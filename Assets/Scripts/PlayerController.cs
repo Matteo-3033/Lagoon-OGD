@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     
     private void FixedUpdate()
     {
-        rb.MovePosition(transform.position + movement);
+        //rb.MovePosition(transform.position + movement);
+        transform.position += movement;
     }
 }

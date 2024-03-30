@@ -55,4 +55,14 @@ public class FieldOfVIew : MonoBehaviour
         mesh.uv = uv;
         mesh.triangles = triangles;
     }
+    
+    public void SetFoV(float fov)
+    {
+        this.fieldOfView = fov;
+    }
+    
+    public void SetViewDistance(float dist)
+    {
+        this.viewDistance = dist;
+    }
 }
