@@ -14,7 +14,7 @@ TagManager:
   - Mask
   - Behind-Mask
   - Object
-  - 
+  - Black
   - 
   - 
   - 
@@ -40,4 +40,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Top
+    uniqueID: 1883338053
     locked: 0
