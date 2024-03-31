@@ -28,15 +28,14 @@ public class FieldOfVIew : MonoBehaviour
         vertices[0] = Origin;
 
         var startAngle = Quaternion.AngleAxis(-fieldOfView / 2, Vector3.up);
-        var localForward = transform.worldToLocalMatrix.MultiplyVector(transform.forward);
-        var direction = startAngle * localForward;
+        var direction = startAngle * transform.forward;
         
         for (var i = 0; i <= rayCount; i++)
         {
             Vector3 newVertex;
             if (Physics.Raycast(transform.position, direction, out var hit, viewDistance))
                 newVertex = transform.worldToLocalMatrix.MultiplyPoint(hit.point);
-            else newVertex = Origin + viewDistance * direction;
+            else newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
 
             vertices[i + 1] = newVertex;
 
