@@ -9,7 +9,7 @@ public class FieldOfVIew : MonoBehaviour
     [SerializeField] private float viewDistance = 10F;
     
     private float AngleIncrease => fieldOfView / rayCount;
-    private Vector3 Origin => transform.localPosition;
+    private Vector3 Origin => Vector3.zero;
 
     private Mesh mesh;
     
