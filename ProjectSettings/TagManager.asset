@@ -11,10 +11,10 @@ TagManager:
   - 
   - Water
   - UI
-  - Mask
-  - Behind-Mask
+  - FieldOfView
+  - Behind-FieldOfView
   - Object
-  - Black
+  - BlurScreen
   - 
   - 
   - 
