@@ -27,13 +27,6 @@ public class FieldOfVIew : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
         OnFoVUpdated();
     }
-
-    
-    [ContextMenu("Increase FoV")]
-    public void DecreaseFoV()
-    {
-        SetFoV(fieldOfViewDegree - 10);
-    }
     
     private void Update()
     {
