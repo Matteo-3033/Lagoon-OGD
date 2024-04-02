@@ -4,11 +4,19 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
 public class FieldOfVIew : MonoBehaviour
 {
-    [SerializeField] private float fieldOfView = 120F;
+    [SerializeField] private float fieldOfViewDegree = 120F;
     [SerializeField] private int rayCount = 60;
     [SerializeField] private float viewDistance = 10F;
+
+    public class FieldOfViewArgs
+    {
+        public float FieldOfViewDegree;
+        public float ViewDistance;
+    }
+
+    public event EventHandler<FieldOfViewArgs> OnFieldOfViewChanged;
     
-    private float AngleIncrease => fieldOfView / rayCount;
+    private float AngleIncrease => fieldOfViewDegree / rayCount;
     private Vector3 Origin => Vector3.zero;
 
     private Mesh mesh;
@@ -17,8 +25,16 @@ public class FieldOfVIew : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        OnFoVUpdated();
     }
 
+    
+    [ContextMenu("Increase FoV")]
+    public void DecreaseFoV()
+    {
+        SetFoV(fieldOfViewDegree - 10);
+    }
+    
     private void Update()
     {
         var vertices = new Vector3[rayCount + 2];   // +2 for the origin and the last vertex
@@ -27,7 +43,7 @@ public class FieldOfVIew : MonoBehaviour
         
         vertices[0] = Origin;
 
-        var startAngle = Quaternion.AngleAxis(-fieldOfView / 2, Vector3.up);
+        var startAngle = Quaternion.AngleAxis(-fieldOfViewDegree / 2, Vector3.up);
         var direction = startAngle * transform.forward;
         
         for (var i = 0; i <= rayCount; i++)
@@ -55,13 +71,14 @@ public class FieldOfVIew : MonoBehaviour
         mesh.triangles = triangles;
     }
     
-    public void SetFoV(float fov)
-    {
-        this.fieldOfView = fov;
-    }
-    
     public void SetViewDistance(float dist)
     {
         this.viewDistance = dist;
+        OnFoVUpdated();
+    }
+
+    private void OnFoVUpdated()
+    {
+        OnFieldOfViewChanged?.Invoke(this, new FieldOfViewArgs {FieldOfViewDegree = fieldOfViewDegree, ViewDistance = viewDistance});
     }
 }
