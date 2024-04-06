@@ -1,4 +1,4 @@
-﻿using Mirror;
+﻿using Network;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,16 +6,17 @@ namespace MainScene
 {
     public class ConnectButton: MonoBehaviour
     {
+        [SerializeField] private ClientConnector connector;
+        
         private void Start()
         {
             var button = gameObject.GetComponent<Button>();
             button.onClick.AddListener(OnClick);
         }
         
-        private static void OnClick()
+        private void OnClick()
         {
-            NetworkManager.singleton.StartClient();
-            UIManager.Instance.ShowMenu(UIManager.Menu.Loading);
+            connector.ConnectClient();
         }
     }
 }

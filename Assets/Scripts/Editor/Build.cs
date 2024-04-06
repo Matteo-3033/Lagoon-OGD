@@ -6,7 +6,11 @@ namespace Editor
 {
     public static class Build
     {
-
+        private static readonly string[] Scenes =
+        {
+            Utils.Scenes.Connection, Utils.Scenes.MainMenu
+        };
+        
         [MenuItem("Build/Build All")]
         public static void BuildAll()
         {
@@ -27,7 +31,7 @@ namespace Editor
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = new[] { "Assets/Scenes/MenuScene.unity" },
+                scenes = Scenes,
                 locationPathName = "Builds/Windows/Server/Server.exe",
                 target = BuildTarget.StandaloneWindows64,
                 options = BuildOptions.CompressWithLz4HC | BuildOptions.EnableHeadlessMode
@@ -43,7 +47,7 @@ namespace Editor
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = new[] { "Assets/Scenes/MenuScene.unity" },
+                scenes = Scenes,
                 locationPathName = "Builds/Linux/Server/Server.x86_64",
                 target = BuildTarget.StandaloneLinux64,
                 options = BuildOptions.CompressWithLz4HC | BuildOptions.EnableHeadlessMode
@@ -58,11 +62,13 @@ namespace Editor
         [MenuItem("Build/Build Client (Windows)")]
         public static void BuildWindowsClient()
         {
-            var buildPlayerOptions = new BuildPlayerOptions();
-            buildPlayerOptions.scenes = new[] { "Assets/Scenes/MenuScene.unity" };
-            buildPlayerOptions.locationPathName = "Builds/Windows/Client/Client.exe";
-            buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
-            buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = Scenes,
+                locationPathName = "Builds/Windows/Client/Client.exe",
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.CompressWithLz4HC
+            };
 
             Debug.Log("Building Client (Windows)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);

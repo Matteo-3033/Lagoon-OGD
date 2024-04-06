@@ -5,33 +5,27 @@ namespace MainScene
 {
     public class UIManager : MonoBehaviour
     {
-        [SerializeField] private GameObject connectionMenu;
         [SerializeField] private GameObject mainMenu;
-        [SerializeField] private GameObject loadingMenu;
         
-        private readonly Dictionary<Menu, GameObject> menus = new Dictionary<Menu, GameObject>();
+        private readonly Dictionary<Menu, GameObject> menus = new();
         
         public enum Menu
         {
-            Connection,
-            MainMenu,
-            Loading
+            MainMenu
         }
         
         public static UIManager Instance { get; private set; }
 
         private void Awake()
         {
-            if (connectionMenu == null)
+            if (mainMenu == null)
             {
-                Debug.LogError("UIManager: ConnectionMenu is not set.");
+                Debug.LogError("UIManager: MainMenu is not set.");
                 return;
             }
 
-            AddMenu(Menu.Connection, connectionMenu);
             AddMenu(Menu.MainMenu, mainMenu);
-            AddMenu(Menu.Loading, loadingMenu);
-            ShowMenu(Menu.Connection);
+            ShowMenu(Menu.MainMenu);
 
             if (Instance != null || Instance == this)
             {
@@ -40,7 +34,8 @@ namespace MainScene
             }
             Instance = this;
         }
-
+        
+        
         private void AddMenu(Menu key, GameObject value)
         {
             if (value != null)

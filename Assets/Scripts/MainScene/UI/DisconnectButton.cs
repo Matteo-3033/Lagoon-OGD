@@ -12,10 +12,9 @@ namespace MainScene
             button.onClick.AddListener(OnClick);
         }
         
-        private void OnClick()
+        private static void OnClick()
         {
             NetworkManager.singleton.StopClient();
-            UIManager.Instance.ShowMenu(UIManager.Menu.Connection);
         }
     }
 }
