@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -125,12 +126,13 @@ namespace Network
 
             if (openMatches[matchId].players != 2) return;
             if (matchConnections[matchId].Select(pConn => playerInfos[pConn]).Count(info => info.ready) == 2)
-                BeginMatch(matchId);
+                StartCoroutine(BeginMatchDelayed(1, matchId));
         }
         
-        private void BeginMatch(string matchId)
+        private IEnumerator BeginMatchDelayed(float waitTime, string matchId)
         {
-            if (!matchConnections.ContainsKey(matchId)) return;
+            if (!matchConnections.ContainsKey(matchId)) yield return null;
+            yield return new WaitForSeconds(waitTime);
             
             var matchController = Instantiate(matchControllerPrefab);
             matchController.InitMatch(matchId);
@@ -155,6 +157,8 @@ namespace Network
             
             openMatches.Remove(matchId);
             matchConnections.Remove(matchId);
+
+            yield return null;
         }
 
         private void DisconnectPlayer(NetworkConnectionToClient conn)

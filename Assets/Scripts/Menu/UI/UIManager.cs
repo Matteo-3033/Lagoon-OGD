@@ -20,7 +20,7 @@ namespace Menu.UI
         private GameObject currentMenu;
         private bool searchingMatch;
 
-        public enum MenuKey
+        private enum MenuKey
         {
             MainMenu,
             SearchingMatch,
