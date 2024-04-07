@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 0
-  _assetId: 3203628458
+  _assetId: 308559770
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -84,4 +84,3 @@ MonoBehaviour:
   syncInterval: 0
   matchId: 
   inGame: 0
-  players: []

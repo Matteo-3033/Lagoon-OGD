@@ -13,7 +13,7 @@ namespace Menu.UI.SearchMenu
         }
 
         public void SearchGame () {
-            UIManager.Instance.ShowMenu(UIManager.MenuKey.SearchingMatch);
+            UIManager.Instance.SearchMatch();
         }
     }
 }

@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Mirror;
+using Network.Messages;
 using UnityEngine;
+using MatchInfo = Network.Messages.MatchInfo;
+using PlayerInfo = Network.Messages.PlayerInfo;
 
 namespace Network
 {
@@ -13,9 +17,11 @@ namespace Network
 
         [SerializeField] private MatchController matchControllerPrefab;
         
+        private readonly Dictionary<string, MatchInfo> openMatches = new();
+        private readonly Dictionary<string, HashSet<NetworkConnectionToClient>> matchConnections = new();
+        private readonly Dictionary<NetworkConnection, PlayerInfo> playerInfos = new();
+        
         public static MatchMaker Instance { get; private set; }
-
-        private readonly Dictionary<string, MatchController> matches = new();
 
         private void Awake()
         {
@@ -30,51 +36,70 @@ namespace Network
         
             Instance = this;
             DontDestroyOnLoad(this);
+            
+            RiseNetworkManager.OnServerReadied += OnServerReadied;
+            RiseNetworkManager.OnServerDisconnected += DisconnectPlayer;
         }
 
-        public bool SearchGame(Player player, out MatchController match)
+        private void OnServerReadied(NetworkConnectionToClient conn)
         {
-            foreach (var m in matches.Values)
+            playerInfos.Add(conn, new PlayerInfo { username = conn.Username(), ready = false });
+        }
+
+        public bool SearchGame(NetworkConnectionToClient conn, out MatchInfo match, out PlayerInfo[] players)
+        {
+            if (!string.IsNullOrEmpty(playerInfos[conn].matchId))
             {
-                Debug.Log ($"Checking match {m.matchId} | inMatch {m.inGame} | matchFull {m.IsFull}");
-                if (m.inGame || m.IsFull) continue;
-                if (JoinMatch(player, m))
-                {
-                    match = m;
-                    return true;
-                }
+                match = new MatchInfo();
+                players = new PlayerInfo[]{};
+                return false;
             }
 
-            return CreateNewMatch(player, out match);
-        }
-        
-        private bool JoinMatch(Player player, MatchController match)
-        { 
-            if (match.inGame || match.IsFull) return false;
+            match = openMatches.Count > 0 ? JoinMatch(conn) : CreateNewMatch(conn);
+            players = matchConnections[match.matchId].Select(pConn => playerInfos[pConn]).ToArray();
 
-            if (!match.SetOpponent(player)) return false;
-
-            Debug.Log($"Joined match {match.matchId}");
             return true;
         }
+        
+        private MatchInfo JoinMatch(NetworkConnectionToClient conn)
+        {
+            var match = openMatches.Values.First();
+            var matchId = match.matchId;
+            
+            match.players++;
+            openMatches[match.matchId] = match;
+            matchConnections[matchId].Add(conn);
 
-        private bool CreateNewMatch(Player firstPlayer, out MatchController match)
+            var playerInfo = playerInfos[conn];
+            playerInfo.ready = false;
+            playerInfo.matchId = matchId;
+            playerInfos[conn] = playerInfo;
+            
+            Debug.Log($"Joined match {match.matchId}");
+            return match;
+        }
+
+        private MatchInfo CreateNewMatch(NetworkConnectionToClient conn)
         {
             Debug.Log("Creating new match");
             
-            var matchID = GetRandomMatchID();
+            var matchId = GetRandomMatchId();
             
-            match = Instantiate(matchControllerPrefab);
-            NetworkServer.Spawn(match.gameObject);
-            match.InitMatch(matchID, firstPlayer);
+            matchConnections.Add(matchId, new HashSet<NetworkConnectionToClient>());
+            matchConnections[matchId].Add(conn);
+            openMatches.Add(matchId, new MatchInfo { matchId = matchId, players = 1 });
+
+            var playerInfo = playerInfos[conn];
+            playerInfo.ready = false;
+            playerInfo.matchId = matchId;
+            playerInfos[conn] = playerInfo;
             
-            matches[matchID] = match;
+            Debug.Log($"Match {matchId} generated");
             
-            Debug.Log($"Match {matchID} generated");
-            return true;
+            return openMatches[matchId];
         }
         
-        private static string GetRandomMatchID()
+        private static string GetRandomMatchId()
         {
             var id = string.Empty;
             
@@ -90,27 +115,62 @@ namespace Network
             return id;
         }
 
-        public void BeginMatch(MatchController match)
+        public void SetReady(NetworkConnectionToClient conn, string matchId)
         {
-            match.inGame = true;
-            foreach (var player in match.Players)
+            if (!matchConnections.ContainsKey(matchId) || !matchConnections[matchId].Contains(conn)) return;
+            
+            var player = playerInfos[conn];
+            player.ready = true;
+            playerInfos[conn] = player;
+
+            if (openMatches[matchId].players != 2) return;
+            if (matchConnections[matchId].Select(pConn => playerInfos[pConn]).Count(info => info.ready) == 2)
+                BeginMatch(matchId);
+        }
+        
+        private void BeginMatch(string matchId)
+        {
+            if (!matchConnections.ContainsKey(matchId)) return;
+            
+            var matchController = Instantiate(matchControllerPrefab);
+            matchController.InitMatch(matchId);
+            NetworkServer.Spawn(matchController.gameObject);
+
+            foreach (var pConn in matchConnections[matchId])
             {
-             //   player.StartGame ();
+                pConn.Send(new ToClientMatchMessage { Op = ClientMatchOperation.Started, MatchId = matchId });
+
+                var playerObj = Instantiate(NetworkManager.singleton.playerPrefab);
+                var player = playerObj.GetComponent<Player>();
+                player.SetMatch(matchController);
+                NetworkServer.AddPlayerForConnection(pConn, playerObj);
+                
+                matchController.AddPlayer(playerObj.GetComponent<Player>());
+                
+                // Reset ready state for after the match
+                var playerInfo = playerInfos[pConn];
+                playerInfo.ready = false;
+                playerInfos[pConn] = playerInfo;
             }
+            
+            openMatches.Remove(matchId);
+            matchConnections.Remove(matchId);
         }
 
-        public void DisconnectPlayer(Player player)
+        private void DisconnectPlayer(NetworkConnectionToClient conn)
         {
-            if (player.Match == null) return;
-            var match = player.Match;
+            if (!conn.identity) return;
+            var player = conn.identity.GetComponent<Player>();
+            if (!player || !player.match) return;
             
-            Debug.Log ($"Player disconnected from match {match.matchId}");
+            Debug.Log ($"Player disconnected from match {player.match.matchId}");
             
-            // TODO: remove points from disconnected player
-            match.Players.Remove(player);
-            match.Resolve();
-            
-            matches.Remove(match.matchId);
+            // TODO
+        }
+        
+        public NetworkConnectionToClient OtherPlayerConn(string matchId, NetworkConnectionToClient conn)
+        {
+            return matchConnections[matchId].First(pConn => pConn.Username() != conn.Username());
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using Mirror;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Network
 {
@@ -12,9 +12,20 @@ namespace Network
         
         public new static RiseNetworkManager singleton => NetworkManager.singleton as RiseNetworkManager;
 
+        // Called on client when client is ready
         public static event Action OnClientConnected;
+        
+        // Called on client when client disconnects
         public static event Action OnClientDisconnected;
+        
+        // Called on server when server stops
         public static event Action OnServerStopped;
+        
+        // Called on server when client is ready
+        public static event Action<NetworkConnectionToClient> OnServerReadied;
+        
+        // Called on server when client disconnects
+        public static event Action<NetworkConnectionToClient> OnServerDisconnected;
 
         public override void Awake()
         {
@@ -46,16 +57,17 @@ namespace Network
             if (numPlayers >= maxConnections)
                 conn.Disconnect();
         }
-
+        
+        
         public override void OnServerDisconnect(NetworkConnectionToClient conn)
         {
-            if (conn.identity)
-            {
-                var player = conn.identity.GetComponent<Player>();
-                MatchMaker.Instance.DisconnectPlayer(player);
-                Authenticator.OnPlayerDisconnected(player);
-            }
-                
+            StartCoroutine(DoServerDisconnect(conn));
+        }
+
+        private IEnumerator DoServerDisconnect(NetworkConnectionToClient conn)
+        {
+            OnServerDisconnected?.Invoke(conn);
+            yield return null;
             base.OnServerDisconnect(conn);
             Debug.Log("Client disconnected from server.");
         }
@@ -80,12 +92,7 @@ namespace Network
         {
             base.OnServerReady(conn);
             Debug.Log("Client ready");
-        }
-
-        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-        {
-            base.OnServerAddPlayer(conn);
-            Debug.Log("Player added");
+            OnServerReadied?.Invoke(conn);
         }
     }
 }

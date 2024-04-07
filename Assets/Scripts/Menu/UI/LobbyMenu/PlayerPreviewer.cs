@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Mirror;
 using Network;
+using Network.Messages;
 using UnityEngine;
 
 namespace Menu.UI.LobbyMenu
@@ -19,13 +17,16 @@ namespace Menu.UI.LobbyMenu
             previewTemplate.gameObject.SetActive(false);
         }
 
-        private void ShowPlayerPreviews()
+        public void ShowPlayerPreviews(IEnumerable<PlayerInfo> players)
         {
-            foreach (var player in match.Players)
+            foreach (var player in players)
             {
-                var preview = Instantiate(previewTemplate, transform);
-                preview.gameObject.SetActive(true);
-                previews[player.username] = preview;
+                if (!previews.TryGetValue(player.username, out var preview))
+                {
+                    preview = Instantiate(previewTemplate, transform);
+                    preview.gameObject.SetActive(true);
+                    previews[player.username] = preview;
+                }
                 preview.SetPlayer(player);
             }
         }
@@ -37,23 +38,6 @@ namespace Menu.UI.LobbyMenu
                 Destroy(preview.gameObject);
             }
             previews.Clear();
-        }
-
-        public void SetMatch(MatchController matchController)
-        {
-            match = matchController;
-            match.Players.Callback += OnPlayerChanged;
-        }
-
-        private void OnPlayerChanged(SyncList<Player>.Operation op, int itemindex, Player olditem, Player newitem)
-        {
-            ShowPlayerPreviews();
-        }
-
-        private void OnDestroy()
-        {
-            if (match)
-                match.Players.Callback -= OnPlayerChanged;
         }
     }
 }

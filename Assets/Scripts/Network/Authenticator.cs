@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -12,6 +11,11 @@ namespace Network
         private readonly HashSet<string> playerNames = new();
         private string username;
 
+        public struct AuthenticationData
+        {
+            public string Username;
+        }
+        
         private struct AuthRequestMessage : NetworkMessage
         {
             public string Username;
@@ -24,6 +28,7 @@ namespace Network
 
         public override void OnStartServer()
         {
+            RiseNetworkManager.OnServerDisconnected += OnPlayerDisconnected;
             NetworkServer.RegisterHandler<AuthRequestMessage>(OnAuthentication, false);
         }
         
@@ -44,7 +49,7 @@ namespace Network
                 Debug.Log("Authentication successful");
                 playerNames.Add(msg.Username);
 
-                conn.authenticationData = msg.Username;
+                conn.authenticationData = new AuthenticationData { Username = msg.Username };
 
                 var authResponseMessage = new AuthResponseMessage
                 {
@@ -72,9 +77,9 @@ namespace Network
             }
         }
 
-        public void OnPlayerDisconnected(Player player)
+        private void OnPlayerDisconnected(NetworkConnectionToClient conn)
         {
-            playerNames.Remove(player.username);
+            playerNames.Remove(conn.Username());
         }
         
         private IEnumerator DelayedDisconnect(NetworkConnectionToClient conn, float waitTime)
@@ -127,6 +132,15 @@ namespace Network
         public void SetUsername(string playerName)
         {
             username = playerName;
+        }
+    }
+    
+    public static class AuthenticatorExtensions
+    {
+        public static string Username(this NetworkConnectionToClient conn)
+        {
+            var auth = (Authenticator.AuthenticationData?)conn.authenticationData;
+            return auth?.Username;
         }
     }
 }

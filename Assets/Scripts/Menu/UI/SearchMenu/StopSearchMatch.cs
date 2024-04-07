@@ -14,7 +14,7 @@ namespace Menu.UI.SearchMenu
 
         private static void StopSearch()
         {
-            UIManager.Instance.ShowMenu(UIManager.MenuKey.MainMenu);
+            UIManager.Instance.StopSearch();
         }
     }
 }

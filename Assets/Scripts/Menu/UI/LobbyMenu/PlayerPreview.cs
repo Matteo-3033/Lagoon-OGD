@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Network.Messages;
+using TMPro;
 using UnityEngine;
 
 namespace Menu.UI.LobbyMenu
@@ -8,7 +9,7 @@ namespace Menu.UI.LobbyMenu
 
         [SerializeField] private TextMeshProUGUI username;
 
-        public void SetPlayer(Player player)
+        public void SetPlayer(PlayerInfo player)
         {
             username.text = player.username;
         }
