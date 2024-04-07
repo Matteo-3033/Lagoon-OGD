@@ -34,7 +34,8 @@ namespace Editor
                 scenes = Scenes,
                 locationPathName = "Builds/Windows/Server/Server.exe",
                 target = BuildTarget.StandaloneWindows64,
-                options = BuildOptions.CompressWithLz4HC | BuildOptions.EnableHeadlessMode
+                subtarget = (int)StandaloneBuildSubtarget.Server,
+                options = BuildOptions.CompressWithLz4HC
             };
 
             Debug.Log("Building Server (Windows)...");
@@ -50,7 +51,8 @@ namespace Editor
                 scenes = Scenes,
                 locationPathName = "Builds/Linux/Server/Server.x86_64",
                 target = BuildTarget.StandaloneLinux64,
-                options = BuildOptions.CompressWithLz4HC | BuildOptions.EnableHeadlessMode
+                subtarget = (int)StandaloneBuildSubtarget.Server,
+                options = BuildOptions.CompressWithLz4HC
             };
 
             Debug.Log("Building Server (Linux)...");
@@ -72,6 +74,7 @@ namespace Editor
             buildPlayerOptions.scenes = Scenes;
             buildPlayerOptions.locationPathName = "Builds/Windows/Client/Client.exe";
             buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
+            buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
             
             Debug.Log("Building Client (Windows)...");

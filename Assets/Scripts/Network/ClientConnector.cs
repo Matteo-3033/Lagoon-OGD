@@ -1,9 +1,9 @@
 ﻿using Mirror;
-using Server;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Network {
+namespace Network
+{
     public class ClientConnector : MonoBehaviour
     {
 
@@ -11,7 +11,8 @@ namespace Network {
         [SerializeField] private GameObject loadingSpinner;
         [SerializeField] private GameObject noConnection;
         
-        private void Start () {
+        private void Start()
+        {
             loadingSpinner.SetActive(false);
             noConnection.SetActive(false);
             
@@ -26,28 +27,52 @@ namespace Network {
         private void InitClient()
         {
             RiseNetworkManager.OnClientConnected += OnClientConnected;
+            RiseNetworkManager.OnClientDisconnected += OnClientDisconnected;
             
             dataInput.SetActive(true);
 
             noConnection.SetActive(PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName));
-
-            if (PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName))
-                ConnectClient();
+            
+            ConnectClient();
         }
-
-        public void ConnectClient()
+        
+        public bool ConnectClient()
         {
+            if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName))
+                return false;
+                
+            var username = PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName);
+            if (username == "") return false;
+            
             Debug.Log("Connecting to server...");
             loadingSpinner.SetActive(true);
             dataInput.SetActive(false);
+            RiseNetworkManager.singleton.Authenticator.SetUsername(username);
             RiseNetworkManager.singleton.StartClient();
+            
+            return true;
         }
         
-        private void OnClientConnected(NetworkConnectionToClient unused)
+        private void OnClientConnected()
         {
             loadingSpinner.SetActive(false);
             dataInput.SetActive(true);
-            SceneManager.LoadScene(Utils.Scenes.MainMenu);
+            SceneManager.LoadScene(Utils.Scenes.Menu);
+        }
+        
+        private void OnClientDisconnected()
+        {
+            loadingSpinner.SetActive(false);
+            dataInput.SetActive(true);
+        }
+
+        private void OnDestroy()
+        {
+            if (!Application.isBatchMode)
+            {
+                RiseNetworkManager.OnClientConnected -= OnClientConnected;
+                RiseNetworkManager.OnClientDisconnected -= OnClientDisconnected;
+            }
         }
     }
 }

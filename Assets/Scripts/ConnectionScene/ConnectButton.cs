@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace MainScene
 {
+    [RequireComponent(typeof(Button))]
     public class ConnectButton: MonoBehaviour
     {
         [SerializeField] private ClientConnector connector;

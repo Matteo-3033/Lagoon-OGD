@@ -1100,7 +1100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640c81f469a244e083f83040de0d49dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connector: {fileID: 1517106040}
+  connector: {fileID: 1591834847}
 --- !u!1 &1421671015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1287,18 +1287,20 @@ MonoBehaviour:
   autoStartServerBuild: 0
   autoConnectClientBuild: 0
   offlineScene: Assets/Scenes/Connection.unity
-  onlineScene: Assets/Scenes/MainMenu.unity
+  onlineScene: Assets/Scenes/Menu.unity
   transport: {fileID: 1517106037}
   networkAddress: localhost
   maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
+  authenticator: {fileID: 1517106040}
   playerPrefab: {fileID: 215138077781146388, guid: de871802091702d4fb5a459cd7261e2e,
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 5543043519484708347, guid: d04acfb1c4ee4204bb84778f7eb05d0f, type: 3}
+  - {fileID: 5618378482802198516, guid: d5594cafb1831a944a748a0bccf4b47a, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -1314,6 +1316,8 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  matchMakerPrefab: {fileID: 8036203385947119173, guid: d5594cafb1831a944a748a0bccf4b47a,
+    type: 3}
 --- !u!4 &1517106039
 Transform:
   m_ObjectHideFlags: 0
@@ -1323,7 +1327,7 @@ Transform:
   m_GameObject: {fileID: 1517106036}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 876.8789, y: 494.12933, z: 4.9609866}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1338,12 +1342,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1517106036}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 561fa11ce12aa834398837a864ef9102, type: 3}
+  m_Script: {fileID: 11500000, guid: f9b01e8ce1594b4e99c3f5363246866b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dataInput: {fileID: 1661787052}
-  loadingSpinner: {fileID: 121743255}
-  noConnection: {fileID: 1050165814}
+  OnServerAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1550757033
 GameObject:
   m_ObjectHideFlags: 0
@@ -1612,6 +1619,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551295945}
   m_CullTransparentMesh: 1
+--- !u!1 &1591834846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1591834848}
+  - component: {fileID: 1591834847}
+  m_Layer: 0
+  m_Name: ClientConnector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1591834847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591834846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 561fa11ce12aa834398837a864ef9102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataInput: {fileID: 1661787052}
+  loadingSpinner: {fileID: 121743255}
+  noConnection: {fileID: 1050165814}
+--- !u!4 &1591834848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591834846}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1661787052
 GameObject:
   m_ObjectHideFlags: 0
@@ -2121,3 +2175,4 @@ SceneRoots:
   - {fileID: 877931996}
   - {fileID: 1863027902}
   - {fileID: 1517106039}
+  - {fileID: 1591834848}

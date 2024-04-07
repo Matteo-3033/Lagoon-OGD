@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MainScene
+namespace Menu.UI.LobbyMenu
 {
     [RequireComponent(typeof(Button))]
-    public class QuitButton : MonoBehaviour
+    public class BeginGame : MonoBehaviour
     {
+        [SerializeField] private GameObject loading;
+    
         private void Start()
         {
             var button = gameObject.GetComponent<Button>();
@@ -14,7 +16,7 @@ namespace MainScene
 
         private void OnClick()
         {
-            Application.Quit();
+            loading.SetActive(true);
         }
     }
 }

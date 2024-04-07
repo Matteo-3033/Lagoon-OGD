@@ -1,9 +1,11 @@
-﻿using TMPro;
+﻿using Network;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MainScene
 {
+    [RequireComponent(typeof(TMP_InputField))]
     public class UsernameInput : MonoBehaviour
     {
         private TMP_InputField nameInputField;
@@ -28,10 +30,10 @@ namespace MainScene
             }
         }
 
-        private void SetUsername(string playerName)
+        private void SetUsername(string username)
         {
-            connectButton.interactable = !string.IsNullOrEmpty(playerName);
-            PlayerPrefs.SetString(Utils.PlayerPrefsKeys.PlayerName, playerName);
+            connectButton.interactable = !string.IsNullOrEmpty(username);
+            PlayerPrefs.SetString(Utils.PlayerPrefsKeys.PlayerName, username);
         }
     }
 }
