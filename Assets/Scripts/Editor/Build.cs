@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace Editor
     {
         private static readonly string[] Scenes =
         {
-            Utils.Scenes.Connection, Utils.Scenes.MainMenu
+            Utils.Scenes.Connection, Utils.Scenes.Menu
         };
         
         [MenuItem("Build/Build All")]
@@ -62,14 +62,18 @@ namespace Editor
         [MenuItem("Build/Build Client (Windows)")]
         public static void BuildWindowsClient()
         {
-            var buildPlayerOptions = new BuildPlayerOptions
-            {
-                scenes = Scenes,
-                locationPathName = "Builds/Windows/Client/Client.exe",
-                target = BuildTarget.StandaloneWindows64,
-                options = BuildOptions.CompressWithLz4HC
-            };
 
+            var method = typeof(BuildPlayerWindow.DefaultBuildMethods).GetMethod("GetBuildPlayerOptionsInternal", BindingFlags.NonPublic | BindingFlags.Static);
+
+            var buildPlayerOptions = (BuildPlayerOptions) method!.Invoke(
+                null, 
+                new object[] { false, new BuildPlayerOptions() }
+            );
+            buildPlayerOptions.scenes = Scenes;
+            buildPlayerOptions.locationPathName = "Builds/Windows/Client/Client.exe";
+            buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
+            buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
+            
             Debug.Log("Building Client (Windows)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
             Debug.Log("Built Client (Windows).");
