@@ -16,6 +16,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     private Vector3 inputMovementDirection;
     private Vector3 lookDirection;
+    private Vector3 lookPosition;
+    private bool mousePerformed;
 
     public delegate void Move(Vector3 inputDirection);
 
@@ -59,14 +61,15 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     {
         Vector3 mousePos = callbackContext.ReadValue<Vector2>();
         mousePos.z = Camera.main.transform.position.y - transform.position.y;
-        Vector3 lookPosition = Camera.main.ScreenToWorldPoint(mousePos);
-        lookDirection = (lookPosition - transform.position).normalized;
+        lookPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        mousePerformed = true;
     }
 
     private void View_performed(InputAction.CallbackContext callbackContext)
     {
         Vector3 temp = callbackContext.ReadValue<Vector2>();
         lookDirection = new Vector3(temp.x, 0, temp.y);
+        mousePerformed = false;
     }
 
     public Vector3 GetMovementDirection()
@@ -76,6 +79,10 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     public Vector3 GetLookDirection()
     {
+        if(mousePerformed)
+        {
+            lookDirection = (lookPosition - transform.position).normalized;
+        }
         return lookDirection;
     }
 }
