@@ -60,8 +60,12 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private void MousePosition_performed(InputAction.CallbackContext callbackContext)
     {
         Vector3 mousePos = callbackContext.ReadValue<Vector2>();
-        mousePos.z = Camera.main.transform.position.y - transform.position.y;
+        mousePos.z = Camera.main.transform.position.y / Mathf.Cos((90 - Camera.main.fieldOfView) / 2 * Mathf.Deg2Rad);
         lookPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        lookPosition = Quaternion.AngleAxis(90 - Camera.main.transform.rotation.eulerAngles.x, Camera.main.transform.right) * lookPosition;
+        //lookPosition.y = transform.position.y;
+        Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta, 3);
+        Debug.DrawLine(transform.position, transform.position + Camera.main.transform.right, Color.cyan);
         mousePerformed = true;
     }
 
@@ -79,10 +83,17 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     public Vector3 GetLookDirection()
     {
-        if(mousePerformed)
+        if (mousePerformed)
         {
             lookDirection = (lookPosition - transform.position).normalized;
+            Debug.DrawRay(transform.position, lookDirection * (lookPosition - transform.position).magnitude, Color.green);
         }
         return lookDirection;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(Camera.main.transform.position, Camera.main.transform.position.y / Mathf.Cos((90 - Camera.main.fieldOfView) / 2 * Mathf.Deg2Rad));
     }
 }
