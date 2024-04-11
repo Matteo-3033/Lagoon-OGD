@@ -48,6 +48,9 @@ namespace Network
 
         public override void Awake()
         {
+            if (NetworkManager.singleton != null)
+                return;
+            
             base.Awake();
             
             headlessStartMode = HeadlessStartOptions.DoNothing;

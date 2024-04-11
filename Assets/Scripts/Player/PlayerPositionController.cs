@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerPositionController : MonoBehaviour
+public class PlayerPositionController : NetworkBehaviour
 {
     [SerializeField] private float maxSpeed = 10F;
     [Space]
@@ -11,21 +11,21 @@ public class PlayerPositionController : MonoBehaviour
     [SerializeField] private float acceleration = 50F;
     [SerializeField] private float deacceleration = 25F;
 
-    public IInputHanlder inputHanlder;
+    public IInputHanlder inputHandler;
     private Rigidbody rb;
 
     private Vector3 currentSpeed;
     private List<Vector3> additionalVectors = new List<Vector3>();
 
-    private void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        inputHanlder = GetComponentInParent<IInputHanlder>();
+        inputHandler = GetComponentInParent<IInputHanlder>();
     }
 
     private void FixedUpdate()
     {
-        Vector3 inputDirection = inputHanlder.GetMovementDirection();
+        Vector3 inputDirection = inputHandler.GetMovementDirection();
 
         if (acceleratedMovement)
         {
@@ -65,7 +65,7 @@ public class PlayerPositionController : MonoBehaviour
         Debug.DrawRay(transform.position, currentSpeed, Color.cyan);
 
         rb.MovePosition(transform.position + movement);
-        // Debug.Log("Speed: " + movement.magnitude / t + " m/s");
+        //Debug.Log("Speed: " + movement.magnitude / t + " m/s");
     }
 
     private void InstantMovement(Vector3 inputDirection)
@@ -79,7 +79,7 @@ public class PlayerPositionController : MonoBehaviour
         Debug.DrawRay(transform.position, currentSpeed, Color.cyan);
 
         rb.MovePosition(transform.position + movement);
-        Debug.Log("Speed: " + movement.magnitude / t + " m/s");
+        //Debug.Log("Speed: " + movement.magnitude / t + " m/s");
     }
 
     public void AddVector(Vector3 vector)

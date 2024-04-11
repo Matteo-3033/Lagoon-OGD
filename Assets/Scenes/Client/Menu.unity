@@ -364,6 +364,7 @@ GameObject:
   - component: {fileID: 72015020}
   - component: {fileID: 72015019}
   - component: {fileID: 72015018}
+  - component: {fileID: 72015021}
   m_Layer: 0
   m_Name: --MIRROR_NETWORK_MANAGER
   m_TagString: Untagged
@@ -421,7 +422,7 @@ MonoBehaviour:
   autoConnectClientBuild: 0
   offlineScene: Assets/Scenes/Client/Menu.unity
   onlineScene: Assets/Scenes/Client/Lobby.unity
-  transport: {fileID: 72015018}
+  transport: {fileID: 72015021}
   networkAddress: localhost
   maxConnections: 10
   disconnectInactiveConnections: 0
@@ -432,11 +433,7 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
-  - {fileID: 8786336352432102918, guid: dc98bc426a22e4542bd58e292675ee08, type: 3}
   - {fileID: 2201293472120167176, guid: d04acfb1c4ee4204bb84778f7eb05d0f, type: 3}
-  - {fileID: 3733100556664357585, guid: 7ed6e1bbcb8184c4386be506f6fb88d3, type: 3}
-  - {fileID: 215138077781146388, guid: de871802091702d4fb5a459cd7261e2e, type: 3}
-  - {fileID: 1551455602030449158, guid: f75beaf0c0aa787449a325d57dddd262, type: 3}
   exceptionsDisconnect: 0
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -470,6 +467,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &72015021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72015017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wrap: {fileID: 72015018}
+  latency: 100
+  jitter: 0.02
+  jitterSpeed: 1
+  unreliableLoss: 2
+  unreliableScramble: 2
 --- !u!1 &100994712
 GameObject:
   m_ObjectHideFlags: 0

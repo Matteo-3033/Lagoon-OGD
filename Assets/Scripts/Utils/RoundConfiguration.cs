@@ -8,7 +8,6 @@ namespace Utils
     {
         [Scene] public string scene;
         public int keyFragments;
-        public Texture2D map;
     }
 
     public static class RoundConfigurationSerializer 

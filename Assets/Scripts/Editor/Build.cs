@@ -12,7 +12,7 @@ namespace Editor
             Scenes.Master
         };
         
-        private static readonly string[] ClientScenes =
+        private static readonly string[] MatchScenes =
         {
             Scenes.Menu, Scenes.Lobby, Scenes.Round
         };
@@ -55,7 +55,7 @@ namespace Editor
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = ClientScenes,
+                scenes = MatchScenes,
                 locationPathName = "Builds/Windows/Server/Server.exe",
                 target = BuildTarget.StandaloneWindows64,
                 subtarget = (int)StandaloneBuildSubtarget.Server,
@@ -89,7 +89,7 @@ namespace Editor
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = ClientScenes,
+                scenes = MatchScenes,
                 locationPathName = "Builds/Linux/Server/Server.x86_64",
                 target = BuildTarget.StandaloneLinux64,
                 subtarget = (int)StandaloneBuildSubtarget.Server,
@@ -112,7 +112,7 @@ namespace Editor
                 null, 
                 new object[] { false, new BuildPlayerOptions() }
             );
-            buildPlayerOptions.scenes = ClientScenes;
+            buildPlayerOptions.scenes = MatchScenes;
             buildPlayerOptions.locationPathName = "Builds/Windows/Client/Client.exe";
             buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
             buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;

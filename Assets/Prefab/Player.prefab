@@ -140,7 +140,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &455724678192080994
 MonoBehaviour:
@@ -154,6 +154,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09a1d2992a3831d4880f106f25598ea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &8966992613993173721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,10 +169,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57444a96a3a79c749abd975b9019bca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   maxSpeed: 10
   acceleratedMovement: 1
-  acceleration: 50
-  deacceleration: 25
+  acceleration: 100
+  deacceleration: 50
 --- !u!114 &9007718436325738886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,6 +188,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25f64ac9dbd4bb042abd92eb1a1253f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   rotationSpeed: 800
 --- !u!114 &5855581670994239393
 MonoBehaviour:
