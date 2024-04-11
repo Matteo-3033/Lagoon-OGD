@@ -1,37 +1,61 @@
 ﻿using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using Utils;
 
 namespace Editor
 {
     public static class Build
     {
-        private static readonly string[] Scenes =
+        private static readonly string[] ServerScenes =
         {
-            Utils.Scenes.Connection, Utils.Scenes.Menu
+            Scenes.Master
+        };
+        
+        private static readonly string[] ClientScenes =
+        {
+            Scenes.Menu, Scenes.Lobby, Scenes.Round
         };
         
         [MenuItem("Build/Build All")]
         public static void BuildAll()
         {
-            BuildWindowsServer();
+            BuildLinuxMasterServer();
             BuildLinuxServer();
-            BuildWindowsClient();
+            BuildWindows();
         }
         
-        [MenuItem("Build/Build Windows")]
+        [MenuItem("Build/Windows/Build All")]
         public static void BuildWindows()
         {
+            BuildWindowsMasterServer();
             BuildWindowsServer();
             BuildWindowsClient();
         }
         
-        [MenuItem("Build/Build Server (Windows)")]
+        [MenuItem("Build/Windows/Master Server")]
+        public static void BuildWindowsMasterServer()
+        {
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = ServerScenes,
+                locationPathName = "Builds/Windows/Master/Master.exe",
+                target = BuildTarget.StandaloneWindows64,
+                subtarget = (int)StandaloneBuildSubtarget.Server,
+                options = BuildOptions.CompressWithLz4HC
+            };
+
+            Debug.Log("Building Master Server (Windows)...");
+            BuildPipeline.BuildPlayer(buildPlayerOptions);
+            Debug.Log("Built Server (Windows).");
+        }
+        
+        [MenuItem("Build/Windows/Server")]
         public static void BuildWindowsServer()
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = Scenes,
+                scenes = ClientScenes,
                 locationPathName = "Builds/Windows/Server/Server.exe",
                 target = BuildTarget.StandaloneWindows64,
                 subtarget = (int)StandaloneBuildSubtarget.Server,
@@ -43,12 +67,29 @@ namespace Editor
             Debug.Log("Built Server (Windows).");
         }
 
-        [MenuItem("Build/Build Server (Linux)")]
+        [MenuItem("Build/Linux/Master Server")]
+        public static void BuildLinuxMasterServer()
+        {
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = ServerScenes,
+                locationPathName = "Builds/Linux/Master/Master.x86_64",
+                target = BuildTarget.StandaloneLinux64,
+                subtarget = (int)StandaloneBuildSubtarget.Server,
+                options = BuildOptions.CompressWithLz4HC
+            };
+
+            Debug.Log("Building Master Server (Linux)...");
+            BuildPipeline.BuildPlayer(buildPlayerOptions);
+            Debug.Log("Built Server (Linux).");
+        }
+        
+        [MenuItem("Build/Linux/Server")]
         public static void BuildLinuxServer()
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = Scenes,
+                scenes = ClientScenes,
                 locationPathName = "Builds/Linux/Server/Server.x86_64",
                 target = BuildTarget.StandaloneLinux64,
                 subtarget = (int)StandaloneBuildSubtarget.Server,
@@ -61,7 +102,7 @@ namespace Editor
         }
 
 
-        [MenuItem("Build/Build Client (Windows)")]
+        [MenuItem("Build/Windows/Client")]
         public static void BuildWindowsClient()
         {
 
@@ -71,7 +112,7 @@ namespace Editor
                 null, 
                 new object[] { false, new BuildPlayerOptions() }
             );
-            buildPlayerOptions.scenes = Scenes;
+            buildPlayerOptions.scenes = ClientScenes;
             buildPlayerOptions.locationPathName = "Builds/Windows/Client/Client.exe";
             buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
             buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;

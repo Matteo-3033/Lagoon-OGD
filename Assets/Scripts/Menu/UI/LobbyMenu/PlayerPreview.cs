@@ -8,10 +8,10 @@ namespace Menu.UI.LobbyMenu
     {
 
         [SerializeField] private TextMeshProUGUI username;
-
+/*
         public void SetPlayer(PlayerInfo player)
         {
             username.text = player.username;
-        }
+        }*/
     }
 }

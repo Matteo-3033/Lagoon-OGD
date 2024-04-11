@@ -1,3 +1,4 @@
+using Network.Client;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,18 @@ namespace Menu.UI.SearchMenu
         private void Awake()
         {
             var button = GetComponent<Button>();
-            button.onClick.AddListener(SearchGame);
+            button.onClick.AddListener(OnClick);
         }
 
-        public void SearchGame () {
-            UIManager.Instance.SearchMatch();
+        private void Start()
+        {
+            if (!MatchmakingBehaviour.Instance)
+                Debug.LogError($"No instance of {nameof(MatchmakingBehaviour)} found. Please add {nameof(MatchmakingBehaviour)} to scene to be able to use auth logic");
+        }
+
+        private void OnClick () {
+            MatchmakingBehaviour.Instance.SearchMatch(3);
+            UIManager.Instance.ShowMenu(UIManager.MenuKey.SearchingMatch);
         }
     }
 }

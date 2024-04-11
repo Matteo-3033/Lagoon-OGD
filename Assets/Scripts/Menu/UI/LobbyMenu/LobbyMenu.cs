@@ -1,17 +1,23 @@
-﻿using System.Collections.Generic;
-using Network.Messages;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Menu.UI.LobbyMenu
 {
-    public class LobbyMenu : MonoBehaviour
+    public class LobbyMenu : Menu
     {
         [SerializeField] private PlayerPreviewer playerPreviewer;
 
-        public void SetPlayers(IEnumerable<PlayerInfo> players)
+        public override void OnFocus()
         {
+            base.OnFocus();
+            
             playerPreviewer.Clear();
-            playerPreviewer.ShowPlayerPreviews(players);
+            //playerPreviewer.ShowPlayerPreviews(players);
+        }
+
+        public override void OnUnfocus()
+        {
+            base.OnUnfocus();
+            playerPreviewer.Clear();
         }
     }
 }

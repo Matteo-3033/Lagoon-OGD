@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Network.Client;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.UI.SearchMenu
@@ -9,12 +10,13 @@ namespace Menu.UI.SearchMenu
         private void Awake()
         {
             var button = GetComponent<Button>();
-            button.onClick.AddListener(StopSearch);
+            button.onClick.AddListener(OnClick);
         }
 
-        private static void StopSearch()
+        private void OnClick()
         {
-            UIManager.Instance.StopSearch();
+            MatchmakingBehaviour.Instance.StopSearch();
+            UIManager.Instance.ShowMenu(UIManager.MenuKey.MainMenu);
         }
     }
 }

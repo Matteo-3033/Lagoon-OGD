@@ -1,51 +1,63 @@
-﻿using System;
+﻿using MasterServerToolkit.Extensions;
+using MasterServerToolkit.Networking;
 using Mirror;
-using UnityEngine.Serialization;
 
 namespace Network.Messages
 {
-    
-    public struct ToServerMatchMessage : NetworkMessage
+    public struct OpCodes
     {
-        public ServerMatchOperation Op;
-        public string MatchId;
+        public static ushort GetMatch = nameof(GetMatch).ToUint16Hash();   
     }
     
-    public struct ToClientMatchMessage : NetworkMessage
+    
+    
+    public struct ValidateRoomAccessResultMessage : NetworkMessage
     {
-        public ClientMatchOperation Op;
-        public string MatchId;
-        public PlayerInfo[] PlayerInfos;
+        public string Error { get; set; }
+        public ResponseStatus Status { get; set; }
     }
 
-    [Serializable]
-    public struct MatchInfo
+    public static class ValidateRoomAccessResultMessageExtension
     {
-        public string matchId;
-        public byte players;
-    }
-   
-    [Serializable]
-    public struct PlayerInfo
-    {
-        public string username;
-        public bool ready;
-        public string matchId;
-    }
+        public static void Serialize(this NetworkWriter writer, ValidateRoomAccessResultMessage value)
+        {
+            writer.WriteString(value.Error);
+            writer.WriteInt((int)value.Status);
+        }
 
-    public enum ServerMatchOperation : byte
-    {
-        None,
-        Search,
-        Ready
+        public static ValidateRoomAccessResultMessage Deserialize(this NetworkReader reader)
+        {
+            ValidateRoomAccessResultMessage value = new ValidateRoomAccessResultMessage()
+            {
+                Error = reader.ReadString(),
+                Status = (ResponseStatus)reader.ReadInt()
+            };
+
+            return value;
+        }
     }
     
-    public enum ClientMatchOperation : byte
+    
+    public struct ValidateRoomAccessRequestMessage : NetworkMessage
     {
-        None,
-        MatchFound,
-        OpponentJoined,
-        Ended,
-        Started
+        public string Token { get; set; }
+    }
+
+    public static class ValidateRoomAccessRequestMessageExtension
+    {
+        public static void Serialize(this NetworkWriter writer, ValidateRoomAccessRequestMessage value)
+        {
+            writer.WriteString(value.Token);
+        }
+
+        public static ValidateRoomAccessRequestMessage Deserialize(this NetworkReader reader)
+        {
+            ValidateRoomAccessRequestMessage value = new ValidateRoomAccessRequestMessage()
+            {
+                Token = reader.ReadString()
+            };
+
+            return value;
+        }
     }
 }

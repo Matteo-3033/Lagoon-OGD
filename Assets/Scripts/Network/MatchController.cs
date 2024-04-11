@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using Mirror;
+using Network.Master;
 using UnityEngine;
+using Utils;
 
 namespace Network
 {
@@ -12,43 +14,114 @@ namespace Network
         // TODO: add other match data
     }
     
-    [RequireComponent(typeof(NetworkMatch))]
     public class MatchController : NetworkBehaviour
     {
-        public readonly SyncDictionary<string, MatchPlayerData> Players = new();
-        [SyncVar] public string matchId;
+        public static MatchController Instance { get; private set; }
+        private const int MaxPlayers = 2;
         
-        public bool IsFull => Players.Count == 2;
-        
-        private NetworkMatch networkMatch;
+        [SyncVar] private RoundConfiguration currentRound;
+        [SyncVar] private int roundCnt;
+        private readonly SyncList<RoundConfiguration> rounds = new();
+        private readonly SyncDictionary<string, MatchPlayerData> players = new();
+        private readonly Dictionary<NetworkIdentity, string> connections = new();
 
         private void Awake()
         {
-            networkMatch = gameObject.GetComponent<NetworkMatch>();
-        }
-
-        public void InitMatch(string id)
-        {
-            if (!string.IsNullOrEmpty(matchId)) return;
+            if (Instance != null && Instance != this)
+            {
+                Debug.LogWarning("MatchController already exists in the scene. Deleting duplicate.");
+                Destroy(gameObject);
+                return;
+            }
             
-            matchId = id;
-            networkMatch.matchId = matchId.ToGuid();
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
-
-        public void AddPlayer(Player player)
+        public override void OnStartServer()
         {
-            if (IsFull) return;
-            StartCoroutine(AddPlayersToMatchController(player));
+            base.OnStartServer();
+            Debug.Log("MatchController started on server");
+            
+            roundCnt = RiseNetworkManager.RoomOptions.CustomOptions.AsInt(RoomsModule.RoundsCntKey);
+            rounds.AddRange(RiseNetworkManager.RoomOptions.CustomOptions.AsString(RoomsModule.RoundsKey).GetRounds());
+            
+            Debug.Log($"Round count: {roundCnt}");
+            foreach (var r in rounds)
+            {
+                Debug.Log($"Round: {r.name}");
+            }
+            
+            RiseNetworkManager.OnServerPlayerAdded += OnPlayerReady;
+            RiseNetworkManager.OnServerDisconnected += OnPlayerDisconnected;
         }
         
-        // For the SyncDictionary to properly fire the update callback, we must
-        // wait a frame before adding the players to the already spawned MatchController
-        private IEnumerator AddPlayersToMatchController(Player player)
+        [ServerCallback]
+        private void OnPlayerReady(NetworkConnectionToClient conn, string username)
         {
-            yield return null;
+            if (!players.ContainsKey(username))
+                AddPlayer(conn.identity, username);
+        }
+        
+        [ServerCallback]
+        private void OnPlayerDisconnected(NetworkConnectionToClient obj)
+        {
+            if (!connections.ContainsKey(obj.identity))
+                return;
             
-            Players.Add(player.username, new MatchPlayerData { username = player.username });
+            var username = connections[obj.identity];
+            connections.Remove(obj.identity);
+            players.Remove(username);
+        }
+        
+        [ServerCallback]
+        private void AddPlayer(NetworkIdentity conn, string username)
+        {
+            if (connections.Count >= MaxPlayers)
+            {
+                Debug.LogError("Match is full");
+                return;
+            }
+            
+            Debug.Log($"Player {username} added to match");
+            
+            connections[conn] = username;
+            players[username] = new MatchPlayerData {username = username};
+
+            if (connections.Count == MaxPlayers)
+                StartMatch();
+        }
+
+        private void StartMatch()
+        {
+            foreach (var identity in connections.Keys)
+            {
+                var conn = identity.connectionToClient;
+                if (conn == null)
+                {
+                    Debug.LogError("Connection is null");
+                    continue;
+                }
+                
+                var player = identity.gameObject;
+                NetworkServer.AddPlayerForConnection(conn, player);
+            }
+
+            StartRound(0);
+        }
+
+        private void StartRound(int roundIndex)
+        {
+            if (roundIndex >= roundCnt)
+            {
+                Debug.Log("Match finished");
+                return;
+            }
+            
+            Debug.Log($"Starting round {roundIndex}");
+            currentRound = rounds[roundIndex];
+            
+            RiseNetworkManager.singleton.ServerChangeScene(currentRound.scene);
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Network;
-using Network.Messages;
 using UnityEngine;
 
 namespace Menu.UI.LobbyMenu
@@ -16,6 +15,8 @@ namespace Menu.UI.LobbyMenu
         {
             previewTemplate.gameObject.SetActive(false);
         }
+        
+        /*
 
         public void ShowPlayerPreviews(IEnumerable<PlayerInfo> players)
         {
@@ -30,7 +31,7 @@ namespace Menu.UI.LobbyMenu
                 preview.SetPlayer(player);
             }
         }
-
+*/
         public void Clear()
         {
             foreach (var preview in previews.Values)
