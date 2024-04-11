@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Mirror;
 using Network.Master;
 using UnityEngine;
@@ -12,11 +11,14 @@ namespace Network
         public static MatchController Instance { get; private set; }
         private const int MaxPlayers = 2;
         
+        private int currentRoundIndex;
         [SyncVar] private RoundConfiguration currentRound;
-        [SyncVar] private int roundCnt;
-        private readonly SyncList<RoundConfiguration> rounds = new();
+        private readonly List<RoundConfiguration> rounds = new();
         private readonly Dictionary<NetworkIdentity, string> players = new();
+        private bool started;
 
+        public int RoundCnt => rounds.Count;
+        
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -29,16 +31,27 @@ namespace Network
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+        
+        #region CLIENT
+        
+        public void CheckWinningCondition()
+        {
+            CmdCheckWinningCondition();
+        }
 
+        #endregion
+
+        #region SERVER
+        
         public override void OnStartServer()
         {
             base.OnStartServer();
             Debug.Log("MatchController started on server");
             
-            roundCnt = RiseNetworkManager.RoomOptions.CustomOptions.AsInt(RoomsModule.RoundsCntKey);
+            RoundCnt = RiseNetworkManager.RoomOptions.CustomOptions.AsInt(RoomsModule.RoundsCntKey);
             rounds.AddRange(RiseNetworkManager.RoomOptions.CustomOptions.AsString(RoomsModule.RoundsKey).GetRounds());
             
-            Debug.Log($"Round count: {roundCnt}");
+            Debug.Log($"Round count: {RoundCnt}");
             foreach (var r in rounds)
             {
                 Debug.Log($"Round: {r.name}");
@@ -84,8 +97,12 @@ namespace Network
                 StartMatch();
         }
 
+        [Server]
         private void StartMatch()
         {
+            if (started)
+                return;
+            
             foreach (var identity in players.Keys)
             {
                 var conn = identity.connectionToClient;
@@ -100,20 +117,38 @@ namespace Network
             }
 
             StartRound(0);
+            started = true;
         }
-
+        
+        [Server]
         private void StartRound(int roundIndex)
         {
-            if (roundIndex >= roundCnt)
+            currentRoundIndex = roundIndex;
+            if (currentRoundIndex >= RoundCnt)
             {
-                Debug.Log("Match finished");
+                EndMatch();
                 return;
             }
             
-            Debug.Log($"Starting round {roundIndex}");
-            currentRound = rounds[roundIndex];
+            Debug.Log($"Starting round {currentRoundIndex}");
+            currentRound = rounds[currentRoundIndex];
             
             RiseNetworkManager.singleton.ServerChangeScene(currentRound.scene);
         }
+
+        private void EndMatch()
+        {
+            Debug.Log("Match ended");
+        }
+
+        [Command(requiresAuthority = false)]
+        private void CmdCheckWinningCondition()
+        {
+            // TODO: check if player has all key fragments
+            
+            StartRound(currentRoundIndex + 1);
+        }
+        
+        #endregion
     }
 }

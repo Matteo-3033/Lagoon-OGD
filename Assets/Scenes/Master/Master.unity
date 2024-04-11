@@ -703,6 +703,7 @@ MonoBehaviour:
   registerRoomPermissionLevel: 0
   roundPool:
   - {fileID: 11400000, guid: bc3c7aa4ba2c2fe439f5d8263b45552f, type: 2}
+  - {fileID: 11400000, guid: 2df35fd36ac307941b0d953d13a2b200, type: 2}
 --- !u!1 &1977181801
 GameObject:
   m_ObjectHideFlags: 0

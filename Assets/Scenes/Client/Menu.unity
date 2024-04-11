@@ -480,7 +480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wrap: {fileID: 0}
+  wrap: {fileID: 72015018}
   latency: 100
   jitter: 0.02
   jitterSpeed: 1
