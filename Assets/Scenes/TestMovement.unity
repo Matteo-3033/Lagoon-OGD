@@ -135,7 +135,6 @@ GameObject:
   - component: {fileID: 1030779104}
   - component: {fileID: 1030779103}
   - component: {fileID: 1030779106}
-  - component: {fileID: 1030779107}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -261,19 +260,6 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!114 &1030779107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030779102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79a138db09ef25e4989187b5fb453644, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 1652768805}
 --- !u!1 &1097994185
 GameObject:
   m_ObjectHideFlags: 0
@@ -574,6 +560,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09a1d2992a3831d4880f106f25598ea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!54 &1652768801
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -702,7 +691,7 @@ GameObject:
   - component: {fileID: 1816333951}
   - component: {fileID: 1816333950}
   - component: {fileID: 1816333949}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

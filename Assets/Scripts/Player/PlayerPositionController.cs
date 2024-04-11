@@ -65,7 +65,7 @@ public class PlayerPositionController : MonoBehaviour
         Debug.DrawRay(transform.position, currentSpeed, Color.cyan);
 
         rb.MovePosition(transform.position + movement);
-        Debug.Log("Speed: " + movement.magnitude / t + " m/s");
+        // Debug.Log("Speed: " + movement.magnitude / t + " m/s");
     }
 
     private void InstantMovement(Vector3 inputDirection)
