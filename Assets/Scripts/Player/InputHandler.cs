@@ -60,12 +60,18 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private void MousePosition_performed(InputAction.CallbackContext callbackContext)
     {
         Vector3 mousePos = callbackContext.ReadValue<Vector2>();
-        mousePos.z = Camera.main.transform.position.y / Mathf.Cos((90 - Camera.main.fieldOfView) / 2 * Mathf.Deg2Rad);
+        float fieldOfViewLength = Camera.main.transform.position.y / Mathf.Cos((90 - Camera.main.transform.rotation.eulerAngles.x - (Camera.main.fieldOfView / 2)) * Mathf.Deg2Rad);
+        mousePos.z = fieldOfViewLength * Mathf.Cos(Camera.main.fieldOfView / 2 * Mathf.Deg2Rad);
         lookPosition = Camera.main.ScreenToWorldPoint(mousePos);
-        lookPosition = Quaternion.AngleAxis(90 - Camera.main.transform.rotation.eulerAngles.x, Camera.main.transform.right) * lookPosition;
+        Vector3 rotationAxisLocation = Quaternion.AngleAxis(Camera.main.fieldOfView / 2, Camera.main.transform.right) * Camera.main.transform.forward * fieldOfViewLength;
+
+        //lookPosition = Quaternion.AngleAxis(90 - Camera.main.transform.rotation.eulerAngles.x, Camera.main.transform.position + rotationAxisLocation + Camera.main.transform.right) * lookPosition;
+
         //lookPosition.y = transform.position.y;
+
         Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta, 3);
-        Debug.DrawLine(transform.position, transform.position + Camera.main.transform.right, Color.cyan);
+        //Debug.DrawLine(transform.position, transform.position + Camera.main.transform.right, Color.cyan);
+
         mousePerformed = true;
     }
 
