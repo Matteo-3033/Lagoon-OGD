@@ -357,9 +357,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c969c12efeca5394d84d79652fda8819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   fieldOfViewDegree: 90
-  rayCount: 250
   viewDistance: 6.5
+  rayCount: 250
+  player: {fileID: 1402961541625812647}
 --- !u!95 &3302393700632336596
 Animator:
   serializedVersion: 5

@@ -7,13 +7,6 @@ using Utils;
 
 namespace Network
 {
-    [Serializable]
-    public struct MatchPlayerData
-    {
-        public string username;
-        // TODO: add other match data
-    }
-    
     public class MatchController : NetworkBehaviour
     {
         public static MatchController Instance { get; private set; }
@@ -22,8 +15,7 @@ namespace Network
         [SyncVar] private RoundConfiguration currentRound;
         [SyncVar] private int roundCnt;
         private readonly SyncList<RoundConfiguration> rounds = new();
-        private readonly SyncDictionary<string, MatchPlayerData> players = new();
-        private readonly Dictionary<NetworkIdentity, string> connections = new();
+        private readonly Dictionary<NetworkIdentity, string> players = new();
 
         private void Awake()
         {
@@ -52,32 +44,33 @@ namespace Network
                 Debug.Log($"Round: {r.name}");
             }
             
-            RiseNetworkManager.OnServerPlayerAdded += OnPlayerReady;
+            RiseNetworkManager.OnServerPlayerAdded += OnAddPlayer;
+            RiseNetworkManager.OnServerReadied += OnPlayerReady;
             RiseNetworkManager.OnServerDisconnected += OnPlayerDisconnected;
         }
         
         [ServerCallback]
-        private void OnPlayerReady(NetworkConnectionToClient conn, string username)
+        private void OnPlayerReady(NetworkConnectionToClient conn)
         {
-            if (!players.ContainsKey(username))
-                AddPlayer(conn.identity, username);
+            // Client just connected, do nothing
+            if (!conn.identity)
+                return;
         }
         
         [ServerCallback]
         private void OnPlayerDisconnected(NetworkConnectionToClient obj)
         {
-            if (!connections.ContainsKey(obj.identity))
+            if (!players.ContainsKey(obj.identity))
                 return;
             
-            var username = connections[obj.identity];
-            connections.Remove(obj.identity);
-            players.Remove(username);
+            var username = players[obj.identity];
+            players.Remove(obj.identity);
         }
         
         [ServerCallback]
-        private void AddPlayer(NetworkIdentity conn, string username)
+        private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
-            if (connections.Count >= MaxPlayers)
+            if (players.Count >= MaxPlayers)
             {
                 Debug.LogError("Match is full");
                 return;
@@ -85,16 +78,15 @@ namespace Network
             
             Debug.Log($"Player {username} added to match");
             
-            connections[conn] = username;
-            players[username] = new MatchPlayerData {username = username};
+            players[conn.identity] = username;
 
-            if (connections.Count == MaxPlayers)
+            if (players.Count == MaxPlayers)
                 StartMatch();
         }
 
         private void StartMatch()
         {
-            foreach (var identity in connections.Keys)
+            foreach (var identity in players.Keys)
             {
                 var conn = identity.connectionToClient;
                 if (conn == null)

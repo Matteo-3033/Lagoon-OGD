@@ -422,9 +422,9 @@ MonoBehaviour:
   autoConnectClientBuild: 0
   offlineScene: Assets/Scenes/Client/Menu.unity
   onlineScene: Assets/Scenes/Client/Lobby.unity
-  transport: {fileID: 72015021}
+  transport: {fileID: 72015018}
   networkAddress: localhost
-  maxConnections: 10
+  maxConnections: 2
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
@@ -479,7 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96b149f511061407fb54895c057b7736, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wrap: {fileID: 72015018}
+  wrap: {fileID: 0}
   latency: 100
   jitter: 0.02
   jitterSpeed: 1

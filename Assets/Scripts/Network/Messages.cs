@@ -9,8 +9,6 @@ namespace Network.Messages
         public static ushort GetMatch = nameof(GetMatch).ToUint16Hash();   
     }
     
-    
-    
     public struct ValidateRoomAccessResultMessage : NetworkMessage
     {
         public string Error { get; set; }
@@ -36,7 +34,6 @@ namespace Network.Messages
             return value;
         }
     }
-    
     
     public struct ValidateRoomAccessRequestMessage : NetworkMessage
     {
