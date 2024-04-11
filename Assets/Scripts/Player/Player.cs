@@ -35,5 +35,4 @@ namespace Player
             gameObject.layer = LayerMask.NameToLayer("Behind-FieldOfView");
         }
     }
-
 }

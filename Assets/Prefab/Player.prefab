@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 9007718436325738886}
   - component: {fileID: 5855581670994239393}
   - component: {fileID: 5372978510782166586}
+  - component: {fileID: 2002138530588773034}
   - component: {fileID: 1402961541625812647}
   m_Layer: 6
   m_Name: Player
@@ -244,6 +245,23 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &2002138530588773034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 215138077781146388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2576730625b1632468cbcbfe5e721f88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _teamId: 
+  forceShown: 1
 --- !u!114 &1402961541625812647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,8 +288,9 @@ GameObject:
   - component: {fileID: 5944640381427253730}
   - component: {fileID: 5173830464388212125}
   - component: {fileID: 284397648797697706}
-  - component: {fileID: 3563411861165034315}
   - component: {fileID: 3302393700632336596}
+  - component: {fileID: 3566355818588074290}
+  - component: {fileID: 3563411861165034315}
   m_Layer: 6
   m_Name: FieldOfView
   m_TagString: Untagged
@@ -288,7 +307,7 @@ Transform:
   m_GameObject: {fileID: 923501315294346588}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.091, z: 0}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 0.6670565, y: 0.6670565, z: 0.6670565}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -345,25 +364,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3563411861165034315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 923501315294346588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c969c12efeca5394d84d79652fda8819, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  fieldOfViewDegree: 90
-  viewDistance: 6.5
-  rayCount: 250
-  player: {fileID: 1402961541625812647}
 --- !u!95 &3302393700632336596
 Animator:
   serializedVersion: 5
@@ -385,6 +385,41 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3566355818588074290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923501315294346588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2576730625b1632468cbcbfe5e721f88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _teamId: 
+  forceShown: 0
+--- !u!114 &3563411861165034315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923501315294346588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c969c12efeca5394d84d79652fda8819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  fieldOfViewDegree: 90
+  viewDistance: 6.5
+  rayCount: 250
 --- !u!1 &5021750893386539450
 GameObject:
   m_ObjectHideFlags: 0

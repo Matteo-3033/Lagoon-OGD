@@ -8,7 +8,6 @@ public class FieldOfVIew : NetworkBehaviour
     [SyncVar(hook = nameof(OnFoVDegreeChanged)), SerializeField] private float fieldOfViewDegree = 120F;
     [SyncVar(hook = nameof(OnViewDistanceChanged)), SerializeField] private float viewDistance = 10F;
     [SyncVar, SerializeField] private int rayCount = 60;
-    [SerializeField] private Player.Player player;
     
     public class FieldOfViewArgs
     {
@@ -22,22 +21,25 @@ public class FieldOfVIew : NetworkBehaviour
     private Vector3 Origin => Vector3.zero;
 
     private Mesh mesh;
+    private Player.Player player;
 
     private void Awake()
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        player = GetComponentInParent<Player.Player>();
     }
 
     public override void OnStartClient()
     {
-        base.OnStartClient();
+        base.OnStartServer();
+        
         OnFoVUpdated();
     }
     
     private void Update()
     {
-        if (isClient)
+        if (isClient && !player.isLocalPlayer)
             return;
         
         var vertices = new Vector3[rayCount + 2];   // +2 for the origin and the last vertex
@@ -71,17 +73,6 @@ public class FieldOfVIew : NetworkBehaviour
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.uv = uv;
-        mesh.triangles = triangles;
-        
-        UpdateMesh(player.connectionToClient, vertices, triangles);
-    }
-
-    [TargetRpc]
-    private void UpdateMesh(NetworkConnectionToClient target, Vector3[] vertices, int[] triangles)
-    {
-        mesh.Clear();
-        mesh.vertices = vertices;
-        mesh.uv = new Vector2[vertices.Length];
         mesh.triangles = triangles;
     }
     
