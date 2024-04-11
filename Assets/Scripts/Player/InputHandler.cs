@@ -11,12 +11,13 @@ public interface IInputHanlder
 
 public class InputHandler : MonoBehaviour, IInputHanlder
 {
+    public LayerMask groundLayerMask;
 
     private CustomInput input = null;
 
     private Vector3 inputMovementDirection;
     private Vector3 lookDirection;
-    private Vector3 lookPosition;
+    private Vector3 mousePosition;
     private bool mousePerformed;
 
     public delegate void Move(Vector3 inputDirection);
@@ -59,19 +60,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     private void MousePosition_performed(InputAction.CallbackContext callbackContext)
     {
-        Vector3 mousePos = callbackContext.ReadValue<Vector2>();
-        float fieldOfViewLength = Camera.main.transform.position.y / Mathf.Cos((90 - Camera.main.transform.rotation.eulerAngles.x - (Camera.main.fieldOfView / 2)) * Mathf.Deg2Rad);
-        mousePos.z = fieldOfViewLength * Mathf.Cos(Camera.main.fieldOfView / 2 * Mathf.Deg2Rad);
-        lookPosition = Camera.main.ScreenToWorldPoint(mousePos);
-        Vector3 rotationAxisLocation = Quaternion.AngleAxis(Camera.main.fieldOfView / 2, Camera.main.transform.right) * Camera.main.transform.forward * fieldOfViewLength;
-
-        //lookPosition = Quaternion.AngleAxis(90 - Camera.main.transform.rotation.eulerAngles.x, Camera.main.transform.position + rotationAxisLocation + Camera.main.transform.right) * lookPosition;
-
-        //lookPosition.y = transform.position.y;
-
-        Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta, 3);
-        //Debug.DrawLine(transform.position, transform.position + Camera.main.transform.right, Color.cyan);
-
+        mousePosition = callbackContext.ReadValue<Vector2>();
         mousePerformed = true;
     }
 
@@ -91,15 +80,19 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     {
         if (mousePerformed)
         {
-            lookDirection = (lookPosition - transform.position).normalized;
+            mousePerformed = false;
+            Ray mouseRay = Camera.main.ScreenPointToRay(mousePosition, Camera.MonoOrStereoscopicEye.Mono);
+            RaycastHit[] hits = new RaycastHit[1];
+            Vector3 lookPosition = Vector3.zero;
+            if (Physics.RaycastNonAlloc(mouseRay, hits, float.MaxValue, groundLayerMask) > 0)
+            {
+                lookPosition = hits[0].point;
+                lookDirection = (lookPosition - transform.position).normalized;
+            }
+
+            Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta);
             Debug.DrawRay(transform.position, lookDirection * (lookPosition - transform.position).magnitude, Color.green);
         }
         return lookDirection;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(Camera.main.transform.position, Camera.main.transform.position.y / Mathf.Cos((90 - Camera.main.fieldOfView) / 2 * Mathf.Deg2Rad));
     }
 }
