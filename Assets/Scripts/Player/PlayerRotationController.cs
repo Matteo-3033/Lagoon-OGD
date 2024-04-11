@@ -1,31 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class PlayerRotationController : MonoBehaviour
+public class PlayerRotationController : NetworkBehaviour
 {
     [SerializeField] private float rotationSpeed = 800f;
 
     private Rigidbody rb;
-    private IInputHanlder inputHanlder;
-
-    private Vector3 lookDirection;
-
-    // Start is called before the first frame update
-    void Start()
+    private IInputHanlder inputHandler;
+    
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        inputHanlder = GetComponentInParent<IInputHanlder>();
+        inputHandler = GetComponentInParent<IInputHanlder>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        lookDirection = inputHanlder.GetLookDirection();
-        LookRotation();
+        if (isServer)
+            return;
+        
+        var lookDirection = inputHandler.GetLookDirection();
+        LookRotation(lookDirection);
     }
 
-    private void LookRotation()
+    private void LookRotation(Vector3 lookDirection)
     {
         float angle = Mathf.Atan2(lookDirection.x, lookDirection.z) * Mathf.Rad2Deg;
         float step = rotationSpeed * Time.fixedDeltaTime;
