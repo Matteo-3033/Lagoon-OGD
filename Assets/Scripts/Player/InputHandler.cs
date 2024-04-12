@@ -78,21 +78,23 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     public Vector3 GetLookDirection()
     {
-        if (mousePerformed)
+        if (!mousePerformed)
         {
-            mousePerformed = false;
-            Ray mouseRay = Camera.main.ScreenPointToRay(mousePosition, Camera.MonoOrStereoscopicEye.Mono);
-            RaycastHit[] hits = new RaycastHit[1];
-            Vector3 lookPosition = Vector3.zero;
-            if (Physics.RaycastNonAlloc(mouseRay, hits, float.MaxValue, groundLayerMask) > 0)
-            {
-                lookPosition = hits[0].point;
-                lookDirection = (lookPosition - transform.position).normalized;
-            }
-
-            Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta);
-            Debug.DrawRay(transform.position, lookDirection * (lookPosition - transform.position).magnitude, Color.green);
+            return lookDirection;
         }
+        
+        mousePerformed = false;
+        Ray mouseRay = Camera.main.ScreenPointToRay(mousePosition, Camera.MonoOrStereoscopicEye.Mono);
+        RaycastHit[] hits = new RaycastHit[1];
+        Vector3 lookPosition = Vector3.zero;
+        if (Physics.RaycastNonAlloc(mouseRay, hits, float.MaxValue, groundLayerMask) > 0)
+        {
+            lookPosition = hits[0].point;
+            lookDirection = (lookPosition - transform.position).normalized;
+        }
+
+        Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta);
+        Debug.DrawRay(transform.position, lookDirection * (lookPosition - transform.position).magnitude, Color.green);
         return lookDirection;
     }
 }
