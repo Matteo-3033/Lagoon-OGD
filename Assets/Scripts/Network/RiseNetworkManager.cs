@@ -128,7 +128,9 @@ namespace Network
         {
             OnServerDisconnected?.Invoke(conn);
             yield return null;
+            
             base.OnServerDisconnect(conn);
+            
             Debug.Log("Client disconnected from rise server");
         }
 
@@ -159,26 +161,36 @@ namespace Network
         {
             base.OnServerReady(conn);
             Debug.Log("Client ready");
-            
-            var username = roomServerManager.Players.FirstOrDefault(p => p.RoomPeerId == conn.connectionId)?.Username;
+
+            var username = roomServerManager.Username(conn);
             OnServerReadied?.Invoke(conn, username);
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            base.OnServerAddPlayer(conn);
-            Debug.Log("Player object created");
+            var startPos = GetStartPosition();
+            var player = startPos != null
+                ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+                : Instantiate(playerPrefab);
 
-            StartCoroutine(DoOnServerAddPlayer(conn));
+            StartCoroutine(DoOnServerAddPlayer(conn, player));
         }
         
-        private IEnumerator DoOnServerAddPlayer(NetworkConnectionToClient conn)
+        private IEnumerator DoOnServerAddPlayer(NetworkConnectionToClient conn, GameObject player)
         {
             // Wait for player object to be actually created
             yield return null;
             
-            var username = roomServerManager.Players.FirstOrDefault(p => p.RoomPeerId == conn.connectionId)?.Username;
-            OnServerPlayerAdded?.Invoke(conn, username);
+            var profile = roomServerManager.GetPlayerProfile(conn);
+            
+            player.name = profile?.Username ?? $"Player {conn.connectionId}";
+            player.GetComponent<Player>().Init(profile?.Username, roomServerManager.Players.Count() == 1);
+            
+            NetworkServer.AddPlayerForConnection(conn, player);
+            
+            Debug.Log("Player object created");
+            
+            OnServerPlayerAdded?.Invoke(conn, profile?.Username);
         }
 
         private void ValidateRoomAccessRequestHandler(NetworkConnection conn, ValidateRoomAccessRequestMessage mess)

@@ -28,6 +28,7 @@ namespace Network.Master
     
     public class RoomsModule : MasterServerToolkit.MasterServer.RoomsModule
     {
+        public const string MatchStarted = "-room.match_started";
         public const string RoundsCntKey = "-room.rounds_cnt";
         public const string RoundsKey = "-room.rounds";
         private const string RoomMasterUserKey = "-room.masterUser";
@@ -76,7 +77,7 @@ namespace Network.Master
             }
 
             var room = roomsList.Values
-                    .FirstOrDefault(r => r.Options.IsPublic && r.OnlineCount < 2 &&
+                    .FirstOrDefault(r => r.Options.IsPublic && !r.Options.CustomOptions.AsBool(MatchStarted, false) &&
                                          r.Options.CustomOptions.AsInt(RoundsCntKey) == data.RoundsCnt);   
 
             if (room != null) {

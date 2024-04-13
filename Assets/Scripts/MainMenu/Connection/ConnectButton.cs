@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Menu.UI.Connection
+namespace MainMenu.Connection
 {
     [RequireComponent(typeof(Button))]
     public class ConnectButton: MonoBehaviour

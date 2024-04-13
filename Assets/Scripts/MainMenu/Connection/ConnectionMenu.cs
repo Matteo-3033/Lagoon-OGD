@@ -1,7 +1,7 @@
 ﻿using Network;
 using UnityEngine;
 
-namespace Menu.UI.Connection
+namespace MainMenu.Connection
 {
     public class ConnectionMenu: Menu
     {

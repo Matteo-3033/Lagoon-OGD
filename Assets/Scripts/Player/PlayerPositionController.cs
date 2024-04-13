@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Network;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -11,7 +10,7 @@ public class PlayerPositionController : MonoBehaviour
     [SerializeField] private float acceleration = 50F;
     [SerializeField] private float deacceleration = 25F;
 
-    public IInputHanlder inputHandler;
+    private IInputHanlder inputHandler;
     private Rigidbody rb;
 
     private Vector3 currentSpeed;
@@ -79,7 +78,7 @@ public class PlayerPositionController : MonoBehaviour
         float t = Time.fixedDeltaTime;
 
         float speedLimit = inputDirection.magnitude != 0 ? maxSpeed * inputDirection.magnitude : maxSpeed; //Speed is limited by the controller analogue
-        Vector3 movement = inputDirection * t * speedLimit;
+        Vector3 movement = inputDirection * (t * speedLimit);
 
         Debug.DrawRay(transform.position, movement * 10, Color.green);
         Debug.DrawRay(transform.position, currentSpeed, Color.cyan);

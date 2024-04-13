@@ -2,7 +2,7 @@ using Network.Client;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Menu.UI.SearchMenu
+namespace MainMenu.SearchMenu
 {
     [RequireComponent(typeof(Button))]
     public class SearchMatch : MonoBehaviour

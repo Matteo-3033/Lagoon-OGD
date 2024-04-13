@@ -1,5 +1,8 @@
-﻿using MasterServerToolkit.MasterServer;
+﻿using System.Linq;
+using MasterServerToolkit.MasterServer;
+using Mirror;
 using UnityEngine;
+using RoomsModule = Network.Master.RoomsModule;
 
 namespace Network.Room
 {
@@ -32,6 +35,12 @@ namespace Network.Room
             RiseNetworkManager.OnServerDisconnected += coon => OnPeerDisconnected(coon.connectionId);
         }
 
+        public override void OnServerStarted()
+        {
+            MatchController.Instance.OnMatchStart += OnMatchStarted;
+            base.OnServerStarted();
+        }
+
         protected override void CreateAccessProvider(RoomAccessProviderCheck accessCheckOptions, RoomAccessProviderCallbackDelegate giveAccess)
         {
             if (MatchController.Instance != null && MatchController.Instance.Started)
@@ -59,6 +68,23 @@ namespace Network.Room
             RoomOptions.MaxConnections = 2;
             RoomOptions.Password = string.Empty;
             RoomOptions.Region = string.Empty;
+            RoomOptions.CustomOptions.Add(RoomsModule.MatchStarted, false);
+        }
+        
+        private void OnMatchStarted()
+        {
+            RoomOptions.CustomOptions.Set(RoomsModule.MatchStarted, true);
+            RoomController.SaveOptions(RoomOptions);
+        }
+        
+        public RoomPlayer GetPlayerProfile(NetworkConnection conn)
+        {
+            return Players.FirstOrDefault(p => p.RoomPeerId == conn.connectionId);
+        }
+
+        public string Username(NetworkConnection conn)
+        {
+            return GetPlayerProfile(conn)?.Username;
         }
     }
 }

@@ -31,9 +31,16 @@ namespace Network
         [SyncVar] private RoundConfiguration currentRound;
         private readonly SyncDictionary<string, MatchPlayerData> players = new();
         
+        // Client side events
         public event Action OnRoundLoaded;
-        public event Action<int> OnCountdown;
         public event Action OnRoundStart;
+        
+        // Server side events
+        public event Action OnMatchStart;
+        
+        // Both sides events
+        public event Action<int> OnCountdown;
+        
         
         public int RoundCnt => rounds.Count;
         
@@ -87,8 +94,6 @@ namespace Network
         [Server]
         private void InitPlayer(NetworkConnectionToClient conn, string username)
         {
-            Debug.LogError($"Adding player {username} to match. Current players: {usernames.Count}/{MaxPlayers}");
-            
             usernames[conn] = username;
             
             players[username] = new MatchPlayerData
@@ -97,19 +102,27 @@ namespace Network
                 KeyFragments = 0,
                 Ready = true
             };
-                
-            if (usernames.Count == MaxPlayers && AllPlayersReady())
-                StartMatch();
+            
+            Debug.LogError($"Adding player {username} to match. Current players: {usernames.Count}/{MaxPlayers}");
+
+            if (AllPlayersReady())
+                StartCoroutine(StartMatch());
         }
 
         [Server]
-        private void StartMatch()
+        private IEnumerator StartMatch()
         {
             if (Started)
-                return;
+                yield break;
+            
+            yield return new WaitForSeconds(2.5F);
 
-            LoadRound(0);
-            Started = true;
+            if (AllPlayersReady())
+            {
+                LoadRound(0);
+                Started = true;
+                OnMatchStart?.Invoke();
+            }
         }
         
         [Server]
@@ -153,7 +166,8 @@ namespace Network
             if (!usernames.ContainsKey(obj))
                 return;
             
-            EndMatch();
+            if (Started)
+                EndMatch();
             
             var username = usernames[obj];
             usernames.Remove(obj);
@@ -162,7 +176,6 @@ namespace Network
         
         #endregion
         
-                
         #region CLIENT
         
         public void CheckWinningCondition()
@@ -206,7 +219,7 @@ namespace Network
         
         private bool AllPlayersReady()
         {
-            return players.All(player => player.Value.Ready);
+            return usernames.Count == MaxPlayers && players.All(player => player.Value.Ready);
         }
         
         [Server]

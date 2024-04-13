@@ -1,5 +1,5 @@
 ﻿using MasterServerToolkit.MasterServer;
-using Menu.UI;
+using MainMenu;
 using UnityEngine;
 
 namespace Network
