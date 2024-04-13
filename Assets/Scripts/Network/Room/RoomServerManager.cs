@@ -34,7 +34,7 @@ namespace Network.Room
 
         protected override void CreateAccessProvider(RoomAccessProviderCheck accessCheckOptions, RoomAccessProviderCallbackDelegate giveAccess)
         {
-            if (MatchController.Instance == null)
+            if (MatchController.Instance != null && MatchController.Instance.Started)
                 giveAccess.Invoke(null, "Match already started");
             else
                 giveAccess.Invoke(new RoomAccessPacket

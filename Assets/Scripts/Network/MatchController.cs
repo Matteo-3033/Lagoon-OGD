@@ -18,11 +18,13 @@ namespace Network
     
     public class MatchController : NetworkBehaviour
     {
-        public static MatchController Instance { get; private set; }
         private const int MaxPlayers = 2;
         
+        public static MatchController Instance { get; private set; }
+        
+        public bool Started { get; private set; }
+        
         private int currentRoundIndex;
-        private bool started;
         private readonly List<RoundConfiguration> rounds = new();
         private readonly Dictionary<NetworkConnectionToClient, string> usernames = new();
         
@@ -103,11 +105,11 @@ namespace Network
         [Server]
         private void StartMatch()
         {
-            if (started)
+            if (Started)
                 return;
 
             LoadRound(0);
-            started = true;
+            Started = true;
         }
         
         [Server]
