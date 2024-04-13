@@ -1,7 +1,6 @@
-using Mirror;
 using UnityEngine;
 
-public class PlayerRotationController : NetworkBehaviour
+public class PlayerRotationController : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 800f;
 
@@ -16,10 +15,7 @@ public class PlayerRotationController : NetworkBehaviour
 
     // Update is called once per frame
     private void FixedUpdate()
-    {
-        if (isServer)
-            return;
-        
+    { 
         var lookDirection = inputHandler.GetLookDirection();
         LookRotation(lookDirection);
     }

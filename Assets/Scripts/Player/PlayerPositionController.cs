@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerPositionController : NetworkBehaviour
+public class PlayerPositionController : MonoBehaviour
 {
     [SerializeField] private float maxSpeed = 10F;
     [Space]
