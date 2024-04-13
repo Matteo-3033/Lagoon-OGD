@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Network;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -20,6 +21,12 @@ public class PlayerPositionController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         inputHandler = GetComponentInParent<IInputHanlder>();
+    }
+
+    public void SetEnabled(bool enabled)
+    {
+        this.enabled = enabled;
+        rb.useGravity = enabled;
     }
 
     private void FixedUpdate()

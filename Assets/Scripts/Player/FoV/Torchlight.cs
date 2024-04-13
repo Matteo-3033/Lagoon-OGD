@@ -9,7 +9,7 @@ public class Torchlight : MonoBehaviour
     
     private void Start()
     {
-        if (!GetComponentInParent<Player.Player>().isLocalPlayer)
+        if (!GetComponentInParent<Player>().isLocalPlayer)
             gameObject.SetActive(false);
         else
         {

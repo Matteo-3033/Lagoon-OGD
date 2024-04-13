@@ -21,13 +21,13 @@ public class FieldOfVIew : NetworkBehaviour
     private Vector3 Origin => Vector3.zero;
 
     private Mesh mesh;
-    private Player.Player player;
+    private Player player;
 
     private void Awake()
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-        player = GetComponentInParent<Player.Player>();
+        player = GetComponentInParent<Player>();
     }
 
     public override void OnStartClient()

@@ -34,16 +34,19 @@ namespace Network.Room
 
         protected override void CreateAccessProvider(RoomAccessProviderCheck accessCheckOptions, RoomAccessProviderCallbackDelegate giveAccess)
         {
-            giveAccess.Invoke(new RoomAccessPacket
-            {
-                RoomId = RoomController.RoomId,
-                RoomIp = RoomController.Options.RoomIp,
-                RoomPort = RoomController.Options.RoomPort,
-                RoomMaxConnections = RoomController.Options.MaxConnections,
-                CustomOptions = RoomController.Options.CustomOptions,
-                Token = Mst.Helper.CreateGuidString(),
-                SceneName = OnlineScene
-            }, null);
+            if (MatchController.Instance == null)
+                giveAccess.Invoke(null, "Match already started");
+            else
+                giveAccess.Invoke(new RoomAccessPacket
+                {
+                    RoomId = RoomController.RoomId,
+                    RoomIp = RoomController.Options.RoomIp,
+                    RoomPort = RoomController.Options.RoomPort,
+                    RoomMaxConnections = RoomController.Options.MaxConnections,
+                    CustomOptions = RoomController.Options.CustomOptions,
+                    Token = Mst.Helper.CreateGuidString(),
+                    SceneName = OnlineScene
+                }, null);
         }
         
         protected override void BeforeRoomRegistering()

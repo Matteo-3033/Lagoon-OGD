@@ -34,7 +34,7 @@ namespace Network
         public static event Action OnServerStopped;
         
         // Called on server when client is ready
-        public static event Action<NetworkConnectionToClient> OnServerReadied;
+        public static event Action<NetworkConnectionToClient, string> OnServerReadied;
         
         // Called on server when a client player object is created
         public static event Action<NetworkConnectionToClient, string> OnServerPlayerAdded;
@@ -160,7 +160,8 @@ namespace Network
             base.OnServerReady(conn);
             Debug.Log("Client ready");
             
-            OnServerReadied?.Invoke(conn);
+            var username = roomServerManager.Players.FirstOrDefault(p => p.RoomPeerId == conn.connectionId)?.Username;
+            OnServerReadied?.Invoke(conn, username);
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
