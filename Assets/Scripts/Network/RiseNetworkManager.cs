@@ -6,8 +6,8 @@ using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
 using Mirror;
 using Mirror.SimpleWeb;
+using Network.Master;
 using UnityEngine;
-using ProfilesModule = Network.Master.ProfilesModule;
 using RoomServerManager = Network.Room.RoomServerManager;
 using ValidateRoomAccessRequestMessage = Network.Messages.ValidateRoomAccessRequestMessage;
 using ValidateRoomAccessResultMessage = Network.Messages.ValidateRoomAccessResultMessage;
@@ -18,7 +18,7 @@ namespace Network
     {
         
         [SerializeField] private RoomServerManager roomServerManager;
-        [SerializeField] private GameObject matchControllerPrefab;
+        [SerializeField] private MatchController matchControllerPrefab;
         
         public new static RiseNetworkManager singleton => NetworkManager.singleton as RiseNetworkManager;
 
@@ -45,7 +45,6 @@ namespace Network
 
         public static bool IsClient => !Mst.Server.Spawners.IsSpawnedProccess && !Application.isBatchMode;
         public static RoomOptions RoomOptions => singleton.roomServerManager.RoomOptions;
-
 
         public override void Awake()
         {
@@ -80,15 +79,8 @@ namespace Network
             #else
                 StopServer();
             #endif
-            StartCoroutine(DoStopRoomServer());
         }
-
-        private IEnumerator DoStopRoomServer()
-        {
-            yield return new WaitForSeconds(1);
-            Utils.Runtime.Quit();
-        }
-
+        
         #region CLIENT
 
         public override void OnClientDisconnect()
@@ -143,7 +135,8 @@ namespace Network
             NetworkServer.RegisterHandler<ValidateRoomAccessRequestMessage>(ValidateRoomAccessRequestHandler, false);
             
             var matchController = Instantiate(matchControllerPrefab);
-            NetworkServer.Spawn(matchController);
+            NetworkServer.Spawn(matchController.gameObject);
+            matchController.OnMatchEnded += OnMatchEnded;
             
             OnServerStarted?.Invoke();
         }
@@ -154,6 +147,7 @@ namespace Network
             Debug.Log("Rise server stopped");
             
             NetworkServer.UnregisterHandler<ValidateRoomAccessRequestMessage>();
+            NetworkServer.Destroy(MatchController.Instance.gameObject);
             
             OnServerStopped?.Invoke();
         }
@@ -232,6 +226,22 @@ namespace Network
                     MstTimer.WaitForSeconds(1f, conn.Disconnect);
                 }
             });
+        }
+
+        private void OnMatchEnded(MatchPlayerData winner, MatchPlayerData loser)
+        {
+            UpdateProfile(winner);
+            UpdateProfile(loser);
+            StopRiseServer();
+        }
+        
+        public void UpdateProfile(MatchPlayerData data)
+        {
+            var player = roomServerManager.GetRoomPlayerByUsername(data.Username);
+            
+            player.Score().Value += data.IsWinner ? 100 : -100; // TODO: Calculate score
+            player.Kills().Value += data.Kills;
+            player.Deaths().Value += data.Deaths;
         }
         
         #endregion

@@ -451,7 +451,7 @@ MonoBehaviour:
   evaluationInterval: 3
   timeInterpolationGui: 0
   roomServerManager: {fileID: 1337683962}
-  matchControllerPrefab: {fileID: 2201293472120167176, guid: d04acfb1c4ee4204bb84778f7eb05d0f,
+  matchControllerPrefab: {fileID: 8340599976205127708, guid: d04acfb1c4ee4204bb84778f7eb05d0f,
     type: 3}
 --- !u!4 &72015020
 Transform:
@@ -2565,7 +2565,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1337683961}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 035b0573ca0d80c4a97125cce118a03b, type: 3}
   m_Name: 

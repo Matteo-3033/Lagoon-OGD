@@ -51,6 +51,7 @@ namespace Network.Master
                              $"In this case, you will not be able to get regions list");
             
             server.RegisterMessageHandler(Messages.OpCodes.GetMatch, GetMatchRequestHandler);
+            server.OnPeerDisconnectedEvent += OnPlayerDisconnected;
 
             OnRoomRegisteredEvent += OnRoomRegistered;
         }
@@ -64,6 +65,7 @@ namespace Network.Master
                 data.RoundsCnt++;
 
             var player = message.Peer.GetExtension<IUserPeerExtension>();
+
             if (player.JoinedRoomID > 0)
             {
                 message.Respond("You are already in a room", ResponseStatus.NotHandled);
@@ -79,7 +81,7 @@ namespace Network.Master
             var room = roomsList.Values
                     .FirstOrDefault(r => r.Options.IsPublic && !r.Options.CustomOptions.AsBool(MatchStarted, false) &&
                                          r.Options.CustomOptions.AsInt(RoundsCntKey) == data.RoundsCnt);   
-
+            Debug.Log("ROOMS: " + roomsList.Count);
             if (room != null) {
                 logger.Debug("Joining existing room");
                 
@@ -106,7 +108,7 @@ namespace Network.Master
                 
                 options.Add(RoomMasterUserKey, player.Username);
                 
-                logger.Debug("Creating room with rounds" + string.Join(", ", rounds));
+                logger.Debug("Creating room with rounds: " + string.Join(", ", rounds));
                 spawnersModule.Spawn(options);
             }
         }
@@ -127,8 +129,9 @@ namespace Network.Master
         {
             yield return new WaitForSeconds(1);
             
-            if (!waitingPlayers.TryRemove(username, out var message)) yield return null;
-            
+            if (!waitingPlayers.TryRemove(username, out var message)) yield break;
+            if (message == null) yield break;
+
             room.GetAccess(message.Peer, new MstProperties(), (packet, error) =>
             {
                 if (packet == null)
@@ -139,6 +142,13 @@ namespace Network.Master
 
                 message.Respond(packet, ResponseStatus.Success);
             });
+        }
+        
+        private void OnPlayerDisconnected(IPeer peer)
+        {
+            var player = peer.GetExtension<IUserPeerExtension>();
+            if (player != null)
+                waitingPlayers.TryRemove(player.Username, out var message);
         }
 
         protected override void GetRoomAccessRequestHandler(IIncomingMessage message)

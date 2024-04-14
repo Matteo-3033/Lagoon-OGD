@@ -14,6 +14,10 @@ namespace Network
         public string Username;
         public int KeyFragments;
         public bool Ready;
+        public int Score;
+        public int Kills;
+        public int Deaths;
+        public bool IsWinner;
     }
     
     public class MatchController : NetworkBehaviour
@@ -37,6 +41,7 @@ namespace Network
         
         // Server side events
         public event Action OnMatchStart;
+        public event Action<MatchPlayerData, MatchPlayerData> OnMatchEnded;
         
         // Both sides events
         public event Action<int> OnCountdown;
@@ -69,7 +74,6 @@ namespace Network
             Debug.Log($"Round count: {RoundCnt}");
             
             RiseNetworkManager.OnServerPlayerAdded += OnAddPlayer;
-            RiseNetworkManager.OnServerDisconnected += OnPlayerDisconnected;
         }
         
         [ServerCallback]
@@ -86,7 +90,7 @@ namespace Network
                 if (AllPlayersReady())
                 {
                     RpcOnRoundLoaded();
-                    StartCoroutine(Countdown());
+                    StartCoroutine(StartRoundCountdown());
                 }
             }
         }
@@ -99,7 +103,6 @@ namespace Network
             players[username] = new MatchPlayerData
             {
                 Username = username,
-                KeyFragments = 0,
                 Ready = true
             };
             
@@ -135,17 +138,44 @@ namespace Network
                 return;
             }
             
-            Debug.Log($"Loading round {currentRoundIndex}");
+            Debug.Log($"Loading round {currentRoundIndex}/{RoundCnt}");
             currentRound = rounds[currentRoundIndex];
 
             UnreadyAllPlayers();
             RiseNetworkManager.singleton.ServerChangeScene(currentRound.scene);
         }
 
-        private void EndMatch()
+        private void EndMatch(string disconnectedPlayer = null)
         {
             Debug.Log("Match ended");
-            var data = players.Values.ToList();
+            Started = false;
+
+            MatchPlayerData winner;
+            MatchPlayerData loser;
+            if (disconnectedPlayer == null)
+            {
+                var p = players.Values.ToList();
+                winner = p[0];
+                loser = p[1];
+
+                if (p[1].Score > p[0].Score)
+                {
+                    winner = p[1];
+                    loser = p[0];
+                }
+
+                winner.IsWinner = true;
+                loser.IsWinner = false;
+            }
+            else
+            {
+                loser = players[disconnectedPlayer];
+                winner = players.Values.First(player => player.Username != disconnectedPlayer);
+            }
+            
+            Debug.Log($"Winner: {winner.Username}");
+            
+            OnMatchEnded?.Invoke(winner, loser);
         }
 
         [Command(requiresAuthority = false)]
@@ -155,22 +185,27 @@ namespace Network
                 return;
             
             var player = usernames[sender];
+            
             // TODO: check if player has all key fragments
+            
+            var data = players[player];
+            data.Score++;
+            players[player] = data;
             
             LoadRound(currentRoundIndex + 1);
         }
         
         [ServerCallback]
-        private void OnPlayerDisconnected(NetworkConnectionToClient obj)
+        public void OnPlayerDisconnected(string username)
         {
-            if (!usernames.ContainsKey(obj))
+            if (!players.ContainsKey(username))
                 return;
             
             if (Started)
-                EndMatch();
+                EndMatch(username);
             
-            var username = usernames[obj];
-            usernames.Remove(obj);
+            var conn = usernames.First(pair => pair.Value == username).Key;
+            usernames.Remove(conn);
             players.Remove(username);
         }
         
@@ -188,7 +223,7 @@ namespace Network
         {
             OnRoundLoaded?.Invoke();
             Debug.Log("Round loaded");
-            StartCoroutine(Countdown());
+            StartCoroutine(StartRoundCountdown());
         }
 
         [ClientRpc]
@@ -201,9 +236,12 @@ namespace Network
         #endregion
 
         #region UTILS
-        
-        private IEnumerator Countdown()
+
+        private bool counting = false;
+        private IEnumerator StartRoundCountdown()
         {
+            if (counting) yield break;
+            counting = true;
             yield return null;
             
             for (int i = 5; i >= 0; i--)
@@ -215,6 +253,7 @@ namespace Network
             
             if (isServer)
                 RpcStartRound();
+            counting = false;
         }
         
         private bool AllPlayersReady()
@@ -227,30 +266,25 @@ namespace Network
         {
             if (!players.ContainsKey(username))
                 return;
-            
-            players[username] = new MatchPlayerData
-            {
-                Username = username,
-                KeyFragments = players[username].KeyFragments,
-                Ready = ready
-            };
+
+            var data = players[username];
+            data.Ready = ready;
+            players[username] = data;
         }
         
         [Server]
         private void UnreadyAllPlayers()
         {
             foreach (var username in usernames.Values)
-            {
-                players[username] = new MatchPlayerData
-                {
-                    Username = players[username].Username,
-                    KeyFragments = players[username].KeyFragments,
-                    Ready = false
-                };
-            }
+                SetPlayerReady(username, false);
         }
 
         #endregion
+
+        private void OnDestroy()
+        {
+            Instance = null;
+        }
     }
 
     internal static class ConnectionExtensions
