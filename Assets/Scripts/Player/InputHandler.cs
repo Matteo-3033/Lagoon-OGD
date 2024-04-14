@@ -1,10 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public interface IInputHanlder
 {
+    event EventHandler<int> OnCameraRotation;
     Vector3 GetMovementDirection();
     Vector3 GetLookDirection();
 }
@@ -12,6 +15,10 @@ public interface IInputHanlder
 public class InputHandler : MonoBehaviour, IInputHanlder
 {
     public LayerMask groundLayerMask;
+    [Range(0,1)]
+    public float cameraMovementIgnoreTime = .8f;
+
+    public event EventHandler<int> OnCameraRotation;
 
     private CustomInput input = null;
 
@@ -19,32 +26,15 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private Vector3 lookDirection;
     private Vector3 mousePosition;
     private bool mousePerformed;
+    private Camera _camera;
+    private float _timeSinceLastCameraRotation;
 
     public delegate void Move(Vector3 inputDirection);
 
     private void Awake()
     {
         input = new CustomInput();
-    }
-
-    private void OnEnable()
-    {
-        input.Enable();
-        input.Player.Movement.performed += Movement_performed;
-        input.Player.Movement.canceled += Movement_canceled;
-
-        input.Player.MousePosition.performed += MousePosition_performed;
-        input.Player.View.performed += View_performed;
-    }
-
-    private void OnDisable()
-    {
-        input.Disable();
-        input.Player.Movement.performed -= Movement_performed;
-        input.Player.Movement.canceled -= Movement_canceled;
-
-        input.Player.MousePosition.performed -= MousePosition_performed;
-        input.Player.View.performed -= View_performed;
+        _camera = Camera.main;
     }
 
     private void Movement_performed(InputAction.CallbackContext callbackContext)
@@ -82,9 +72,9 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         {
             return lookDirection;
         }
-        
+
         mousePerformed = false;
-        Ray mouseRay = Camera.main.ScreenPointToRay(mousePosition, Camera.MonoOrStereoscopicEye.Mono);
+        Ray mouseRay = _camera.ScreenPointToRay(mousePosition, Camera.MonoOrStereoscopicEye.Mono);
         RaycastHit[] hits = new RaycastHit[1];
         Vector3 lookPosition = Vector3.zero;
         if (Physics.RaycastNonAlloc(mouseRay, hits, float.MaxValue, groundLayerMask) > 0)
@@ -93,8 +83,60 @@ public class InputHandler : MonoBehaviour, IInputHanlder
             lookDirection = (lookPosition - transform.position).normalized;
         }
 
-        Debug.DrawLine(Camera.main.transform.position, lookPosition, Color.magenta);
+        Debug.DrawLine(_camera.transform.position, lookPosition, Color.magenta);
         Debug.DrawRay(transform.position, lookDirection * (lookPosition - transform.position).magnitude, Color.green);
         return lookDirection;
     }
+
+    private void CameraRotationMousePerformed(InputAction.CallbackContext callbackContext)
+    {
+        if (!CanPerformCameraRotation()) return;
+
+        OnCameraRotation?.Invoke(this, (int)callbackContext.ReadValue<float>());
+    }
+
+    private void CameraRotationGamepadPerformed(InputAction.CallbackContext callbackContext)
+    {
+        if (!CanPerformCameraRotation()) return;
+
+        OnCameraRotation?.Invoke(this, callbackContext.ReadValueAsButton() ? 1 : -1);
+    }
+
+    private bool CanPerformCameraRotation()
+    {
+        bool canPerform = Time.time - _timeSinceLastCameraRotation >= cameraMovementIgnoreTime;
+        if (canPerform) _timeSinceLastCameraRotation = Time.time;
+
+        return canPerform;
+    }
+
+    #region Enable/disable
+
+    private void OnEnable()
+    {
+        input.Enable();
+        input.Player.Movement.performed += Movement_performed;
+        input.Player.Movement.canceled += Movement_canceled;
+
+        input.Player.MousePosition.performed += MousePosition_performed;
+        input.Player.View.performed += View_performed;
+
+        input.Player.CameraRotationMouse.performed += CameraRotationMousePerformed;
+        input.Player.CameraRotationGamepad.performed += CameraRotationGamepadPerformed;
+    }
+
+    private void OnDisable()
+    {
+        input.Disable();
+        input.Player.Movement.performed -= Movement_performed;
+        input.Player.Movement.canceled -= Movement_canceled;
+
+        input.Player.MousePosition.performed -= MousePosition_performed;
+        input.Player.View.performed -= View_performed;
+
+        input.Player.CameraRotationMouse.performed -= CameraRotationMousePerformed;
+        input.Player.CameraRotationGamepad.performed -= CameraRotationGamepadPerformed;
+    }
+
+    #endregion
 }

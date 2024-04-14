@@ -1571,6 +1571,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 455724678192080994, guid: de871802091702d4fb5a459cd7261e2e,
+        type: 3}
+      propertyPath: cameraMovementIgnoreTime
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 5372978510782166586, guid: de871802091702d4fb5a459cd7261e2e,
         type: 3}
       propertyPath: sceneId

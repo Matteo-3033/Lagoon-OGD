@@ -1,45 +1,53 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
     public Transform player;
+    public float rotationTime;
 
-    private Vector3 offset;
-
-    private float _targetRotation;
-    private float _startRotation;
+    private int _targetRotation;
+    private int _startRotation;
     private float _durationTime = 0f;
     private float _currentTime = 0f;
     private float _currentRotation;
 
-    public float rotationTime;
+    private IInputHanlder _inputHandler;
+
+    private void Awake()
+    {
+        _inputHandler = player.GetComponent<IInputHanlder>();
+    }
 
     void Start()
     {
-        offset = transform.position - player.position;
-        _startRotation = transform.rotation.eulerAngles.y;
+        _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
+
+        _inputHandler.OnCameraRotation += OnOnCameraRotation;
+    }
+
+    private void OnOnCameraRotation(object sender, int direction)
+    {
+        _targetRotation += direction * 90;
+        _durationTime += rotationTime;
+        Debug.Log("----- Target rotation: " + _targetRotation);
     }
 
     void LateUpdate()
     {
-        Vector3 newPosition = player.position + offset;
+        Vector3 newPosition = player.position;
         newPosition.y = transform.position.y;
 
         transform.position = newPosition;
-
-        if (Keyboard.current.eKey.wasPressedThisFrame && _targetRotation < 360)
-        {
-            _targetRotation += 90;
-            _durationTime += rotationTime;
-        }
 
         float t = _currentTime / _durationTime;
         if (1 - t > .001f)
         {
             _currentTime += Time.deltaTime;
+            //t = Slope(_currentTime / _durationTime);
 
             _currentRotation = Mathf.Lerp(_startRotation, _targetRotation, t);
             transform.rotation = Quaternion.Euler(0,
@@ -49,16 +57,22 @@ public class CameraMovement : MonoBehaviour
         else
         {
             transform.rotation = Quaternion.Euler(0, _targetRotation, 0);
-            _startRotation = transform.rotation.eulerAngles.y;
             _targetRotation %= 360;
+            _startRotation = _targetRotation;
             _currentRotation = 0;
             _durationTime = 0;
             _currentTime = 0;
         }
     }
 
+
     private static float Slope(float x)
     {
-        return -2f * Mathf.Pow(x, 3) + 3f * Mathf.Pow(x, 2);
+        return (1 + Mathf.Cos(Mathf.PI * (x - 1))) / 2;
+    }
+
+    private static float InverseSlope(float y)
+    {
+        return Mathf.Acos(2 * y - 1) / Mathf.PI;
     }
 }

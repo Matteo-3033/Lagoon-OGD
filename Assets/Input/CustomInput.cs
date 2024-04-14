@@ -53,6 +53,24 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraRotationMouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""591ae87f-87fc-47b0-9574-9e84f4d4bda7"",
+                    ""expectedControlType"": ""Integer"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraRotationGamepad"",
+                    ""type"": ""Button"",
+                    ""id"": ""f6a9e134-b210-4cd6-9d91-7a753db0040d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -231,6 +249,39 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""action"": ""MousePosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""81027790-55f0-4f33-bbf3-046620d47ea1"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": ""Clamp(min=-1,max=1)"",
+                    ""groups"": """",
+                    ""action"": ""CameraRotationMouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5def6d99-5c5b-4283-8a06-7027770a15b2"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraRotationGamepad"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""63c58c20-a637-4152-9af8-75f74175f66b"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": ""Invert"",
+                    ""groups"": """",
+                    ""action"": ""CameraRotationGamepad"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -242,6 +293,8 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_View = m_Player.FindAction("View", throwIfNotFound: true);
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
+        m_Player_CameraRotationMouse = m_Player.FindAction("CameraRotationMouse", throwIfNotFound: true);
+        m_Player_CameraRotationGamepad = m_Player.FindAction("CameraRotationGamepad", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -306,6 +359,8 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_View;
     private readonly InputAction m_Player_MousePosition;
+    private readonly InputAction m_Player_CameraRotationMouse;
+    private readonly InputAction m_Player_CameraRotationGamepad;
     public struct PlayerActions
     {
         private @CustomInput m_Wrapper;
@@ -313,6 +368,8 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @View => m_Wrapper.m_Player_View;
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
+        public InputAction @CameraRotationMouse => m_Wrapper.m_Player_CameraRotationMouse;
+        public InputAction @CameraRotationGamepad => m_Wrapper.m_Player_CameraRotationGamepad;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -331,6 +388,12 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @MousePosition.started += instance.OnMousePosition;
             @MousePosition.performed += instance.OnMousePosition;
             @MousePosition.canceled += instance.OnMousePosition;
+            @CameraRotationMouse.started += instance.OnCameraRotationMouse;
+            @CameraRotationMouse.performed += instance.OnCameraRotationMouse;
+            @CameraRotationMouse.canceled += instance.OnCameraRotationMouse;
+            @CameraRotationGamepad.started += instance.OnCameraRotationGamepad;
+            @CameraRotationGamepad.performed += instance.OnCameraRotationGamepad;
+            @CameraRotationGamepad.canceled += instance.OnCameraRotationGamepad;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -344,6 +407,12 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @MousePosition.started -= instance.OnMousePosition;
             @MousePosition.performed -= instance.OnMousePosition;
             @MousePosition.canceled -= instance.OnMousePosition;
+            @CameraRotationMouse.started -= instance.OnCameraRotationMouse;
+            @CameraRotationMouse.performed -= instance.OnCameraRotationMouse;
+            @CameraRotationMouse.canceled -= instance.OnCameraRotationMouse;
+            @CameraRotationGamepad.started -= instance.OnCameraRotationGamepad;
+            @CameraRotationGamepad.performed -= instance.OnCameraRotationGamepad;
+            @CameraRotationGamepad.canceled -= instance.OnCameraRotationGamepad;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -366,5 +435,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnView(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
+        void OnCameraRotationMouse(InputAction.CallbackContext context);
+        void OnCameraRotationGamepad(InputAction.CallbackContext context);
     }
 }
