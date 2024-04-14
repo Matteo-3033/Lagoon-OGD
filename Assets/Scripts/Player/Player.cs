@@ -1,6 +1,9 @@
 using System;
+using MasterServerToolkit.MasterServer;
 using Mirror;
+using Network.Master;
 using UnityEngine;
+using ProfilesModule = Network.Master.ProfilesModule;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
@@ -8,14 +11,21 @@ public class Player : NetworkBehaviour
     public static Player LocalPlayer { get; private set;  }
     public static Player Opponent { get; private set;  }
 
-    [SyncVar] private string username;
-    [SyncVar] private bool isMangiagalli;
-    
-    public string Username => username;
-    public bool IsMangiagalli => isMangiagalli;
+    [field: SyncVar]
+    public string Username { get; private set; }
 
-    public int Score => 0;
+    [field: SyncVar]
+    public bool IsMangiagalli { get; private set; }
+
+    [field: SyncVar]
+    public int Score { get; private set; }
     
+    [field: SyncVar]
+    public int Deaths { get; private set; }
+    
+    [field: SyncVar]
+    public int Kills { get; private set; }
+
     public static event Action<bool> OnPlayerSpawned;
     public static event Action<bool> OnPlayerDespawned; 
     
@@ -55,10 +65,13 @@ public class Player : NetworkBehaviour
         GetComponent<PlayerPositionController>().SetEnabled(true);    
     }
 
-    public void Init(string username, bool isMangiagalli)
+    public void Init(RoomPlayer profile, bool isMangiagalli)
     {
-        this.username = username;
-        this.isMangiagalli = isMangiagalli;
+        Username = profile.Username;
+        IsMangiagalli = isMangiagalli;
+        Score = profile.Score().Value;
+        Deaths = profile.Deaths().Value;
+        Kills = profile.Kills().Value;
     }
 
     public override void OnStopClient()

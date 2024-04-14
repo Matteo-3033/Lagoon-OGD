@@ -7,6 +7,7 @@ using MasterServerToolkit.Networking;
 using Mirror;
 using Mirror.SimpleWeb;
 using UnityEngine;
+using ProfilesModule = Network.Master.ProfilesModule;
 using RoomServerManager = Network.Room.RoomServerManager;
 using ValidateRoomAccessRequestMessage = Network.Messages.ValidateRoomAccessRequestMessage;
 using ValidateRoomAccessResultMessage = Network.Messages.ValidateRoomAccessResultMessage;
@@ -184,7 +185,7 @@ namespace Network
             var profile = roomServerManager.GetPlayerProfile(conn);
             
             player.name = profile?.Username ?? $"Player {conn.connectionId}";
-            player.GetComponent<Player>().Init(profile?.Username, roomServerManager.Players.Count() == 1);
+            player.GetComponent<Player>().Init(profile, roomServerManager.Players.Count() == 1);
             
             NetworkServer.AddPlayerForConnection(conn, player);
             

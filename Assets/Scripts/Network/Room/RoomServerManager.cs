@@ -1,7 +1,9 @@
 ﻿using System.Linq;
+using MasterServerToolkit.Extensions;
 using MasterServerToolkit.MasterServer;
 using Mirror;
 using UnityEngine;
+using ProfilesModule = Network.Master.ProfilesModule;
 using RoomsModule = Network.Master.RoomsModule;
 
 namespace Network.Room
@@ -28,11 +30,26 @@ namespace Network.Room
         protected override void OnInitialize()
         {
             base.OnInitialize();
+
+            ProfileFactory = RiseProfileFactory;
+            
             OnBeforeRoomRegisterEvent.AddListener(_ => NetworkManager.StartRiseServer());
             OnRoomRegisterFailedEvent.AddListener(() => NetworkManager.StopRiseServer());
+            
             RiseNetworkManager.OnServerStarted += OnServerStarted;
             RiseNetworkManager.OnServerStopped += OnServerStopped;
             RiseNetworkManager.OnServerDisconnected += coon => OnPeerDisconnected(coon.connectionId);
+        }
+        
+        private static ObservableServerProfile RiseProfileFactory(string userId)
+        {
+            var profile = new ObservableServerProfile(userId);
+            
+            profile.Add(new ObservableInt(ProfilesModule.ScoreKey.ToUint16Hash(), 0));
+            profile.Add(new ObservableInt(ProfilesModule.DeathsKey.ToUint16Hash(), 0));
+            profile.Add(new ObservableInt(ProfilesModule.KillsKey.ToUint16Hash(), 0));
+            
+            return profile;
         }
 
         public override void OnServerStarted()
