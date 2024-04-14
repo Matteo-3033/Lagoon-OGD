@@ -79,7 +79,7 @@ namespace Network
         [ServerCallback]
         private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
-            if (!usernames.ContainsKey(conn))
+            if (!usernames.ContainsKey(conn) && !players.ContainsKey(username))
                 InitPlayer(conn, username);
             else
             {
