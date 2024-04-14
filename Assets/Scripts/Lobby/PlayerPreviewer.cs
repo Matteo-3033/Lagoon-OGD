@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,11 +13,22 @@ namespace Lobby
 
         private void Awake()
         {
+            Debug.Log("AWAKE PlayerPreviewer.cs");
             previewTemplate.gameObject.SetActive(false);
             loadingSpinner.SetActive(true);
             
-            Player.OnPlayerSpawned += (localPlayer) => ShowPreview(localPlayer ? Player.LocalPlayer : Player.Opponent);
-            Player.OnPlayerDespawned += (localPlayer) => DeletePreview(localPlayer ? Player.LocalPlayer : Player.Opponent);
+            Player.OnPlayerSpawned += OnPlayerSpawned;
+            Player.OnPlayerDespawned += OnPlayerDespawned;
+        }
+
+        private void OnPlayerSpawned(bool isLocalPlayer)
+        {
+            ShowPreview(isLocalPlayer ? Player.LocalPlayer : Player.Opponent);
+        }
+        
+        private void OnPlayerDespawned(bool isLocalPlayer)
+        {
+            DeletePreview(isLocalPlayer ? Player.LocalPlayer : Player.Opponent);
         }
 
         private void ShowPreview(Player player)
@@ -25,8 +37,9 @@ namespace Lobby
             {
                 if (previews.Count == 1)
                     loadingSpinner.SetActive(false);
-                
-                preview = Instantiate(previewTemplate, previewTemplate.transform.parent);
+             
+                preview = Instantiate(previewTemplate, transform);
+
                 if (previews.Count == 0)
                     preview.transform.SetAsFirstSibling();
                 preview.gameObject.SetActive(true);
@@ -45,6 +58,12 @@ namespace Lobby
                 Destroy(preview.gameObject);
                 previews.Remove(player.Username);
             }
+        }
+
+        private void OnDestroy()
+        {
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
+            Player.OnPlayerDespawned -= OnPlayerDespawned;
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Network
             SetAddress(roomServerManager.RoomOptions.RoomIp);
             SetPort(roomServerManager.RoomOptions.RoomPort);
 
-            Debug.Log($"Starting Room Server: {networkAddress}:{roomServerManager.RoomOptions.RoomPort}");
+            Debug.Log($"Starting Rise Server: {networkAddress}:{roomServerManager.RoomOptions.RoomPort}");
             Debug.Log($"Online Scene: {onlineScene}");
 
             #if UNITY_EDITOR

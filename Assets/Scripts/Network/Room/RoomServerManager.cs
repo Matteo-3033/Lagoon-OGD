@@ -78,7 +78,7 @@ namespace Network.Room
 
         public override void OnServerStarted()
         {
-            MatchController.Instance.OnMatchStart += OnMatchStarted;
+            MatchController.Instance.OnMatchStarted += OnMatchStarted;
             base.OnServerStarted();
         }
 
@@ -120,7 +120,7 @@ namespace Network.Room
         
         public override void OnPeerDisconnected(int roomPeerId)
         {
-            if (MatchController.Instance != null && MatchController.Instance.Started && TryGetRoomPlayerByRoomPeer(roomPeerId, out var player))
+            if (MatchController.Instance != null && TryGetRoomPlayerByRoomPeer(roomPeerId, out var player))
                 MatchController.Instance.OnPlayerDisconnected(player.Username);
             
             MstTimer.WaitForSeconds(Mst.Server.Profiles.ProfileUpdatesInterval, () => base.OnPeerDisconnected(roomPeerId));

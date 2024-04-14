@@ -11,7 +11,7 @@ namespace Round.UI
         {
             countdown.SetActive(false);
             MatchController.Instance.OnRoundLoaded += () => countdown.SetActive(true);
-            MatchController.Instance.OnRoundStart += () => countdown.SetActive(false);
+            MatchController.Instance.OnRoundStarted += () => countdown.SetActive(false);
         }
     }
 }

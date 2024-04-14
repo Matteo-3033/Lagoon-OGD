@@ -7,11 +7,19 @@ namespace Test
     [RequireComponent(typeof(Button))]
     public class LoadNextRoundButton : MonoBehaviour
     {
+        private Button button;
+        
         private void Awake()
         {
-            var button = gameObject.GetComponent<Button>();
-            button.interactable = true;
+            button = gameObject.GetComponent<Button>();
+            button.interactable = false;
             button.onClick.AddListener(OnClick);
+            MatchController.Instance.OnRoundStarted += OnRoundStarted;
+        }
+
+        private void OnRoundStarted()
+        {
+            button.interactable = true;    
         }
 
         private void OnClick()

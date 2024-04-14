@@ -37,10 +37,10 @@ namespace Network
         
         // Client side events
         public event Action OnRoundLoaded;
-        public event Action OnRoundStart;
+        public event Action OnRoundStarted;
         
         // Server side events
-        public event Action OnMatchStart;
+        public event Action OnMatchStarted;
         public event Action<MatchPlayerData, MatchPlayerData> OnMatchEnded;
         
         // Both sides events
@@ -79,7 +79,7 @@ namespace Network
         [ServerCallback]
         private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
-            if (!usernames.ContainsKey(conn) && !players.ContainsKey(username))
+            if (!usernames.ContainsKey(conn))
                 InitPlayer(conn, username);
             else
             {
@@ -93,6 +93,7 @@ namespace Network
                     StartCoroutine(StartRoundCountdown());
                 }
             }
+            Debug.Log("PLAYERS COUNT: " + usernames.Count);
         }
 
         [Server]
@@ -124,7 +125,7 @@ namespace Network
             {
                 LoadRound(0);
                 Started = true;
-                OnMatchStart?.Invoke();
+                OnMatchStarted?.Invoke();
             }
         }
         
@@ -178,6 +179,20 @@ namespace Network
             OnMatchEnded?.Invoke(winner, loser);
         }
 
+        [ServerCallback]
+        public void OnPlayerDisconnected(string username)
+        {
+            if (!players.ContainsKey(username))
+                return;
+            
+            if (Started)
+                EndMatch(username);
+            
+            var conn = usernames.First(pair => pair.Value == username).Key;
+            usernames.Remove(conn);
+            players.Remove(username);
+        }
+        
         [Command(requiresAuthority = false)]
         private void CmdCheckWinningCondition(NetworkConnectionToClient sender = null)
         {
@@ -193,20 +208,6 @@ namespace Network
             players[player] = data;
             
             LoadRound(currentRoundIndex + 1);
-        }
-        
-        [ServerCallback]
-        public void OnPlayerDisconnected(string username)
-        {
-            if (!players.ContainsKey(username))
-                return;
-            
-            if (Started)
-                EndMatch(username);
-            
-            var conn = usernames.First(pair => pair.Value == username).Key;
-            usernames.Remove(conn);
-            players.Remove(username);
         }
         
         #endregion
@@ -229,7 +230,7 @@ namespace Network
         [ClientRpc]
         private void RpcStartRound()
         {
-            OnRoundStart?.Invoke();
+            OnRoundStarted?.Invoke();
             Player.LocalPlayer.EnableMovement();
         }
 

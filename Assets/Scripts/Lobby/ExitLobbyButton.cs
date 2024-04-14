@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,12 @@ namespace Lobby
             if (Player.Opponent != null)
                 return;
             NetworkClient.Disconnect();
+        }
+
+        private void OnDestroy()
+        {
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
+            Player.OnPlayerDespawned -= OnPlayerDespawned;
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Network.Master
             var room = roomsList.Values
                     .FirstOrDefault(r => r.Options.IsPublic && !r.Options.CustomOptions.AsBool(MatchStarted, false) &&
                                          r.Options.CustomOptions.AsInt(RoundsCntKey) == data.RoundsCnt);   
-            Debug.Log("ROOMS: " + roomsList.Count);
+
             if (room != null) {
                 logger.Debug("Joining existing room");
                 
