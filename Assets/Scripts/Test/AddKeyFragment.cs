@@ -1,3 +1,4 @@
+using Mirror;
 using Network;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,7 +6,7 @@ using UnityEngine.UI;
 namespace Test
 {
     [RequireComponent(typeof(Button))]
-    public class LoadNextRoundButton : MonoBehaviour
+    public class AddKeyFragment : NetworkBehaviour
     {
         private Button button;
         
@@ -13,7 +14,7 @@ namespace Test
         {
             button = gameObject.GetComponent<Button>();
             button.interactable = false;
-            button.onClick.AddListener(OnClick);
+            button.onClick.AddListener(() => OnClick());
             MatchController.Instance.OnRoundStarted += OnRoundStarted;
         }
 
@@ -21,10 +22,11 @@ namespace Test
         {
             button.interactable = true;    
         }
-
-        private void OnClick()
+        
+        [Command(requiresAuthority = false)]
+        private void OnClick(NetworkConnectionToClient sender = null)
         {
-            MatchController.Instance.CheckWinningCondition();
+            sender.Player().Inventory.AddKeyFragment();
         }
     }
 }

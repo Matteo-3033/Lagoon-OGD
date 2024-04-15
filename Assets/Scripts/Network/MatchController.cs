@@ -14,7 +14,7 @@ namespace Network
         public string Username;
         public int KeyFragments;
         public bool Ready;
-        public int Score;
+        public int RoundsWon;
         public int Kills;
         public int Deaths;
         public bool IsWinner;
@@ -31,8 +31,10 @@ namespace Network
         private int currentRoundIndex;
         private readonly List<RoundConfiguration> rounds = new();
         private readonly Dictionary<NetworkConnectionToClient, string> usernames = new();
-        
-        [SyncVar] private RoundConfiguration currentRound;
+
+        [field: SyncVar]
+        public RoundConfiguration CurrentRound { get; private set; }
+
         private readonly SyncDictionary<string, MatchPlayerData> players = new();
         
         // Client side events
@@ -140,10 +142,10 @@ namespace Network
             }
             
             Debug.Log($"Loading round {currentRoundIndex}/{RoundCnt}");
-            currentRound = rounds[currentRoundIndex];
+            CurrentRound = rounds[currentRoundIndex];
 
             UnreadyAllPlayers();
-            RiseNetworkManager.singleton.ServerChangeScene(currentRound.scene);
+            RiseNetworkManager.singleton.ServerChangeScene(CurrentRound.scene);
         }
 
         private void EndMatch(string disconnectedPlayer = null)
@@ -159,7 +161,7 @@ namespace Network
                 winner = p[0];
                 loser = p[1];
 
-                if (p[1].Score > p[0].Score)
+                if (p[1].RoundsWon > p[0].RoundsWon)
                 {
                     winner = p[1];
                     loser = p[0];
@@ -204,7 +206,7 @@ namespace Network
             // TODO: check if player has all key fragments
             
             var data = players[player];
-            data.Score++;
+            data.RoundsWon++;
             players[player] = data;
             
             LoadRound(currentRoundIndex + 1);

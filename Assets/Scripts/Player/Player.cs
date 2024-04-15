@@ -3,13 +3,16 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
-using ProfilesModule = Network.Master.ProfilesModule;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
     public static Player LocalPlayer { get; private set;  }
     public static Player Opponent { get; private set;  }
+    
+    public Inventory Inventory { get; private set; }
+	public PlayerPositionController PositionController { get; private set; }
+	public PlayerRotationController RotationController { get; private set; }
 
     [field: SyncVar]
     public string Username { get; private set; }
@@ -27,9 +30,15 @@ public class Player : NetworkBehaviour
     public int Kills { get; private set; }
 
     public static event Action<bool> OnPlayerSpawned;
-    public static event Action<bool> OnPlayerDespawned; 
-    
+    public static event Action<bool> OnPlayerDespawned;
 
+    private void Awake()
+    {
+        Inventory = GetComponent<Inventory>();
+		PositionController = GetComponent<PlayerPositionController>();
+		RotationController = GetComponent<PlayerRotationController>();
+    }
+    
     public override void OnStartClient()
     {
         base.OnStartClient();
