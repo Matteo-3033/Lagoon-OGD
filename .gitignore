@@ -78,3 +78,6 @@ crashlytics-build.properties
 # Mirror examples
 /[Aa]ssets/Mirror/Examples.meta
 /[Aa]ssets/Mirror/Examples/*
+
+# Database files
+*.db
