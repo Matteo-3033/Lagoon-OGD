@@ -437,7 +437,6 @@ MonoBehaviour:
   - {fileID: 4851495186559573822, guid: c6f019eca13601146bcee654ca265c8f, type: 3}
   - {fileID: 2201293472120167176, guid: d04acfb1c4ee4204bb84778f7eb05d0f, type: 3}
   - {fileID: 5350905696168783278, guid: c6ed814d99e6cf94cacf8a407eb9d3d4, type: 3}
-  - {fileID: 215138077781146388, guid: de871802091702d4fb5a459cd7261e2e, type: 3}
   exceptionsDisconnect: 0
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -1446,12 +1445,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
