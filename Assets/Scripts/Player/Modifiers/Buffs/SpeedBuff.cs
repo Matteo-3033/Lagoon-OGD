@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Modifiers.Buffs
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/Buffs", fileName = "Speed")]
+    [CreateAssetMenu(menuName = "ScriptableObjects/Buffs/Speed", fileName = "Speed")]
     public class SpeedBuff : Modifier
     {
         public float multiplicationFactor = 2;
