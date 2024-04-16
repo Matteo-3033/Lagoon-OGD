@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using Network;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,6 +33,19 @@ namespace Round.UI.Main
         {
             height = GetComponent<RectTransform>().rect.height;
             eventLogTemplate.gameObject.SetActive(false);
+        }
+
+        private void Start()
+        {
+            MatchController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+        }
+
+        private void LogNoWinningCondition()
+        {
+            var totalFragments = MatchController.Instance.CurrentRound.keyFragments;
+            var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
+            
+            LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} key fragments</color> to win the round");
         }
 
         [ContextMenu("Test event")]

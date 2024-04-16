@@ -40,6 +40,7 @@ namespace Network
         // Client side events
         public event Action OnRoundLoaded;
         public event Action OnRoundStarted;
+        public event Action OnNoWinningCondition;
         
         // Server side events
         public event Action OnMatchStarted;
@@ -203,15 +204,27 @@ namespace Network
             
             var player = Usernames[sender];
             
-            // TODO: check if player has all key fragments
-            
-            var data = players[player];
-            data.RoundsWon++;
-            players[player] = data;
-            
+            if (sender.Player().Inventory.KeyFragments == CurrentRound.keyFragments)
+            {
+                var data = players[player];
+                data.RoundsWon++;
+                players[player] = data;
+                OnRoundWon();
+            } else 
+                TargetNotifyNoWinningCondition(sender);
+        }
+
+        [TargetRpc]
+        private void TargetNotifyNoWinningCondition(NetworkConnectionToClient sender)
+        {
+            OnNoWinningCondition?.Invoke();
+        }
+
+        private void OnRoundWon()
+        {
             LoadRound(currentRoundIndex + 1);
         }
-        
+
         #endregion
         
         #region CLIENT
