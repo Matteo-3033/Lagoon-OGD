@@ -1,9 +1,10 @@
 ﻿using Network;
 using UnityEngine;
+using Screen = Utils.Screen;
 
 namespace MainMenu.Connection
 {
-    public class ConnectionMenu: Menu
+    public class ConnectionMenu: Screen
     {
         [SerializeField] private ClientConnector clientConnector;
         

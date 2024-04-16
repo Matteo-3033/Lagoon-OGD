@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace MainMenu
+namespace Utils
 {
-    public class Menu: MonoBehaviour
+    public class Screen: MonoBehaviour
     {
         public virtual void OnFocus()
         {

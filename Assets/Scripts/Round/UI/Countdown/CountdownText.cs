@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace Round.UI
+namespace Round.UI.Countdown
 {
     public class CountdownText: MonoBehaviour
     {
@@ -17,6 +17,11 @@ namespace Round.UI
         private void OnCountdown(int time)
         {
             text.text = time.ToString();
+        }
+        
+        private void OnDestroy()
+        {
+            MatchController.Instance.OnCountdown -= OnCountdown;
         }
     }
 }

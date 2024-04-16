@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,8 @@ public interface IInputHanlder
 {
     Vector3 GetMovementDirection();
     Vector3 GetLookDirection();
+
+    public event Action OnInteract;
 }
 
 public class InputHandler : MonoBehaviour, IInputHanlder
@@ -21,6 +24,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private bool mousePerformed;
 
     public delegate void Move(Vector3 inputDirection);
+    
+    public event Action OnInteract;
 
     private void Awake()
     {
@@ -35,6 +40,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
         input.Player.MousePosition.performed += MousePosition_performed;
         input.Player.View.performed += View_performed;
+        
+        input.Player.Interaction.performed += ctx => OnInteract?.Invoke();
     }
 
     private void OnDisable()
