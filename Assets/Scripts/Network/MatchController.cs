@@ -96,7 +96,6 @@ namespace Network
                     StartCoroutine(StartRoundCountdown());
                 }
             }
-            Debug.Log("PLAYERS COUNT: " + Usernames.Count);
         }
 
         [Server]
@@ -246,7 +245,7 @@ namespace Network
         private void RpcStartRound()
         {
             OnRoundStarted?.Invoke();
-            Player.LocalPlayer.EnableMovement();
+            Player.LocalPlayer.EnableMovement(true);
         }
 
         #endregion
