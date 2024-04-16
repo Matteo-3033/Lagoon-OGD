@@ -1,4 +1,5 @@
 using System;
+using Mirror;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,6 +18,11 @@ public class CameraMovement : MonoBehaviour
 
     private void Awake()
     {
+        if (player == null || player.GetComponent<NetworkIdentity>() == null)
+        {
+            player = Player.LocalPlayer.transform;
+        }
+
         _inputHandler = player.GetComponent<IInputHanlder>();
     }
 

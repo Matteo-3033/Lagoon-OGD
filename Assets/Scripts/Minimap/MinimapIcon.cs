@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Mirror;
 using UnityEngine;
 
 public class MinimapIcon : MonoBehaviour
@@ -11,16 +13,18 @@ public class MinimapIcon : MonoBehaviour
     public float offset;
     [Header("Ripple effect")] public GameObject ripplePrefab;
 
-    private SpriteRenderer _spriteRenderer;
+    private List<SpriteRenderer> _spriteRenderers;
     private bool _isShown;
 
     private void Awake()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
     }
 
     private void Start()
     {
+        if (minimapCamera == null) minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<Camera>();
+
         if (showAtStart)
         {
             Show();
@@ -57,17 +61,17 @@ public class MinimapIcon : MonoBehaviour
 
     public void Show()
     {
-        if (!_spriteRenderer) return;
+        if (_spriteRenderers.Count == 0) return;
 
-        _spriteRenderer.enabled = true;
+        _spriteRenderers.ForEach(x => x.enabled = true);
         _isShown = true;
     }
 
     public void Hide()
     {
-        if (!_spriteRenderer) return;
+        if (_spriteRenderers.Count == 0) return;
 
-        _spriteRenderer.enabled = false;
+        _spriteRenderers.ForEach(x => x.enabled = false);
         _isShown = false;
     }
 
