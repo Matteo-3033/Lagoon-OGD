@@ -509,7 +509,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1189862047}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4a353abf2efbb243a56de2ebee2194d, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b4a07450716469f85182c8a8959904f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   logLevel: 0
@@ -703,6 +703,7 @@ MonoBehaviour:
   registerRoomPermissionLevel: 0
   roundPool:
   - {fileID: 11400000, guid: bc3c7aa4ba2c2fe439f5d8263b45552f, type: 2}
+  - {fileID: 11400000, guid: 2df35fd36ac307941b0d953d13a2b200, type: 2}
 --- !u!1 &1977181801
 GameObject:
   m_ObjectHideFlags: 0

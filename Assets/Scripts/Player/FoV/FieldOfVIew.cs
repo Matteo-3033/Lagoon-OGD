@@ -1,13 +1,14 @@
 using System;
+using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
-public class FieldOfVIew : MonoBehaviour
+public class FieldOfVIew : NetworkBehaviour
 {
-    [SerializeField] private float fieldOfViewDegree = 120F;
-    [SerializeField] private int rayCount = 60;
-    [SerializeField] private float viewDistance = 10F;
-
+    [SyncVar(hook = nameof(OnFoVDegreeChanged)), SerializeField] private float fieldOfViewDegree = 120F;
+    [SyncVar(hook = nameof(OnViewDistanceChanged)), SerializeField] private float viewDistance = 10F;
+    [SyncVar, SerializeField] private int rayCount = 60;
+    
     public class FieldOfViewArgs
     {
         public float FieldOfViewDegree;
@@ -20,16 +21,27 @@ public class FieldOfVIew : MonoBehaviour
     private Vector3 Origin => Vector3.zero;
 
     private Mesh mesh;
-    
-    private void Start()
+    private Player player;
+
+    private void Awake()
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        player = GetComponentInParent<Player>();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartServer();
+        
         OnFoVUpdated();
     }
     
     private void Update()
     {
+        if (isClient && !player.isLocalPlayer)
+            return;
+        
         var vertices = new Vector3[rayCount + 2];   // +2 for the origin and the last vertex
         var uv = new Vector2[vertices.Length];
         var triangles = new int[rayCount * 3];
@@ -64,12 +76,32 @@ public class FieldOfVIew : MonoBehaviour
         mesh.triangles = triangles;
     }
     
+    [Server]
     public void SetViewDistance(float dist)
     {
-        this.viewDistance = dist;
+        viewDistance = dist;
+    }
+    
+    [Server]
+    public void SetAngle(float angle)
+    {
+        fieldOfViewDegree = angle;
+    }
+    
+    [ClientCallback]
+    private void OnFoVDegreeChanged(float oldValue, float newValue)
+    {
+        
+        OnFoVUpdated();
+    }
+    
+    [ClientCallback]
+    private void OnViewDistanceChanged(float oldValue, float newValue)
+    {
         OnFoVUpdated();
     }
 
+    [ClientCallback]
     private void OnFoVUpdated()
     {
         OnFieldOfViewChanged?.Invoke(this, new FieldOfViewArgs {FieldOfViewDegree = fieldOfViewDegree, ViewDistance = viewDistance});

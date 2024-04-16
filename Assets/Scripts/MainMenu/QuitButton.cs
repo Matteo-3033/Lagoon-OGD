@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MainScene
+namespace MainMenu
 {
     [RequireComponent(typeof(Button))]
     public class QuitButton : MonoBehaviour

@@ -65,7 +65,8 @@ namespace Network.Client
         
         protected override void StartDisconnection()
         {
-            NetworkManager.StopClient();
+            if (NetworkManager)
+                NetworkManager.StopClient();
         }
 
         private void NetworkManager_OnConnectedEvent(NetworkConnection conn)

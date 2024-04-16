@@ -2,25 +2,22 @@
 using Mirror;
 using UnityEngine;
 
-namespace Menu.UI
+namespace MainMenu
 {
     public class UIManager : MonoBehaviour
     {
         [SerializeField] private Menu connection;
         [SerializeField] private Menu main;
         [SerializeField] private Menu search;
-        [SerializeField] private Menu lobby;
         
         private readonly Dictionary<MenuKey, Menu> menus = new();
         private Menu currentMenu;
-        private bool searchingMatch;
 
         public enum MenuKey
         {
             Connection,
             MainMenu,
             SearchingMatch,
-            Lobby
         }
         
         public static UIManager Instance { get; private set; }
@@ -47,7 +44,6 @@ namespace Menu.UI
             AddMenu(MenuKey.Connection, connection);
             AddMenu(MenuKey.MainMenu, main);
             AddMenu(MenuKey.SearchingMatch, search);
-            AddMenu(MenuKey.Lobby, lobby);
             
             ShowMenu(MenuKey.Connection);
         }

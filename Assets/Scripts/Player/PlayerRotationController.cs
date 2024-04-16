@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-public class PlayerRotationController : NetworkBehaviour
+public class PlayerRotationController : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 800f;
 

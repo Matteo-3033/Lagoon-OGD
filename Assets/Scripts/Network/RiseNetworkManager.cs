@@ -6,6 +6,7 @@ using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
 using Mirror;
 using Mirror.SimpleWeb;
+using Network.Master;
 using UnityEngine;
 using RoomServerManager = Network.Room.RoomServerManager;
 using ValidateRoomAccessRequestMessage = Network.Messages.ValidateRoomAccessRequestMessage;
@@ -17,7 +18,7 @@ namespace Network
     {
         
         [SerializeField] private RoomServerManager roomServerManager;
-        [SerializeField] private GameObject matchControllerPrefab;
+        [SerializeField] private MatchController matchControllerPrefab;
         
         public new static RiseNetworkManager singleton => NetworkManager.singleton as RiseNetworkManager;
 
@@ -34,7 +35,7 @@ namespace Network
         public static event Action OnServerStopped;
         
         // Called on server when client is ready
-        public static event Action<NetworkConnectionToClient> OnServerReadied;
+        public static event Action<NetworkConnectionToClient, string> OnServerReadied;
         
         // Called on server when a client player object is created
         public static event Action<NetworkConnectionToClient, string> OnServerPlayerAdded;
@@ -44,7 +45,6 @@ namespace Network
 
         public static bool IsClient => !Mst.Server.Spawners.IsSpawnedProccess && !Application.isBatchMode;
         public static RoomOptions RoomOptions => singleton.roomServerManager.RoomOptions;
-
 
         public override void Awake()
         {
@@ -62,7 +62,7 @@ namespace Network
             SetAddress(roomServerManager.RoomOptions.RoomIp);
             SetPort(roomServerManager.RoomOptions.RoomPort);
 
-            Debug.Log($"Starting Room Server: {networkAddress}:{roomServerManager.RoomOptions.RoomPort}");
+            Debug.Log($"Starting Rise Server: {networkAddress}:{roomServerManager.RoomOptions.RoomPort}");
             Debug.Log($"Online Scene: {onlineScene}");
 
             #if UNITY_EDITOR
@@ -79,15 +79,8 @@ namespace Network
             #else
                 StopServer();
             #endif
-            StartCoroutine(DoStopRoomServer());
         }
-
-        private IEnumerator DoStopRoomServer()
-        {
-            yield return new WaitForSeconds(1);
-            Utils.Runtime.Quit();
-        }
-
+        
         #region CLIENT
 
         public override void OnClientDisconnect()
@@ -128,7 +121,9 @@ namespace Network
         {
             OnServerDisconnected?.Invoke(conn);
             yield return null;
+            
             base.OnServerDisconnect(conn);
+            
             Debug.Log("Client disconnected from rise server");
         }
 
@@ -140,7 +135,8 @@ namespace Network
             NetworkServer.RegisterHandler<ValidateRoomAccessRequestMessage>(ValidateRoomAccessRequestHandler, false);
             
             var matchController = Instantiate(matchControllerPrefab);
-            NetworkServer.Spawn(matchController);
+            NetworkServer.Spawn(matchController.gameObject);
+            matchController.OnMatchEnded += OnMatchEnded;
             
             OnServerStarted?.Invoke();
         }
@@ -151,6 +147,7 @@ namespace Network
             Debug.Log("Rise server stopped");
             
             NetworkServer.UnregisterHandler<ValidateRoomAccessRequestMessage>();
+            NetworkServer.Destroy(MatchController.Instance.gameObject);
             
             OnServerStopped?.Invoke();
         }
@@ -159,25 +156,36 @@ namespace Network
         {
             base.OnServerReady(conn);
             Debug.Log("Client ready");
-            
-            OnServerReadied?.Invoke(conn);
+
+            var username = roomServerManager.Username(conn);
+            OnServerReadied?.Invoke(conn, username);
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            base.OnServerAddPlayer(conn);
-            Debug.Log("Player object created");
+            var startPos = GetStartPosition();
+            var player = startPos != null
+                ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+                : Instantiate(playerPrefab);
 
-            StartCoroutine(DoOnServerAddPlayer(conn));
+            StartCoroutine(DoOnServerAddPlayer(conn, player));
         }
         
-        private IEnumerator DoOnServerAddPlayer(NetworkConnectionToClient conn)
+        private IEnumerator DoOnServerAddPlayer(NetworkConnectionToClient conn, GameObject player)
         {
             // Wait for player object to be actually created
             yield return null;
             
-            var username = roomServerManager.Players.FirstOrDefault(p => p.RoomPeerId == conn.connectionId)?.Username;
-            OnServerPlayerAdded?.Invoke(conn, username);
+            var profile = roomServerManager.GetPlayerProfile(conn);
+            
+            player.name = profile?.Username ?? $"Player {conn.connectionId}";
+            player.GetComponent<Player>().Init(profile, roomServerManager.Players.Count() == 1);
+            
+            NetworkServer.AddPlayerForConnection(conn, player);
+            
+            Debug.Log("Player object created");
+            
+            OnServerPlayerAdded?.Invoke(conn, profile?.Username);
         }
 
         private void ValidateRoomAccessRequestHandler(NetworkConnection conn, ValidateRoomAccessRequestMessage mess)
@@ -218,6 +226,22 @@ namespace Network
                     MstTimer.WaitForSeconds(1f, conn.Disconnect);
                 }
             });
+        }
+
+        private void OnMatchEnded(MatchPlayerData winner, MatchPlayerData loser)
+        {
+            UpdateProfile(winner);
+            UpdateProfile(loser);
+            StopRiseServer();
+        }
+        
+        public void UpdateProfile(MatchPlayerData data)
+        {
+            var player = roomServerManager.GetRoomPlayerByUsername(data.Username);
+            
+            player.Score().Value += data.IsWinner ? 100 : -100; // TODO: Calculate score
+            player.Kills().Value += data.Kills;
+            player.Deaths().Value += data.Deaths;
         }
         
         #endregion

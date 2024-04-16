@@ -1,12 +1,11 @@
 ﻿using MasterServerToolkit.MasterServer;
-using Menu.UI;
+using MainMenu;
 using UnityEngine;
 
 namespace Network
 {
     public class ClientConnector : MonoBehaviour
     {
-
         [SerializeField] private GameObject dataInput;
         [SerializeField] private GameObject loadingSpinner;
         [SerializeField] private GameObject noConnection;
@@ -16,16 +15,6 @@ namespace Network
             loadingSpinner.SetActive(false);
             noConnection.SetActive(false);
             dataInput.SetActive(false);
-        }
-
-        private void Start()
-        {
-            if (!Mst.Server.Spawners.IsSpawnedProccess)
-                return;
-            
-            Debug.Log("Starting room server");
-            
-            ClientToMasterConnector.Instance.StartConnection();
         }
 
         public void InitClient()
@@ -45,6 +34,7 @@ namespace Network
             else
             {
                 ClientToMasterConnector.Instance.OnConnectedEvent.AddListener(OnClientConnected);
+                ClientToMasterConnector.Instance.OnFailedConnectEvent.AddListener(OnFailedConnection);
                 ClientToMasterConnector.Instance.StartConnection();
             }
         }
@@ -54,9 +44,9 @@ namespace Network
             Debug.Log("Client connected to server");
             
             ClientToMasterConnector.Instance.OnConnectedEvent.RemoveListener(OnClientConnected);
+            ClientToMasterConnector.Instance.OnFailedConnectEvent.RemoveListener(OnFailedConnection);
             
             ClientToMasterConnector.Instance.OnDisconnectedEvent.AddListener(OnClientDisconnected);
-            ClientToMasterConnector.Instance.OnFailedConnectEvent.AddListener(OnFailedConnection);
             
             AuthBehaviour.Instance.OnSignedInEvent.AddListener(OnClientAuthenticated);
             AuthBehaviour.Instance.OnSignInFailedEvent.AddListener(OnFailedConnection);
@@ -73,7 +63,10 @@ namespace Network
             }
             
             if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName))
+            {
+                OnFailedConnection();
                 return;
+            }
                 
             var username = PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName);
             if (username == "") return;
@@ -87,6 +80,8 @@ namespace Network
         {
             Debug.Log("Client authenticated");
             
+            AuthBehaviour.Instance.OnSignedInEvent.RemoveListener(OnClientAuthenticated);
+            AuthBehaviour.Instance.OnSignInFailedEvent.RemoveListener(OnClientAuthenticated);
             UIManager.Instance.ShowMenu(UIManager.MenuKey.MainMenu);
         }
         

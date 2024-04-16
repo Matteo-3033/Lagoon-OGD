@@ -9,8 +9,13 @@ public class Torchlight : MonoBehaviour
     
     private void Start()
     {
-        spotLight = GetComponent<Light>();
-        fieldOfView.OnFieldOfViewChanged += FieldOfView_OnFieldOfViewChanged;
+        if (!GetComponentInParent<Player>().isLocalPlayer)
+            gameObject.SetActive(false);
+        else
+        {
+            spotLight = GetComponent<Light>();
+            fieldOfView.OnFieldOfViewChanged += FieldOfView_OnFieldOfViewChanged;   
+        }
     }
 
     private void FieldOfView_OnFieldOfViewChanged(object sender, FieldOfVIew.FieldOfViewArgs args)
