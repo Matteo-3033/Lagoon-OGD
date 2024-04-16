@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Modifiers.Buffs
+namespace Modifiers.Debuffs
 {
     [CreateAssetMenu(menuName = "ScriptableObjects/Debuffs/Speed", fileName = "Speed")]
     public class SpeedDebuff : Modifier

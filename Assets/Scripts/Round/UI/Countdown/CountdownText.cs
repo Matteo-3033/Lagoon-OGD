@@ -1,4 +1,4 @@
-﻿using Network;
+﻿        using Network;
 using TMPro;
 using UnityEngine;
 
@@ -21,7 +21,8 @@ namespace Round.UI.Countdown
         
         private void OnDestroy()
         {
-            MatchController.Instance.OnCountdown -= OnCountdown;
+            if (MatchController.Instance)
+                MatchController.Instance.OnCountdown -= OnCountdown;
         }
     }
 }

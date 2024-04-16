@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Mirror;
 using Modifiers;
+using UnityEngine;
 
 public class Inventory : NetworkBehaviour
 {
@@ -48,16 +49,18 @@ public class Inventory : NetworkBehaviour
     }
     
     public void AddModifier(Modifier modifier)
-    {            
+    {
+        Debug.Log("QUI");
         if (modifiers.Contains(modifier))
             return;
-        
+        Debug.Log($"Adding modifier {modifier.modifierName} to {player.Username}");
         modifiers.Add(modifier);
         
         if (modifier.other == null || modifier.synergy == null) return;
         
         var ok = modifiers.FirstOrDefault(m => m.modifierName == modifier.other.modifierName) != null;
-        if (ok) AddModifier(modifier.synergy);
+        if (ok)
+            AddModifier(modifier.synergy);
     }
     
     public void RemoveModifier(Modifier modifier)

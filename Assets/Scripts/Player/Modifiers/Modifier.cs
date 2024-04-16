@@ -18,25 +18,32 @@ namespace Modifiers
     
     public static class ModifierSerializer 
     {
-        public static void WriteRoundConfiguration(this NetworkWriter writer, Modifier config)
+        public static void WriteRoundConfiguration(this NetworkWriter writer, Modifier modifier)
         {
-            writer.WriteString(config == null ? "" : config.name);
-            writer.WriteString(config == null ? "" : config.GetType().ToString());
-            writer.WriteBool(config != null && config.isBuff);
+            if (modifier == null)
+                writer.Write("");
+            else
+            {
+                writer.WriteString(modifier.name);
+                writer.WriteString(modifier.GetType().ToString());
+                writer.WriteBool(modifier.isBuff);
+            }
         }
 
         public static Modifier ReadRoundConfiguration(this NetworkReader reader)
         {
             var modifierName = reader.ReadString();
+            
+            if (string.IsNullOrEmpty(modifierName))
+                return null;
+            
             var modifierType= reader.ReadString();
             var isBuff = reader.ReadBool();
 
             var type = Type.GetType(modifierType);
             var subdir = isBuff ? "Buffs" : "Debuffs";
             
-            return string.IsNullOrEmpty(modifierName)
-                ? null
-                : Resources.Load($"Modifiers/{subdir}/{modifierName}", type) as Modifier;
+            return Resources.Load($"Modifiers/{subdir}/{modifierName}", type) as Modifier;
         }
     }
 }

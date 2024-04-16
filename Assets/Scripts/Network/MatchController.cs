@@ -30,7 +30,7 @@ namespace Network
         
         private int currentRoundIndex;
         private readonly List<RoundConfiguration> rounds = new();
-        private readonly Dictionary<NetworkConnectionToClient, string> usernames = new();
+        internal readonly Dictionary<NetworkConnectionToClient, string> Usernames = new();
 
         [field: SyncVar]
         public RoundConfiguration CurrentRound { get; private set; }
@@ -81,7 +81,7 @@ namespace Network
         [ServerCallback]
         private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
-            if (!usernames.ContainsKey(conn))
+            if (!Usernames.ContainsKey(conn))
                 InitPlayer(conn, username);
             else
             {
@@ -95,13 +95,13 @@ namespace Network
                     StartCoroutine(StartRoundCountdown());
                 }
             }
-            Debug.Log("PLAYERS COUNT: " + usernames.Count);
+            Debug.Log("PLAYERS COUNT: " + Usernames.Count);
         }
 
         [Server]
         private void InitPlayer(NetworkConnectionToClient conn, string username)
         {
-            usernames[conn] = username;
+            Usernames[conn] = username;
             
             players[username] = new MatchPlayerData
             {
@@ -109,7 +109,7 @@ namespace Network
                 Ready = true
             };
             
-            Debug.LogError($"Adding player {username} to match. Current players: {usernames.Count}/{MaxPlayers}");
+            Debug.LogError($"Adding player {username} to match. Current players: {Usernames.Count}/{MaxPlayers}");
 
             if (AllPlayersReady())
                 StartCoroutine(StartMatch());
@@ -190,8 +190,8 @@ namespace Network
             if (Started)
                 EndMatch(username);
             
-            var conn = usernames.First(pair => pair.Value == username).Key;
-            usernames.Remove(conn);
+            var conn = Usernames.First(pair => pair.Value == username).Key;
+            Usernames.Remove(conn);
             players.Remove(username);
         }
         
@@ -201,7 +201,7 @@ namespace Network
             if (sender == null)
                 return;
             
-            var player = usernames[sender];
+            var player = Usernames[sender];
             
             // TODO: check if player has all key fragments
             
@@ -261,7 +261,7 @@ namespace Network
         
         private bool AllPlayersReady()
         {
-            return usernames.Count == MaxPlayers && players.All(player => player.Value.Ready);
+            return Usernames.Count == MaxPlayers && players.All(player => player.Value.Ready);
         }
         
         [Server]
@@ -278,7 +278,7 @@ namespace Network
         [Server]
         private void UnreadyAllPlayers()
         {
-            foreach (var username in usernames.Values)
+            foreach (var username in Usernames.Values)
                 SetPlayerReady(username, false);
         }
 
@@ -297,6 +297,11 @@ namespace Network
             if (conn.identity == null)
                 return null;
             return !conn.identity.TryGetComponent(out Player player) ? null : player;
+        }
+        
+        public static Player Opponent(this NetworkConnectionToClient conn)
+        {
+            return MatchController.Instance.Usernames.First(kp => kp.Value != conn.Player().Username).Key.Player();
         }
     }
 }

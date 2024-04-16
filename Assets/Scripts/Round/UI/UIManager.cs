@@ -50,7 +50,7 @@ namespace Round.UI
             value.gameObject.SetActive(false);
         }
 
-        public void ShowMenu(ScreenKey key)
+        private void ShowMenu(ScreenKey key)
         {
             if (currentScreen != null)
                 currentScreen.OnUnfocus();
@@ -60,7 +60,11 @@ namespace Round.UI
 
         private void HideAll()
         {
-            currentScreen.OnUnfocus();
+            foreach (var menu in menus.Values)
+                menu.gameObject.SetActive(false);
+            
+            if (currentScreen != null)
+                currentScreen.OnUnfocus();
             currentScreen = null;
         }
         
