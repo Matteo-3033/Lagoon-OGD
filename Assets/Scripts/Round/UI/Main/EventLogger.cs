@@ -38,6 +38,42 @@ namespace Round.UI.Main
         private void Start()
         {
             MatchController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+            Player.OnPlayerSpawned += OnPlayerSpawned;
+        }
+
+        private void OnPlayerSpawned(bool isLocalPlayer)
+        {
+            var player = isLocalPlayer ? Player.LocalPlayer : Player.Opponent;
+            player.Inventory.OnKeyFragmentUpdated += LogKeyFragmentUpdate;
+            player.Inventory.OnModifierUpdate += LogModifierUpdate;
+        }
+
+        private void LogModifierUpdate(object sender, Inventory.OnModifierUpdatedArgs args)
+        {
+            if (args.Enabled)
+            {
+                if (args.OnLocalPlayer)
+                    LogEvent($"{args.Modifier.modifierName} activated!");
+                else
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
+            }
+            else
+            {
+                if (args.OnLocalPlayer)
+                    LogEvent($"{args.Modifier.modifierName} disabled!");
+                else
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
+            }
+        }
+
+        private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
+        {
+            if (args.NewValue < args.OldValue) return;
+            
+            if (args.OnLocalPlayer)
+                LogEvent($"Key fragment acquired!");
+            else
+                LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> found a key fragment!");
         }
 
         private void LogNoWinningCondition()
@@ -81,6 +117,13 @@ namespace Round.UI.Main
             eventLog.gameObject.SetActive(true);
             eventLog.OnHeightSurpassed += () => CanSpawn = true;
             eventLog.Init(msg, maxHeight, onScreenDuration);
+        }
+
+        private void OnDestroy()
+        {
+            if (MatchController.Instance)
+                MatchController.Instance.OnNoWinningCondition -= LogNoWinningCondition;
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
         }
     }
 }
