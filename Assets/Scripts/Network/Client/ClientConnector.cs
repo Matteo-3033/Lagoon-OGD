@@ -63,7 +63,10 @@ namespace Network
             }
             
             if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName))
+            {
+                OnFailedConnection();
                 return;
+            }
                 
             var username = PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName);
             if (username == "") return;
