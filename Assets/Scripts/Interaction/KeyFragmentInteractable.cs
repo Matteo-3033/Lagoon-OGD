@@ -5,7 +5,7 @@ namespace Interaction
 {
     public class KeyFragmentInteractable: NetworkBehaviour, IInteractable
     {
-        public string InteractionPrompt { get; }
+        public string InteractionPrompt => "Badge Fragment";
         
         public bool Interact(Interactor interactor)
         {
