@@ -3,13 +3,19 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
-using ProfilesModule = Network.Master.ProfilesModule;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
+    public static event Action<bool> OnPlayerSpawned;
+    public static event Action<bool> OnPlayerDespawned;
+    
     public static Player LocalPlayer { get; private set;  }
     public static Player Opponent { get; private set;  }
+    
+    public Inventory Inventory { get; private set; }
+	public PlayerPositionController PositionController { get; private set; }
+	public PlayerRotationController RotationController { get; private set; }
 
     [field: SyncVar]
     public string Username { get; private set; }
@@ -26,10 +32,15 @@ public class Player : NetworkBehaviour
     [field: SyncVar]
     public int Kills { get; private set; }
 
-    public static event Action<bool> OnPlayerSpawned;
-    public static event Action<bool> OnPlayerDespawned; 
-    
+    private void Awake()
+    {
+        Inventory = GetComponent<Inventory>();
+		PositionController = GetComponent<PlayerPositionController>();
+		RotationController = GetComponent<PlayerRotationController>();
+    }
 
+    #region SERVER
+    
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -57,14 +68,7 @@ public class Player : NetworkBehaviour
         gameObject.layer = LayerMask.NameToLayer("Behind-FieldOfView");
         OnPlayerSpawned?.Invoke(false);
     }
-
-    #region CLIENT
     
-    public void EnableMovement()
-    {
-        GetComponent<PlayerPositionController>().SetEnabled(true);    
-    }
-
     public void Init(RoomPlayer profile, bool isMangiagalli)
     {
         Username = profile.Username;
@@ -72,6 +76,15 @@ public class Player : NetworkBehaviour
         Score = profile.Score().Value;
         Deaths = profile.Deaths().Value;
         Kills = profile.Kills().Value;
+    }
+    
+    #endregion
+
+    #region CLIENT
+    
+    public void EnableMovement()
+    {
+        GetComponent<PlayerPositionController>().SetEnabled(true);    
     }
 
     public override void OnStopClient()

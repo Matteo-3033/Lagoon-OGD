@@ -24,7 +24,6 @@ namespace Test
 
         private void OnClick()
         {
-            Debug.Log("Load next round button clicked");
             MatchController.Instance.CheckWinningCondition();
         }
     }

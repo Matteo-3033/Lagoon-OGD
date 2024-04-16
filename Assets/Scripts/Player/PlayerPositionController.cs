@@ -4,12 +4,16 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerPositionController : MonoBehaviour
 {
-    [SerializeField] private float maxSpeed = 10F;
+    [SerializeField] private float baseMaxSpeed = 10F;
     [Space]
     [SerializeField] private bool acceleratedMovement = true;
     [SerializeField] private float acceleration = 50F;
     [SerializeField] private float deacceleration = 25F;
 
+    private float factor = 1F;
+
+    private float MaxSpeed => baseMaxSpeed * factor;
+    
     private IInputHanlder inputHandler;
     private Rigidbody rb;
 
@@ -63,7 +67,7 @@ public class PlayerPositionController : MonoBehaviour
             accelerationComponent += v;
         }
 
-        float speedLimit = inputDirection.magnitude != 0 ? maxSpeed * inputDirection.magnitude : maxSpeed; //Speed is limited by the controller analogue
+        float speedLimit = inputDirection.magnitude != 0 ? MaxSpeed * inputDirection.magnitude : MaxSpeed; //Speed is limited by the controller analogue
         Vector3 movement = currentSpeed * t + .5f * t * t * accelerationComponent;
         currentSpeed = Vector3.ClampMagnitude(currentSpeed + t * accelerationComponent, speedLimit);
 
@@ -77,7 +81,7 @@ public class PlayerPositionController : MonoBehaviour
     {
         float t = Time.fixedDeltaTime;
 
-        float speedLimit = inputDirection.magnitude != 0 ? maxSpeed * inputDirection.magnitude : maxSpeed; //Speed is limited by the controller analogue
+        float speedLimit = inputDirection.magnitude != 0 ? MaxSpeed * inputDirection.magnitude : MaxSpeed; //Speed is limited by the controller analogue
         Vector3 movement = inputDirection * (t * speedLimit);
 
         Debug.DrawRay(transform.position, movement * 10, Color.green);
@@ -90,5 +94,10 @@ public class PlayerPositionController : MonoBehaviour
     public void AddVector(Vector3 vector)
     {
         additionalVectors.Add(vector);
+    }
+
+    public void AddFactor(float f)
+    {
+        factor *= f;
     }
 }

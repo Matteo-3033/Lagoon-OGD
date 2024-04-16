@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using Utils;
+using Screen = Utils.Screen;
 
 namespace MainMenu
 {
     public class UIManager : MonoBehaviour
     {
-        [SerializeField] private Menu connection;
-        [SerializeField] private Menu main;
-        [SerializeField] private Menu search;
+        [SerializeField] private Screen connection;
+        [SerializeField] private Screen main;
+        [SerializeField] private Screen search;
         
-        private readonly Dictionary<MenuKey, Menu> menus = new();
-        private Menu currentMenu;
+        private readonly Dictionary<MenuKey, Screen> menus = new();
+        private Screen currentMenu;
 
         public enum MenuKey
         {
@@ -48,7 +50,7 @@ namespace MainMenu
             ShowMenu(MenuKey.Connection);
         }
         
-        private void AddMenu(MenuKey key, Menu value)
+        private void AddMenu(MenuKey key, Screen value)
         {
             if (value != null)
                 menus.Add(key, value);
