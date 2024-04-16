@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Interaction
 {
-    public class ModifierInteractable : NetworkBehaviour, IInteractable
+    public class StatsModifierInteractable : NetworkBehaviour, IInteractable
     {
-        [SerializeField] private Modifier modifier;
+        [SerializeField] private StatsModifier modifier;
 
         public string InteractionPrompt => modifier.modifierName;
         

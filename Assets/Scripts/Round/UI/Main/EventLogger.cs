@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
 using Network;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Round.UI.Main
 {
     public class EventLogger : MonoBehaviour
     {
-        [FormerlySerializedAs("eventLogPrefab")] [SerializeField] private EventLoggerText eventLogTemplate;
+        [SerializeField] private EventLoggerText eventLogTemplate;
         [SerializeField] private float onScreenDuration = 5F;
         
-        private readonly ConcurrentQueue<string> eventQueue = new();
+        private readonly ConcurrentQueue<EventLoggerText.LogMessage> eventQueue = new();
         
         private float height;
         
@@ -25,7 +23,7 @@ namespace Round.UI.Main
                 canSpawn = value;
                 if (!canSpawn) return;
                 if (eventQueue.TryDequeue(out var msg))
-                    LogEvent(msg);
+                    StartCoroutine(SpawnEvent(msg));
             }
         }
 
@@ -45,35 +43,48 @@ namespace Round.UI.Main
         {
             var player = isLocalPlayer ? Player.LocalPlayer : Player.Opponent;
             player.Inventory.OnKeyFragmentUpdated += LogKeyFragmentUpdate;
-            player.Inventory.OnModifierUpdate += LogModifierUpdate;
+            player.Inventory.OnStatsUpdate += LogStatsUpdate;
+            
+            if (isLocalPlayer)
+                player.Inventory.OnTrapsUpdated += LogTrapsUpdate;
         }
 
-        private void LogModifierUpdate(object sender, Inventory.OnModifierUpdatedArgs args)
+        private void LogStatsUpdate(object sender, Inventory.OnStatsUpdatedArgs args)
         {
             if (args.Enabled)
             {
-                if (args.OnLocalPlayer)
-                    LogEvent($"{args.Modifier.modifierName} activated!");
-                else
-                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
+                LogEvent(args.OnLocalPlayer
+                    ? $"{args.Modifier.modifierName} activated!"
+                    : $"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
             }
             else
             {
-                if (args.OnLocalPlayer)
-                    LogEvent($"{args.Modifier.modifierName} disabled!");
-                else
-                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
+                LogEvent(args.OnLocalPlayer
+                    ? $"{args.Modifier.modifierName} disabled!"
+                    : $"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
+            }
+        }
+
+        private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
+        {
+            if (args.Acquired)
+            {
+                LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
+                LogEvent($"{args.Trap.description}");
+            }
+            else
+            {
+                LogEvent($"{args.Trap.modifierName} placed");
             }
         }
 
         private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
         {
             if (args.NewValue < args.OldValue) return;
-            
-            if (args.OnLocalPlayer)
-                LogEvent($"Key fragment acquired!");
-            else
-                LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> found a key fragment!");
+
+            LogEvent(args.OnLocalPlayer
+                ? $"Key fragment acquired!"
+                : $"<color=#FF0000>{Player.Opponent.Username}</color> found a key fragment!");
         }
 
         private void LogNoWinningCondition()
@@ -90,15 +101,17 @@ namespace Round.UI.Main
             LogEvent("Test event");
         }
 
-        private void LogEvent(string msg)
+        private void LogEvent(string msg, float fadeOutAfter = 1F)
         {
+            var logMsg = new EventLoggerText.LogMessage(msg, fadeOutAfter);
+            
             if (!CanSpawn)
-                eventQueue.Enqueue(msg);
+                eventQueue.Enqueue(logMsg);
             else
-                StartCoroutine(SpawnEvent(msg));
+                StartCoroutine(SpawnEvent(logMsg));
         }
 
-        private IEnumerator SpawnEvent(string msg)
+        private IEnumerator SpawnEvent(EventLoggerText.LogMessage msg)
         {
             CanSpawn = false;
             var eventLog = Instantiate(eventLogTemplate, transform);
