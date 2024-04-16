@@ -3,7 +3,7 @@ using Network;
 
 namespace Interaction
 {
-    public class KeyFragment: NetworkBehaviour, IInteractable
+    public class KeyFragmentInteractable: NetworkBehaviour, IInteractable
     {
         public string InteractionPrompt { get; }
         

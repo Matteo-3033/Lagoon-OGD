@@ -8,8 +8,9 @@ namespace Interaction
     public class ModifierInteractable : NetworkBehaviour, IInteractable
     {
         [SerializeField] private Modifier modifier;
+
+        public string InteractionPrompt => modifier.modifierName;
         
-        public string InteractionPrompt { get; }
         public bool Interact(Interactor interactor)
         {
             CmdInteract();
