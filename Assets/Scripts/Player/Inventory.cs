@@ -43,6 +43,9 @@ public class Inventory : NetworkBehaviour
     private void Awake()
     {
         player = gameObject.GetComponent<Player>();
+        
+        modifiers.Callback += OnModifiersChanged;
+        traps.Callback += OnTrapsChanged;
     }
     
     #region SERVER
@@ -56,6 +59,13 @@ public class Inventory : NetworkBehaviour
     public void AddKeyFragment()
     {
         KeyFragments++;
+        
+        OnKeyFragmentUpdated?.Invoke(this, new OnKeyFragmentUpdatedArgs
+        {
+            OldValue = KeyFragments - 1,
+            NewValue = KeyFragments,
+            Player = player
+        });
     }
     
     public void AddModifier(StatsModifier modifier)
@@ -105,13 +115,6 @@ public class Inventory : NetworkBehaviour
     #endregion
 
     #region CLIENT
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        modifiers.Callback += OnModifiersChanged;
-        traps.Callback += OnTrapsChanged;
-    }
     
     private void OnKeyFragmentsUpdated(int oldValue, int newValue)
     {

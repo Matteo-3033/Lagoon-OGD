@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using Network;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Round
@@ -17,7 +16,7 @@ namespace Round
         public static RoundController Instance { get; private set; }
         
         public RoundConfiguration Round => MatchController.Instance.CurrentRound;
-        public bool Loaded { get; private set; } 
+        public static bool Loaded { get; private set; } 
         
         
         private readonly Dictionary<string, bool> playersReady = new();
@@ -101,12 +100,24 @@ namespace Round
 
         private IEnumerator Timer()
         {
-            var untilOneMin = (Round.timeLimitMinutes - 1) * 60;
-            yield return new WaitForSeconds(untilOneMin);
+            // Wait one frame after round start
+            yield return null;
             
-            RpcNotifyRemainingTime(60F);
-            yield return new WaitForSeconds(60);
+            var time = Round.timeLimitMinutes * 60;
+            
+            while (time > 30)
+            {
+                Debug.Log($"Remaining time: {time}");
+                RpcNotifyRemainingTime(time);
+                yield return new WaitForSeconds(30);
+                time -= 30;
+            }
+            
+            RpcNotifyRemainingTime(time);
+            yield return new WaitForSeconds(time);
 
+            RpcNotifyRemainingTime(0F);
+            
             if (!CheckIfWinner())
                 tie = true;
             foreach (var player in Players)
@@ -185,6 +196,7 @@ namespace Round
         [ClientRpc]
         private void RpcNotifyRemainingTime(float remainingTime)
         {
+            Debug.Log($"Remaining time: {remainingTime}");
             TimerUpdate?.Invoke(remainingTime);
         }
         

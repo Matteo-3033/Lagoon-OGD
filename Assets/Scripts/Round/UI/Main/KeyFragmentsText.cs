@@ -16,14 +16,22 @@ namespace Round.UI.Main
             text = GetComponent<TextMeshProUGUI>();
             
             if (Player.LocalPlayer != null)
-                OnPlayerSpawned(global::Player.LocalPlayer);
+                OnPlayerSpawned(Player.LocalPlayer);
             if (Player.Opponent != null)
-                OnPlayerSpawned(global::Player.Opponent);
+                OnPlayerSpawned(Player.Opponent);
             Player.OnPlayerSpawned += OnPlayerSpawned;
             
+            if (RoundController.Loaded)
+                RegisterRoundControllerCallbacks();
+            else
+                RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
+        }
+
+        private void RegisterRoundControllerCallbacks()
+        {
             RoundController.Instance.OnRoundStarted += UpdateText;
         }
-        
+
         private void OnPlayerSpawned(Player player)
         {
             if ((playerFragments && !player.isLocalPlayer) || (!playerFragments && player.isLocalPlayer))
@@ -57,6 +65,7 @@ namespace Round.UI.Main
         private void OnDestroy()
         {
             Player.OnPlayerSpawned -= OnPlayerSpawned;
+            RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
         }
     }
 }

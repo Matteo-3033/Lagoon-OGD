@@ -31,7 +31,11 @@ namespace Round.UI.Main
         {
             height = GetComponent<RectTransform>().rect.height;
             eventLogTemplate.gameObject.SetActive(false);
-            RoundController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+            
+            if (RoundController.Loaded)
+                RegisterRoundControllerCallbacks();
+            else
+                RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
             
             if (Player.LocalPlayer != null)
                 OnPlayerSpawned(Player.LocalPlayer);
@@ -39,6 +43,12 @@ namespace Round.UI.Main
                 OnPlayerSpawned(Player.Opponent);
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
+        }
+
+        private void RegisterRoundControllerCallbacks()
+        {
+            RoundController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+            RoundController.Instance.TimerUpdate += LogTimerUpdate;
         }
 
         private void OnPlayerSpawned(Player player)
@@ -85,7 +95,7 @@ namespace Round.UI.Main
 
             LogEvent(args.Player.isLocalPlayer
                 ? $"Key fragment acquired!"
-                : $"<color=#FF0000>{Player.Opponent.Username}</color> found a key fragment!");
+                : $"<color=#FF0000>{Player.Opponent.Username}</color> found a badge fragment!");
         }
 
         private void LogNoWinningCondition()
@@ -93,7 +103,19 @@ namespace Round.UI.Main
             var totalFragments = RoundController.Instance.Round.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
             
-            LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} key fragments</color> to win the round");
+            LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color> to win the round");
+        }
+        
+        private void LogTimerUpdate(float remainingTime)
+        {
+            if (remainingTime > 1)
+                return;
+            
+            if (Player.LocalPlayer.Inventory.KeyFragments == Player.Opponent.Inventory.KeyFragments)
+            {
+                LogEvent("Time limit reached!", 0.1F);
+                LogEvent("Find a badge fragment to win the round");
+            }
         }
 
         [ContextMenu("Test event")]
@@ -136,6 +158,7 @@ namespace Round.UI.Main
         private void OnDestroy()
         {
             Player.OnPlayerSpawned -= OnPlayerSpawned;
+            RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
         }
     }
 }
