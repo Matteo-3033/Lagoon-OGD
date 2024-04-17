@@ -82,9 +82,9 @@ public class Player : NetworkBehaviour
 
     #region CLIENT
     
-    public void EnableMovement()
+    public void EnableMovement(bool enable)
     {
-        GetComponent<PlayerPositionController>().SetEnabled(true);    
+        PositionController.SetEnabled(enable);    
     }
 
     public override void OnStopClient()

@@ -7,9 +7,6 @@ namespace Modifiers
     public abstract class Modifier: ScriptableObject
     {
         public string modifierName;
-        public bool isBuff;
-        public Modifier other;
-        public Modifier synergy;
         
         public abstract void Enable();
         
@@ -18,7 +15,7 @@ namespace Modifiers
     
     public static class ModifierSerializer 
     {
-        public static void WriteRoundConfiguration(this NetworkWriter writer, Modifier modifier)
+        public static void WriteModifier(this NetworkWriter writer, Modifier modifier)
         {
             if (modifier == null)
                 writer.Write("");
@@ -26,11 +23,10 @@ namespace Modifiers
             {
                 writer.WriteString(modifier.name);
                 writer.WriteString(modifier.GetType().ToString());
-                writer.WriteBool(modifier.isBuff);
             }
         }
 
-        public static Modifier ReadRoundConfiguration(this NetworkReader reader)
+        public static Modifier ReadModifier(this NetworkReader reader)
         {
             var modifierName = reader.ReadString();
             
@@ -38,12 +34,18 @@ namespace Modifiers
                 return null;
             
             var modifierType= reader.ReadString();
-            var isBuff = reader.ReadBool();
 
             var type = Type.GetType(modifierType);
-            var subdir = isBuff ? "Buffs" : "Debuffs";
             
-            return Resources.Load($"Modifiers/{subdir}/{modifierName}", type) as Modifier;
+            string dir;
+            if (type!.IsSubclassOf(typeof(TrapModifier)))
+                dir = "Traps";
+            else if (type.IsSubclassOf(typeof(StatsModifier)))
+                dir = "Stats";
+            else
+                throw new Exception($"Invalid modifier type {type}");
+            
+            return Resources.Load($"Modifiers/{dir}/{modifierName}", type) as Modifier;
         }
     }
 }

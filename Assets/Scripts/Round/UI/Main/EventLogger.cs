@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
+using Network;
 using UnityEngine;
 
 namespace Round.UI.Main
@@ -10,7 +10,7 @@ namespace Round.UI.Main
         [SerializeField] private EventLoggerText eventLogTemplate;
         [SerializeField] private float onScreenDuration = 5F;
         
-        private readonly ConcurrentQueue<string> eventQueue = new();
+        private readonly ConcurrentQueue<EventLoggerText.LogMessage> eventQueue = new();
         
         private float height;
         
@@ -23,7 +23,7 @@ namespace Round.UI.Main
                 canSpawn = value;
                 if (!canSpawn) return;
                 if (eventQueue.TryDequeue(out var msg))
-                    LogEvent(msg);
+                    StartCoroutine(SpawnEvent(msg));
             }
         }
 
@@ -31,12 +31,65 @@ namespace Round.UI.Main
         {
             height = GetComponent<RectTransform>().rect.height;
             eventLogTemplate.gameObject.SetActive(false);
-            RoundController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+        }
+
+        private void Start()
+        {
+            MatchController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+            Player.OnPlayerSpawned += OnPlayerSpawned;
+        }
+
+        private void OnPlayerSpawned(bool isLocalPlayer)
+        {
+            var player = isLocalPlayer ? Player.LocalPlayer : Player.Opponent;
+            player.Inventory.OnKeyFragmentUpdated += LogKeyFragmentUpdate;
+            player.Inventory.OnStatsUpdate += LogStatsUpdate;
+            
+            if (isLocalPlayer)
+                player.Inventory.OnTrapsUpdated += LogTrapsUpdate;
+        }
+
+        private void LogStatsUpdate(object sender, Inventory.OnStatsUpdatedArgs args)
+        {
+            if (args.Enabled)
+            {
+                LogEvent(args.OnLocalPlayer
+                    ? $"{args.Modifier.modifierName} activated!"
+                    : $"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
+            }
+            else
+            {
+                LogEvent(args.OnLocalPlayer
+                    ? $"{args.Modifier.modifierName} disabled!"
+                    : $"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
+            }
+        }
+
+        private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
+        {
+            if (args.Acquired)
+            {
+                LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
+                LogEvent($"{args.Trap.description}");
+            }
+            else
+            {
+                LogEvent($"{args.Trap.modifierName} placed");
+            }
+        }
+
+        private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
+        {
+            if (args.NewValue < args.OldValue) return;
+
+            LogEvent(args.OnLocalPlayer
+                ? $"Key fragment acquired!"
+                : $"<color=#FF0000>{Player.Opponent.Username}</color> found a key fragment!");
         }
 
         private void LogNoWinningCondition()
         {
-            var totalFragments = RoundController.Instance.Round.keyFragments;
+            var totalFragments = MatchController.Instance.CurrentRound.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
             
             LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} key fragments</color> to win the round");
@@ -48,15 +101,17 @@ namespace Round.UI.Main
             LogEvent("Test event");
         }
 
-        private void LogEvent(string msg)
+        private void LogEvent(string msg, float fadeOutAfter = 1F)
         {
+            var logMsg = new EventLoggerText.LogMessage(msg, fadeOutAfter);
+            
             if (!CanSpawn)
-                eventQueue.Enqueue(msg);
+                eventQueue.Enqueue(logMsg);
             else
-                StartCoroutine(SpawnEvent(msg));
+                StartCoroutine(SpawnEvent(logMsg));
         }
 
-        private IEnumerator SpawnEvent(string msg)
+        private IEnumerator SpawnEvent(EventLoggerText.LogMessage msg)
         {
             CanSpawn = false;
             var eventLog = Instantiate(eventLogTemplate, transform);
@@ -75,6 +130,13 @@ namespace Round.UI.Main
             eventLog.gameObject.SetActive(true);
             eventLog.OnHeightSurpassed += () => CanSpawn = true;
             eventLog.Init(msg, maxHeight, onScreenDuration);
+        }
+
+        private void OnDestroy()
+        {
+            if (MatchController.Instance)
+                MatchController.Instance.OnNoWinningCondition -= LogNoWinningCondition;
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
         }
     }
 }

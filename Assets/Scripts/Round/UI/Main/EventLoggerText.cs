@@ -8,14 +8,22 @@ namespace Round.UI.Main
     [RequireComponent(typeof(TextMeshProUGUI)), RequireComponent(typeof(RectTransform))]
     public class EventLoggerText: MonoBehaviour
     {
-        [SerializeField] private float fadeOutAfterSeconds = 1F;
+        public class LogMessage
+        {
+            public readonly string Msg;
+            public readonly float FadeOutAfterSeconds;
+            
+            public LogMessage(string msg, float fadeOutAfterSeconds)
+            {
+                Msg = msg;
+                FadeOutAfterSeconds = fadeOutAfterSeconds;
+            }
+        }
         
         private RectTransform rectTransform;
         private TextMeshProUGUI text;
         
         private float Height => rectTransform.rect.height;
-        private Vector2 endPosition;
-        
         
         public event Action OnHeightSurpassed;
         
@@ -25,14 +33,14 @@ namespace Round.UI.Main
             text = GetComponent<TextMeshProUGUI>();
         }
         
-        public void Init(string msg, float endHeight, float duration)
+        public void Init(LogMessage msg, float endHeight, float duration)
         {
-            text.text = msg;
+            text.text = msg.Msg;
             
-            StartCoroutine(FadeOut(duration, endHeight));
+            StartCoroutine(FadeOut(duration, endHeight, msg.FadeOutAfterSeconds));
         }
 
-        private IEnumerator FadeOut(float duration, float endHeight)
+        private IEnumerator FadeOut(float duration, float endHeight, float fadeOutAfterSeconds)
         {
             yield return new WaitForSeconds(fadeOutAfterSeconds);
             

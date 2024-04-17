@@ -79,6 +79,9 @@ namespace Network
             
             if (!Usernames.ContainsKey(conn))
                 InitPlayer(conn, username);
+            
+            if (players.Count == MaxPlayers)
+                StartCoroutine(StartMatch());
         }
 
         [Server]
@@ -89,9 +92,6 @@ namespace Network
             players[username] = new MatchPlayerData { Username = username};
             
             Debug.LogError($"Adding player {username} to match. Current players: {Usernames.Count}/{MaxPlayers}");
-
-            if (players.Count == MaxPlayers)
-                StartCoroutine(StartMatch());
         }
 
         [Server]

@@ -5,9 +5,9 @@ public class SelectionHighlight : MonoBehaviour, ISelectable
 {
     [SerializeField] private GameObject[] highlights;
 
-    public void OnSelected() => Show();
+    public virtual void OnSelected() => Show();
 
-    public void OnDeselected() => Hide();
+    public virtual void OnDeselected() => Hide();
 
     private void Awake()
     {

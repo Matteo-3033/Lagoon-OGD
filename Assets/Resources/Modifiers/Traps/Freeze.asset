@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f99b77561154c6585481bce5006ba2b, type: 3}
-  m_Name: Speed
+  m_Script: {fileID: 11500000, guid: 769aab93e9b7485a9ad26e7abba58bc2, type: 3}
+  m_Name: Freeze
   m_EditorClassIdentifier: 
-  modifierName: 
-  isBuff: 1
-  other: {fileID: 0}
-  synergy: {fileID: 0}
-  multiplicationFactor: 1.5
+  modifierName: Freeze
+  duration: 5
+  description: Freeze a player for 5 seconds
+  icon: {fileID: 0}
+  prefab: {fileID: 0}

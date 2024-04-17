@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace Modifiers.Debuffs
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/Debuffs/Speed", fileName = "Speed")]
-    public class SpeedDebuff : Modifier
+    [CreateAssetMenu(menuName = "ScriptableObjects/Debuffs/Speed", fileName = "DebuffSpeed")]
+    public class SpeedDebuff : StatsModifier
     {
         public float divisionFactor = 2;
         

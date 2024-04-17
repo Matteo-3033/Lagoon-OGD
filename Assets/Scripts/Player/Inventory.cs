@@ -9,7 +9,8 @@ public class Inventory : NetworkBehaviour
     [field: SyncVar(hook = nameof(OnKeyFragmentsUpdated))]
     public int KeyFragments { get; private set; } = 1;
 
-    private readonly SyncList<Modifier> modifiers = new();
+    private readonly SyncList<StatsModifier> modifiers = new();
+    private readonly SyncList<TrapModifier> traps = new();
     
     private Player player;
 
@@ -20,15 +21,24 @@ public class Inventory : NetworkBehaviour
         public bool OnLocalPlayer;
     }
     
-    public class OnModifierUpdatedArgs : EventArgs
+    public class OnStatsUpdatedArgs : EventArgs
     {
-        public Modifier Modifier;
+        public StatsModifier Modifier;
         public bool OnLocalPlayer;
         public bool Enabled;
     }
     
+    public class OnTrapsUpdatedArgs : EventArgs
+    {
+        public TrapModifier Trap;
+        public bool Acquired;
+    }
+    
     public event EventHandler<OnKeyFragmentUpdatedArgs> OnKeyFragmentUpdated;
-    public event EventHandler<OnModifierUpdatedArgs> OnModifierUpdate;
+    public event EventHandler<OnStatsUpdatedArgs> OnStatsUpdate;
+    public event EventHandler<OnTrapsUpdatedArgs> OnTrapsUpdated;
+    
+    
     
     private void Awake()
     {
@@ -48,7 +58,7 @@ public class Inventory : NetworkBehaviour
         KeyFragments++;
     }
     
-    public void AddModifier(Modifier modifier)
+    public void AddModifier(StatsModifier modifier)
     {
         Debug.Log("QUI");
         if (modifiers.Contains(modifier))
@@ -63,7 +73,12 @@ public class Inventory : NetworkBehaviour
             AddModifier(modifier.synergy);
     }
     
-    public void RemoveModifier(Modifier modifier)
+    public void AddTrap(TrapModifier trap)
+    {
+        traps.Add(trap);
+    }
+    
+    public void RemoveModifier(StatsModifier modifier)
     {
         modifiers.Remove(modifier);
     }
@@ -76,6 +91,19 @@ public class Inventory : NetworkBehaviour
         return true;
     }
     
+    public bool UseTrap(TrapModifier trap)
+    {
+        if (!traps.Contains(trap))
+            return false;
+        traps.Remove(trap);
+
+        // TODO: check trap position
+        var obj =  Instantiate(trap.prefab, player.transform.position, Quaternion.identity);
+        NetworkServer.Spawn(obj);
+        
+        return true;
+    }
+    
     #endregion
 
     #region CLIENT
@@ -84,30 +112,7 @@ public class Inventory : NetworkBehaviour
     {
         base.OnStartClient();
         modifiers.Callback += OnModifiersChanged;
-    }
-
-    private void OnModifiersChanged(SyncList<Modifier>.Operation op, int itemindex, Modifier olditem, Modifier newitem)
-    {
-        var onLocalPlayer = player.Username == Player.LocalPlayer.Username;
-        if (onLocalPlayer)
-        {
-            switch (op)
-            {
-                case SyncList<Modifier>.Operation.OP_ADD:
-                    newitem.Enable();
-                    break;
-                case SyncList<Modifier>.Operation.OP_REMOVEAT:
-                    olditem.Disable();
-                    break;
-            }
-        }
-
-        OnModifierUpdate?.Invoke(this, new OnModifierUpdatedArgs
-        {
-            Enabled = op == SyncList<Modifier>.Operation.OP_ADD,
-            Modifier = op == SyncList<Modifier>.Operation.OP_ADD ? newitem : olditem,
-            OnLocalPlayer = onLocalPlayer
-        });
+        traps.Callback += OnTrapsChanged;
     }
     
     private void OnKeyFragmentsUpdated(int oldValue, int newValue)
@@ -117,6 +122,39 @@ public class Inventory : NetworkBehaviour
             OldValue = oldValue,
             NewValue = newValue,
             OnLocalPlayer = player.Username == Player.LocalPlayer.Username
+        });
+    }
+
+    private void OnModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
+    {
+        var onLocalPlayer = player.Username == Player.LocalPlayer.Username;
+        if (onLocalPlayer)
+        {
+            switch (op)
+            {
+                case SyncList<StatsModifier>.Operation.OP_ADD:
+                    newItem.Enable();
+                    break;
+                case SyncList<StatsModifier>.Operation.OP_REMOVEAT:
+                    oldItem.Disable();
+                    break;
+            }
+        }
+
+        OnStatsUpdate?.Invoke(this, new OnStatsUpdatedArgs
+        {
+            Enabled = op == SyncList<StatsModifier>.Operation.OP_ADD,
+            Modifier = op == SyncList<StatsModifier>.Operation.OP_ADD ? newItem : oldItem,
+            OnLocalPlayer = onLocalPlayer
+        });
+    }
+    
+    private void OnTrapsChanged(SyncList<TrapModifier>.Operation op, int itemIndex, TrapModifier oldItem, TrapModifier newItem)
+    { 
+        OnTrapsUpdated?.Invoke(this, new OnTrapsUpdatedArgs
+        {
+            Acquired = op == SyncList<TrapModifier>.Operation.OP_ADD,
+            Trap = op == SyncList<TrapModifier>.Operation.OP_ADD ? newItem : oldItem
         });
     }
 

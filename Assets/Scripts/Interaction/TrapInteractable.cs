@@ -1,15 +1,18 @@
 ﻿using Mirror;
+using Modifiers;
 using Network;
+using UnityEngine;
 
 namespace Interaction
 {
-    public class KeyFragment: NetworkBehaviour, IInteractable
+    public class TrapInteractable: NetworkBehaviour, IInteractable
     {
-        public string InteractionPrompt { get; }
+        [SerializeField] private TrapModifier trap;
+
+        public string InteractionPrompt => trap.modifierName;
         
         public bool Interact(Interactor interactor)
         {
-            // TODO: check on client if the player has completed the minigame (prolonged button press)
             CmdInteract();
             return true;
         }
@@ -17,8 +20,8 @@ namespace Interaction
         [Command(requiresAuthority = false)]
         private void CmdInteract(NetworkConnectionToClient sender = null)
         {
-            var player = sender.Player();
-            player.Inventory.AddKeyFragment();
+            var player = sender.Player(); 
+            player.Inventory.AddTrap(trap);
             NetworkServer.Destroy(gameObject);
         }
     }
