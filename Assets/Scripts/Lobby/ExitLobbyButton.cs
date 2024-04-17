@@ -1,4 +1,3 @@
-using System;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,14 +15,14 @@ namespace Lobby
             Player.OnPlayerDespawned += OnPlayerDespawned;
         }
 
-        private void OnPlayerDespawned(bool obj)
+        private void OnPlayerDespawned(Player player)
         {
             gameObject.SetActive(true);
         }
 
-        private void OnPlayerSpawned(bool isLocalPlayer)
+        private void OnPlayerSpawned(Player player)
         {
-            if (!isLocalPlayer)
+            if (!player.isLocalPlayer)
                 gameObject.SetActive(false);
         }
 

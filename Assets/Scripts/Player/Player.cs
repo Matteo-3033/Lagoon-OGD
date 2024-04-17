@@ -7,8 +7,8 @@ using UnityEngine;
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
-    public static event Action<bool> OnPlayerSpawned;
-    public static event Action<bool> OnPlayerDespawned;
+    public static event Action<Player> OnPlayerSpawned;
+    public static event Action<Player> OnPlayerDespawned;
     
     public static Player LocalPlayer { get; private set;  }
     public static Player Opponent { get; private set;  }
@@ -58,7 +58,7 @@ public class Player : NetworkBehaviour
         LocalPlayer = this;
         
         gameObject.layer = LayerMask.NameToLayer("FieldOfView");
-        OnPlayerSpawned?.Invoke(true);
+        OnPlayerSpawned?.Invoke(LocalPlayer);
     }
     
     private void OnStartOpponent()
@@ -66,7 +66,7 @@ public class Player : NetworkBehaviour
         Opponent = this;
         
         gameObject.layer = LayerMask.NameToLayer("Behind-FieldOfView");
-        OnPlayerSpawned?.Invoke(false);
+        OnPlayerSpawned?.Invoke(Opponent);
     }
     
     public void Init(RoomPlayer profile, bool isMangiagalli)
@@ -89,8 +89,8 @@ public class Player : NetworkBehaviour
 
     public override void OnStopClient()
     {
+        OnPlayerDespawned?.Invoke(this);
         base.OnStopClient();
-        OnPlayerDespawned?.Invoke(isLocalPlayer);
     }
 
     #endregion

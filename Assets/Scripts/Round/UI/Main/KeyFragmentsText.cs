@@ -15,16 +15,20 @@ namespace Round.UI.Main
         {
             text = GetComponent<TextMeshProUGUI>();
             
+            if (Player.LocalPlayer != null)
+                OnPlayerSpawned(global::Player.LocalPlayer);
+            if (Player.Opponent != null)
+                OnPlayerSpawned(global::Player.Opponent);
             Player.OnPlayerSpawned += OnPlayerSpawned;
+            
             RoundController.Instance.OnRoundStarted += UpdateText;
         }
         
-        private void OnPlayerSpawned(bool isLocalPlayer)
+        private void OnPlayerSpawned(Player player)
         {
-            if ((playerFragments && !isLocalPlayer) || (!playerFragments && isLocalPlayer))
+            if ((playerFragments && !player.isLocalPlayer) || (!playerFragments && player.isLocalPlayer))
                 return;
             
-            var player = Player;
             player.Inventory.OnKeyFragmentUpdated += OnKeyFragmentUpdate;
             
             UpdateText();

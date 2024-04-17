@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,14 +19,14 @@ namespace Lobby
             Player.OnPlayerDespawned += OnPlayerDespawned;
         }
 
-        private void OnPlayerSpawned(bool isLocalPlayer)
+        private void OnPlayerSpawned(Player player)
         {
-            ShowPreview(isLocalPlayer ? Player.LocalPlayer : Player.Opponent);
+            ShowPreview(player);
         }
         
-        private void OnPlayerDespawned(bool isLocalPlayer)
+        private void OnPlayerDespawned(Player player)
         {
-            DeletePreview(isLocalPlayer ? Player.LocalPlayer : Player.Opponent);
+            DeletePreview(player);
         }
 
         private void ShowPreview(Player player)

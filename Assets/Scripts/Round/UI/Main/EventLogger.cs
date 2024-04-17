@@ -14,14 +14,14 @@ namespace Round.UI.Main
         
         private float height;
         
-        private bool canSpawn = true;
-        private bool CanSpawn
+        private bool canSpawnNext = true;
+        private bool CanSpawnNext
         {
-            get => canSpawn;
+            get => canSpawnNext;
             set
             {
-                canSpawn = value;
-                if (!canSpawn) return;
+                canSpawnNext = value;
+                if (!canSpawnNext) return;
                 if (eventQueue.TryDequeue(out var msg))
                     StartCoroutine(SpawnEvent(msg));
             }
@@ -31,21 +31,22 @@ namespace Round.UI.Main
         {
             height = GetComponent<RectTransform>().rect.height;
             eventLogTemplate.gameObject.SetActive(false);
-        }
-
-        private void Start()
-        {
-            MatchController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+            RoundController.Instance.OnNoWinningCondition += LogNoWinningCondition;
+            
+            if (Player.LocalPlayer != null)
+                OnPlayerSpawned(Player.LocalPlayer);
+            if (Player.Opponent != null)
+                OnPlayerSpawned(Player.Opponent);
+            
             Player.OnPlayerSpawned += OnPlayerSpawned;
         }
 
-        private void OnPlayerSpawned(bool isLocalPlayer)
+        private void OnPlayerSpawned(Player player)
         {
-            var player = isLocalPlayer ? Player.LocalPlayer : Player.Opponent;
             player.Inventory.OnKeyFragmentUpdated += LogKeyFragmentUpdate;
             player.Inventory.OnStatsUpdate += LogStatsUpdate;
             
-            if (isLocalPlayer)
+            if (player.isLocalPlayer)
                 player.Inventory.OnTrapsUpdated += LogTrapsUpdate;
         }
 
@@ -53,13 +54,13 @@ namespace Round.UI.Main
         {
             if (args.Enabled)
             {
-                LogEvent(args.OnLocalPlayer
+                LogEvent(args.Player.isLocalPlayer
                     ? $"{args.Modifier.modifierName} activated!"
                     : $"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
             }
             else
             {
-                LogEvent(args.OnLocalPlayer
+                LogEvent(args.Player.isLocalPlayer
                     ? $"{args.Modifier.modifierName} disabled!"
                     : $"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
             }
@@ -82,14 +83,14 @@ namespace Round.UI.Main
         {
             if (args.NewValue < args.OldValue) return;
 
-            LogEvent(args.OnLocalPlayer
+            LogEvent(args.Player.isLocalPlayer
                 ? $"Key fragment acquired!"
                 : $"<color=#FF0000>{Player.Opponent.Username}</color> found a key fragment!");
         }
 
         private void LogNoWinningCondition()
         {
-            var totalFragments = MatchController.Instance.CurrentRound.keyFragments;
+            var totalFragments = RoundController.Instance.Round.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
             
             LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} key fragments</color> to win the round");
@@ -105,7 +106,7 @@ namespace Round.UI.Main
         {
             var logMsg = new EventLoggerText.LogMessage(msg, fadeOutAfter);
             
-            if (!CanSpawn)
+            if (!CanSpawnNext)
                 eventQueue.Enqueue(logMsg);
             else
                 StartCoroutine(SpawnEvent(logMsg));
@@ -113,7 +114,7 @@ namespace Round.UI.Main
 
         private IEnumerator SpawnEvent(EventLoggerText.LogMessage msg)
         {
-            CanSpawn = false;
+            CanSpawnNext = false;
             var eventLog = Instantiate(eventLogTemplate, transform);
             
             var eventLogTransform = eventLog.GetComponent<RectTransform>();
@@ -128,14 +129,12 @@ namespace Round.UI.Main
             yield return null;
 
             eventLog.gameObject.SetActive(true);
-            eventLog.OnHeightSurpassed += () => CanSpawn = true;
+            eventLog.OnHeightSurpassed += () => CanSpawnNext = true;
             eventLog.Init(msg, maxHeight, onScreenDuration);
         }
 
         private void OnDestroy()
         {
-            if (MatchController.Instance)
-                MatchController.Instance.OnNoWinningCondition -= LogNoWinningCondition;
             Player.OnPlayerSpawned -= OnPlayerSpawned;
         }
     }
