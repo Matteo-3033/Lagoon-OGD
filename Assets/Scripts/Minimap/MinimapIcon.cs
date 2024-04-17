@@ -16,6 +16,11 @@ public class MinimapIcon : MonoBehaviour
     private List<SpriteRenderer> _spriteRenderers;
     private bool _isShown;
 
+    public event EventHandler<bool> OnIconShown;
+    public event EventHandler<bool> OnIconClamped;
+    public event EventHandler OnRippleStarted;
+    public event EventHandler OnRippleEnded;
+
     private void Awake()
     {
         _spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
@@ -61,23 +66,27 @@ public class MinimapIcon : MonoBehaviour
 
     public void Show()
     {
-        if (_spriteRenderers.Count == 0) return;
-
-        _spriteRenderers.ForEach(x => x.enabled = true);
-        _isShown = true;
+        SetIconShown(true);
     }
 
     public void Hide()
     {
+        SetIconShown(false);
+    }
+
+    private void SetIconShown(bool active)
+    {
         if (_spriteRenderers.Count == 0) return;
 
-        _spriteRenderers.ForEach(x => x.enabled = false);
-        _isShown = false;
+        _spriteRenderers.ForEach(x => x.enabled = active);
+        _isShown = active;
+        OnIconShown?.Invoke(this, active);
     }
 
     public void ClampToMinimapBorder(bool active)
     {
         clampToBorder = active;
+        OnIconClamped?.Invoke(this, active);
     }
 
     public void ClampForSeconds(float seconds)
@@ -106,6 +115,14 @@ public class MinimapIcon : MonoBehaviour
             rippleConfiguration.rippleColor);
     }
 
+    public void ShowRipple(float totalDuration, float singleRippleDuration, float scale, Color color)
+    {
+        ShowRipple(totalDuration,
+            (int)(totalDuration / singleRippleDuration),
+            scale,
+            color);
+    }
+
     public void ShowRipple(float totalDuration, int repetitions, float scale, Color color)
     {
         GameObject rippleObject = Instantiate(ripplePrefab, transform);
@@ -122,5 +139,14 @@ public class MinimapIcon : MonoBehaviour
 
         ClampForSeconds(totalDuration);
         rippleEffect.Play();
+
+        StartCoroutine(RippleEventCoroutine(totalDuration));
+    }
+
+    private IEnumerator RippleEventCoroutine(float totalDuration)
+    {
+        OnRippleStarted?.Invoke(this, EventArgs.Empty);
+        yield return new WaitForSeconds(totalDuration);
+        OnRippleEnded?.Invoke(this, EventArgs.Empty);
     }
 }
