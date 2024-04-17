@@ -28,7 +28,7 @@ namespace Network
         
         private int currentRoundIndex;
         private readonly List<RoundConfiguration> rounds = new();
-        internal readonly Dictionary<NetworkConnectionToClient, string> Usernames = new();
+        internal readonly Dictionary<NetworkConnectionToClient, string> ConnectionsToUsernames = new();
 
         [field: SyncVar]
         public RoundConfiguration CurrentRound { get; private set; }
@@ -71,13 +71,13 @@ namespace Network
         [ServerCallback]
         private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
-            if (Usernames.ContainsKey(conn))
+            if (ConnectionsToUsernames.ContainsKey(conn))
                 return;
             
             if (Started)
                 conn.Disconnect();
             
-            if (!Usernames.ContainsKey(conn))
+            if (!ConnectionsToUsernames.ContainsKey(conn))
                 InitPlayer(conn, username);
             
             if (players.Count == MaxPlayers)
@@ -87,11 +87,11 @@ namespace Network
         [Server]
         private void InitPlayer(NetworkConnectionToClient conn, string username)
         {
-            Usernames[conn] = username;
+            ConnectionsToUsernames[conn] = username;
             
             players[username] = new MatchPlayerData { Username = username};
             
-            Debug.LogError($"Adding player {username} to match. Current players: {Usernames.Count}/{MaxPlayers}");
+            Debug.LogError($"Adding player {username} to match. Current players: {ConnectionsToUsernames.Count}/{MaxPlayers}");
         }
 
         [Server]
@@ -168,8 +168,8 @@ namespace Network
             if (Started)
                 EndMatch(username);
             
-            var conn = Usernames.First(pair => pair.Value == username).Key;
-            Usernames.Remove(conn);
+            var conn = ConnectionsToUsernames.First(pair => pair.Value == username).Key;
+            ConnectionsToUsernames.Remove(conn);
             players.Remove(username);
         }
 
@@ -200,7 +200,7 @@ namespace Network
         
         public static Player Opponent(this NetworkConnectionToClient conn)
         {
-            return MatchController.Instance.Usernames.First(kp => kp.Value != conn.Player().Username).Key.Player();
+            return MatchController.Instance.ConnectionsToUsernames.First(kp => kp.Value != conn.Player().Username).Key.Player();
         }
     }
 }

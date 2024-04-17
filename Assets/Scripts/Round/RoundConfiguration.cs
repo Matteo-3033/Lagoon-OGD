@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Round
 {
@@ -8,7 +9,7 @@ namespace Round
     {
         [Scene] public string scene;
         public int keyFragments;
-        public int timeLimit;
+        public float timeLimitMinutes;
     }
 
     public static class RoundConfigurationSerializer 

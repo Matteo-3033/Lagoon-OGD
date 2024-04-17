@@ -18,13 +18,13 @@ public class Inventory : NetworkBehaviour
     {
         public int OldValue;
         public int NewValue;
-        public bool OnLocalPlayer;
+        public Player Player;
     }
     
     public class OnStatsUpdatedArgs : EventArgs
     {
         public StatsModifier Modifier;
-        public bool OnLocalPlayer;
+        public Player Player;
         public bool Enabled;
     }
     
@@ -37,7 +37,6 @@ public class Inventory : NetworkBehaviour
     public event EventHandler<OnKeyFragmentUpdatedArgs> OnKeyFragmentUpdated;
     public event EventHandler<OnStatsUpdatedArgs> OnStatsUpdate;
     public event EventHandler<OnTrapsUpdatedArgs> OnTrapsUpdated;
-    
     
     
     private void Awake()
@@ -121,7 +120,7 @@ public class Inventory : NetworkBehaviour
         {
             OldValue = oldValue,
             NewValue = newValue,
-            OnLocalPlayer = player.Username == Player.LocalPlayer.Username
+            Player = player
         });
     }
 
@@ -145,7 +144,7 @@ public class Inventory : NetworkBehaviour
         {
             Enabled = op == SyncList<StatsModifier>.Operation.OP_ADD,
             Modifier = op == SyncList<StatsModifier>.Operation.OP_ADD ? newItem : oldItem,
-            OnLocalPlayer = onLocalPlayer
+            Player = player
         });
     }
     

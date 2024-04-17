@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using Network;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Round
@@ -16,13 +17,19 @@ namespace Round
         public static RoundController Instance { get; private set; }
         
         public RoundConfiguration Round => MatchController.Instance.CurrentRound;
+        public bool Loaded { get; private set; } 
+        
         
         private readonly Dictionary<string, bool> playersReady = new();
-        public bool Loaded { get; private set; } 
+        private bool tie;
+        
+        private IEnumerable<Player> Players => NetworkServer.connections.Values.Select(conn => conn.Player());
+        
         
         // Client side events
         public event Action OnRoundStarted;
         public event Action OnNoWinningCondition;
+        public event Action<float> TimerUpdate;
         
         // Server side events
         public event Action<Player> OnRoundWon;
@@ -89,8 +96,47 @@ namespace Round
         private void StartRound()
         {
             RpcStartRound();
-            //Invoke(nameof(), round.timeLimit/2);
-            //Invoke(nameof(), round.timeLimit);
+            StartCoroutine(Timer());
+        }
+
+        private IEnumerator Timer()
+        {
+            var untilOneMin = (Round.timeLimitMinutes - 1) * 60;
+            yield return new WaitForSeconds(untilOneMin);
+            
+            RpcNotifyRemainingTime(60F);
+            yield return new WaitForSeconds(60);
+
+            if (!CheckIfWinner())
+                tie = true;
+            foreach (var player in Players)
+                player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
+        }
+
+        [Server]
+        private bool CheckIfWinner()
+        {
+            foreach (var player in Players)
+            {
+                if (player.Inventory.KeyFragments != Round.keyFragments) continue;
+                OnRoundWon?.Invoke(player);
+                return true;
+            }
+
+            return false;
+        }
+
+        [Server]
+        private void CheckPlayerAdvantage(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
+        {
+            if (!tie || args.NewValue <= args.OldValue)
+                return;
+            
+            tie = false;
+            foreach (var player in Players)
+                player.Inventory.OnKeyFragmentUpdated -= CheckPlayerAdvantage;
+            
+            OnRoundWon?.Invoke(args.Player);
         }
         
         [Command(requiresAuthority = false)]
@@ -133,9 +179,15 @@ namespace Round
         private void RpcStartRound()
         {
             OnRoundStarted?.Invoke();
-            Player.LocalPlayer.EnableMovement();
+            Player.LocalPlayer.EnableMovement(true);
         }
-
+        
+        [ClientRpc]
+        private void RpcNotifyRemainingTime(float remainingTime)
+        {
+            TimerUpdate?.Invoke(remainingTime);
+        }
+        
         #endregion
 
         #region UTILS
