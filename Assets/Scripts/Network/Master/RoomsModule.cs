@@ -6,8 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
+using Round;
 using UnityEngine;
-using Utils;
 
 namespace Network.Master
 {
@@ -79,8 +79,8 @@ namespace Network.Master
             }
 
             var room = roomsList.Values
-                    .FirstOrDefault(r => r.Options.IsPublic && !r.Options.CustomOptions.AsBool(MatchStarted, false) &&
-                                         r.Options.CustomOptions.AsInt(RoundsCntKey) == data.RoundsCnt);   
+                    .FirstOrDefault(r => r.Options.IsPublic && !r.Options.CustomOptions.AsBool(MatchStarted) &&
+                                         r.Options.CustomOptions.AsInt(RoundsCntKey) == data.RoundsCnt);
 
             if (room != null) {
                 logger.Debug("Joining existing room");
@@ -117,7 +117,7 @@ namespace Network.Master
         {
             logger.Debug("Room registered");
             
-            var username = room.Options.CustomOptions.AsString(RoomMasterUserKey, "");
+            var username = room.Options.CustomOptions.AsString(RoomMasterUserKey);
             if (string.IsNullOrEmpty(username)) return;
             
             logger.Debug("Room master: " + username);
@@ -148,7 +148,7 @@ namespace Network.Master
         {
             var player = peer.GetExtension<IUserPeerExtension>();
             if (player != null)
-                waitingPlayers.TryRemove(player.Username, out var message);
+                waitingPlayers.TryRemove(player.Username, out _);
         }
 
         protected override void GetRoomAccessRequestHandler(IIncomingMessage message)

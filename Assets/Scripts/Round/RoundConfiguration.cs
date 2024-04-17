@@ -1,13 +1,14 @@
 ﻿using Mirror;
 using UnityEngine;
 
-namespace Utils
+namespace Round
 {
     [CreateAssetMenu(menuName = "ScriptableObjects/RoundConfiguration", fileName = "RoundConfiguration")]
     public class RoundConfiguration : ScriptableObject
     {
         [Scene] public string scene;
         public int keyFragments;
+        public int timeLimit;
     }
 
     public static class RoundConfigurationSerializer 

@@ -1,4 +1,3 @@
-using Network;
 using TMPro;
 using UnityEngine;
 
@@ -17,16 +16,9 @@ namespace Round.UI.Main
             text = GetComponent<TextMeshProUGUI>();
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
-            MatchController.Instance.OnRoundLoaded += OnRoundLoaded;
-            
-            UpdateText();
+            RoundController.Instance.OnRoundStarted += UpdateText;
         }
-
-        private void OnRoundLoaded()
-        {
-            UpdateText();
-        }
-
+        
         private void OnPlayerSpawned(bool isLocalPlayer)
         {
             if ((playerFragments && !isLocalPlayer) || (!playerFragments && isLocalPlayer))
@@ -47,22 +39,20 @@ namespace Round.UI.Main
         {
             var player = Player;
 
-            var playerFragments = 1;
+            var owned = 1;
             if (player != null)
-                playerFragments = player.Inventory.KeyFragments;
+                owned = player.Inventory.KeyFragments;
 
-            var totalFragments = 3;
-            if (MatchController.Instance.CurrentRound != null)
-                totalFragments = MatchController.Instance.CurrentRound.keyFragments;
+            var total = 3;
+            if (RoundController.Instance != null && RoundController.Instance.Round != null)
+                total = RoundController.Instance.Round.keyFragments;
             
-            text.text = $"{playerFragments}/{totalFragments}";
+            text.text = $"{owned}/{total}";
         }
 
         private void OnDestroy()
         {
             Player.OnPlayerSpawned -= OnPlayerSpawned;
-            if (MatchController.Instance)
-                MatchController.Instance.OnRoundLoaded -= OnRoundLoaded;
         }
     }
 }

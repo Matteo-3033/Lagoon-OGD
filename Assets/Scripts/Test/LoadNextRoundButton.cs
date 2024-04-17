@@ -1,4 +1,4 @@
-using Network;
+using Round;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,19 +12,12 @@ namespace Test
         private void Awake()
         {
             button = gameObject.GetComponent<Button>();
-            button.interactable = false;
             button.onClick.AddListener(OnClick);
-            MatchController.Instance.OnRoundStarted += OnRoundStarted;
-        }
-
-        private void OnRoundStarted()
-        {
-            button.interactable = true;    
         }
 
         private void OnClick()
         {
-            MatchController.Instance.CheckWinningCondition();
+            RoundController.Instance.CheckWinningCondition();
         }
     }
 }

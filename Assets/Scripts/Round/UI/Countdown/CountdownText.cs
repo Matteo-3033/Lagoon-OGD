@@ -1,5 +1,4 @@
-﻿        using Network;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 namespace Round.UI.Countdown
@@ -11,18 +10,12 @@ namespace Round.UI.Countdown
         private void Awake()
         {
             text = GetComponent<TextMeshProUGUI>();
-            MatchController.Instance.OnCountdown += OnCountdown;
+            RoundController.Instance.OnCountdown += OnCountdown;
         }
 
         private void OnCountdown(int time)
         {
             text.text = time.ToString();
-        }
-        
-        private void OnDestroy()
-        {
-            if (MatchController.Instance)
-                MatchController.Instance.OnCountdown -= OnCountdown;
         }
     }
 }

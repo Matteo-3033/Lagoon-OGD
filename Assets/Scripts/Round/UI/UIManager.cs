@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Network;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Screen = Utils.Screen;
 
@@ -13,26 +13,15 @@ namespace Round.UI
         private readonly Dictionary<ScreenKey, Screen> menus = new();
         private Screen currentScreen;
 
-        public enum ScreenKey
+        private enum ScreenKey
         {
             Countdown,
             Main,
         }
-        
-        public static UIManager Instance { get; private set; }
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Debug.LogWarning("UIManager: Instance already exists.");
-                Destroy(this);
-                return;
-            }
-            Instance = this;
-            
-            MatchController.Instance.OnRoundLoaded += OnRoundLoaded;
-            MatchController.Instance.OnRoundStarted += OnRoundStarted;
+            RoundController.OnRoundLoaded += RegisterRoundCallbacks;
         }
 
         private void Start()
@@ -42,7 +31,13 @@ namespace Round.UI
             
             HideAll();
         }
-        
+
+        private void RegisterRoundCallbacks()
+        {
+            RoundController.Instance.OnCountdownStart += () => ShowMenu(ScreenKey.Countdown);
+            RoundController.Instance.OnRoundStarted += () => ShowMenu(ScreenKey.Main);
+        }
+
         private void AddMenu(ScreenKey key, Screen value)
         {
             if (value != null)
@@ -67,24 +62,10 @@ namespace Round.UI
                 currentScreen.OnUnfocus();
             currentScreen = null;
         }
-        
-        private void OnRoundLoaded()
-        {
-            ShowMenu(ScreenKey.Countdown);
-        }
-        
-        private void OnRoundStarted()
-        {
-            ShowMenu(ScreenKey.Main);
-        }
-        
+
         private void OnDestroy()
         {
-            if (MatchController.Instance)
-            {
-                MatchController.Instance.OnRoundLoaded -= OnRoundLoaded;
-                MatchController.Instance.OnRoundStarted -= OnRoundStarted;
-            }
+            RoundController.OnRoundLoaded -= RegisterRoundCallbacks;
         }
     }
 }

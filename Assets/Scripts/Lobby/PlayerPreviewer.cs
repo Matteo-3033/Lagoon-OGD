@@ -13,7 +13,6 @@ namespace Lobby
 
         private void Awake()
         {
-            Debug.Log("AWAKE PlayerPreviewer.cs");
             previewTemplate.gameObject.SetActive(false);
             loadingSpinner.SetActive(true);
             

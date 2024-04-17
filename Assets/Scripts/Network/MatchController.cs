@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using Network.Master;
+using Round;
 using UnityEngine;
-using Utils;
 
 namespace Network
 {
     public struct MatchPlayerData
     {
         public string Username;
-        public int KeyFragments;
-        public bool Ready;
         public int RoundsWon;
         public int Kills;
         public int Deaths;
@@ -37,18 +35,9 @@ namespace Network
 
         private readonly SyncDictionary<string, MatchPlayerData> players = new();
         
-        // Client side events
-        public event Action OnRoundLoaded;
-        public event Action OnRoundStarted;
-        public event Action OnNoWinningCondition;
-        
         // Server side events
         public event Action OnMatchStarted;
         public event Action<MatchPlayerData, MatchPlayerData> OnMatchEnded;
-        
-        // Both sides events
-        public event Action<int> OnCountdown;
-        
         
         public int RoundCnt => rounds.Count;
         
@@ -82,21 +71,14 @@ namespace Network
         [ServerCallback]
         private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
+            if (Usernames.ContainsKey(conn))
+                return;
+            
+            if (Started)
+                conn.Disconnect();
+            
             if (!Usernames.ContainsKey(conn))
                 InitPlayer(conn, username);
-            else
-            {
-                Debug.Log($"Player {username} loaded round");
-                
-                SetPlayerReady(username, true);
-                
-                if (AllPlayersReady())
-                {
-                    RpcOnRoundLoaded();
-                    StartCoroutine(StartRoundCountdown());
-                }
-            }
-            Debug.Log("PLAYERS COUNT: " + Usernames.Count);
         }
 
         [Server]
@@ -104,15 +86,11 @@ namespace Network
         {
             Usernames[conn] = username;
             
-            players[username] = new MatchPlayerData
-            {
-                Username = username,
-                Ready = true
-            };
+            players[username] = new MatchPlayerData { Username = username};
             
             Debug.LogError($"Adding player {username} to match. Current players: {Usernames.Count}/{MaxPlayers}");
 
-            if (AllPlayersReady())
+            if (players.Count == MaxPlayers)
                 StartCoroutine(StartMatch());
         }
 
@@ -123,13 +101,12 @@ namespace Network
                 yield break;
             
             yield return new WaitForSeconds(2.5F);
-
-            if (AllPlayersReady())
-            {
-                LoadRound(0);
-                Started = true;
-                OnMatchStarted?.Invoke();
-            }
+        
+            LoadRound(0);
+            Started = true;
+            OnMatchStarted?.Invoke();
+            
+            RoundController.OnRoundLoaded += () => RoundController.Instance.OnRoundWon += OnRoundWon;
         }
         
         [Server]
@@ -145,10 +122,10 @@ namespace Network
             Debug.Log($"Loading round {currentRoundIndex}/{RoundCnt}");
             CurrentRound = rounds[currentRoundIndex];
 
-            UnreadyAllPlayers();
             RiseNetworkManager.singleton.ServerChangeScene(CurrentRound.scene);
         }
-
+        
+        [Server]
         private void EndMatch(string disconnectedPlayer = null)
         {
             Debug.Log("Match ended");
@@ -195,104 +172,13 @@ namespace Network
             Usernames.Remove(conn);
             players.Remove(username);
         }
-        
-        [Command(requiresAuthority = false)]
-        private void CmdCheckWinningCondition(NetworkConnectionToClient sender = null)
-        {
-            if (sender == null)
-                return;
-            
-            var player = Usernames[sender];
-            
-            if (sender.Player().Inventory.KeyFragments == CurrentRound.keyFragments)
-            {
-                var data = players[player];
-                data.RoundsWon++;
-                players[player] = data;
-                OnRoundWon();
-            } else 
-                TargetNotifyNoWinningCondition(sender);
-        }
 
-        [TargetRpc]
-        private void TargetNotifyNoWinningCondition(NetworkConnectionToClient sender)
+        private void OnRoundWon(Player player)
         {
-            OnNoWinningCondition?.Invoke();
-        }
-
-        private void OnRoundWon()
-        {
+            var data = players[player.Username];
+            data.RoundsWon++;
+            players[player.Username] = data;
             LoadRound(currentRoundIndex + 1);
-        }
-
-        #endregion
-        
-        #region CLIENT
-        
-        public void CheckWinningCondition()
-        {
-            CmdCheckWinningCondition();
-        }
-
-        [ClientRpc]
-        private void RpcOnRoundLoaded()
-        {
-            OnRoundLoaded?.Invoke();
-            Debug.Log("Round loaded");
-            StartCoroutine(StartRoundCountdown());
-        }
-
-        [ClientRpc]
-        private void RpcStartRound()
-        {
-            OnRoundStarted?.Invoke();
-            Player.LocalPlayer.EnableMovement();
-        }
-
-        #endregion
-
-        #region UTILS
-
-        private bool counting = false;
-        private IEnumerator StartRoundCountdown()
-        {
-            if (counting) yield break;
-            counting = true;
-            yield return null;
-            
-            for (int i = 5; i >= 0; i--)
-            {
-                Debug.Log($"Round starting in {i}");
-                OnCountdown?.Invoke(i);
-                yield return new WaitForSeconds(1F);
-            }
-            
-            if (isServer)
-                RpcStartRound();
-            counting = false;
-        }
-        
-        private bool AllPlayersReady()
-        {
-            return Usernames.Count == MaxPlayers && players.All(player => player.Value.Ready);
-        }
-        
-        [Server]
-        private void SetPlayerReady(string username, bool ready)
-        {
-            if (!players.ContainsKey(username))
-                return;
-
-            var data = players[username];
-            data.Ready = ready;
-            players[username] = data;
-        }
-        
-        [Server]
-        private void UnreadyAllPlayers()
-        {
-            foreach (var username in Usernames.Values)
-                SetPlayerReady(username, false);
         }
 
         #endregion
