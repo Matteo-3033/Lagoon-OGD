@@ -1,6 +1,6 @@
 ﻿using Mirror;
-using Modifiers;
 using Network;
+using TrapModifiers;
 using UnityEngine;
 
 namespace Interaction

@@ -1,21 +1,40 @@
+using System;
+using Mirror;
+using UnityEngine;
+
 namespace Modifiers
 {
-    // Do not instantiate
-    // Not abstract only for serialization
-    public class StatsModifier: Modifier
+    public abstract  class StatsModifier: Modifier
     {
         public bool isBuff;
         public StatsModifier other;
         public StatsModifier synergy;
-        
-        public override void Enable()
+    }
+    
+    public static class StatsModifierSerializer 
+    {
+        public static void WriteStatsModifier(this NetworkWriter writer, StatsModifier statsModifier)
         {
-            throw new System.NotImplementedException();
+            if (statsModifier == null)
+                writer.Write("");
+            else
+            {
+                writer.WriteString(statsModifier.name);
+                writer.WriteString(statsModifier.GetType().ToString());
+            }
         }
 
-        public override void Disable()
+        public static StatsModifier ReadStatsTrapModifier(this NetworkReader reader)
         {
-            throw new System.NotImplementedException();
+            var statsName = reader.ReadString();
+            
+            if (string.IsNullOrEmpty(statsName))
+                return null;
+            
+            var statsType= reader.ReadString();
+            var type = Type.GetType(statsType);
+            
+            return Resources.Load($"Modifiers/Stats/{statsName}", type) as StatsModifier;
         }
     }
 }

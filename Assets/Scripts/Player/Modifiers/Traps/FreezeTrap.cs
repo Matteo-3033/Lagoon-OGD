@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TrapModifiers;
+using UnityEngine;
 
 namespace Modifiers.Traps
 {

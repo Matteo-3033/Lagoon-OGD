@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Mirror;
 using Modifiers;
+using TrapModifiers;
 using UnityEngine;
 
 public class Inventory : NetworkBehaviour
@@ -59,10 +60,8 @@ public class Inventory : NetworkBehaviour
     
     public void AddModifier(StatsModifier modifier)
     {
-        Debug.Log("QUI");
         if (modifiers.Contains(modifier))
             return;
-        Debug.Log($"Adding modifier {modifier.modifierName} to {player.Username}");
         modifiers.Add(modifier);
         
         if (modifier.other == null || modifier.synergy == null) return;
@@ -132,6 +131,8 @@ public class Inventory : NetworkBehaviour
             switch (op)
             {
                 case SyncList<StatsModifier>.Operation.OP_ADD:
+                    Debug.Log($"Adding modifier {newItem.modifierName} to {player.Username}");
+                    Debug.Log(newItem.GetType().ToString());
                     newItem.Enable();
                     break;
                 case SyncList<StatsModifier>.Operation.OP_REMOVEAT:
