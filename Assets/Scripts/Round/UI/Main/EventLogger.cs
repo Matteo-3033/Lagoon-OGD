@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
+using Interaction;
 using Network;
+using TrapModifiers;
 using UnityEngine;
 
 namespace Round.UI.Main
@@ -43,6 +45,8 @@ namespace Round.UI.Main
                 OnPlayerSpawned(Player.Opponent);
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
+            
+            TrapInteractable.OnTrapNotAdded += LogTrapNotAdded;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -117,6 +121,11 @@ namespace Round.UI.Main
                 LogEvent("Find a badge fragment to win the round");
             }
         }
+        
+        private void LogTrapNotAdded(object sender, TrapModifier trap)
+        {
+            LogEvent($"{trap.modifierName} already in your inventory!");
+        }
 
         [ContextMenu("Test event")]
         public void LogEvent()
@@ -157,8 +166,9 @@ namespace Round.UI.Main
 
         private void OnDestroy()
         {
-            Player.OnPlayerSpawned -= OnPlayerSpawned;
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
+            TrapInteractable.OnTrapNotAdded -= LogTrapNotAdded;
         }
     }
 }

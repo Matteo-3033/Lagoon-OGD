@@ -1,7 +1,10 @@
-﻿using Mirror;
+﻿using System;
+using System.Collections;
+using Mirror;
 using Network;
 using TrapModifiers;
 using UnityEngine;
+using Utils;
 
 namespace Interaction
 {
@@ -10,6 +13,8 @@ namespace Interaction
         [SerializeField] private TrapModifier trap;
 
         public string InteractionPrompt => trap.modifierName;
+        
+        public static event EventHandler<TrapModifier> OnTrapNotAdded; 
         
         public bool Interact(Interactor interactor)
         {
@@ -21,8 +26,26 @@ namespace Interaction
         private void CmdInteract(NetworkConnectionToClient sender = null)
         {
             var player = sender.Player(); 
-            player.Inventory.AddTrap(trap);
-            NetworkServer.Destroy(gameObject);
+            if (player.Inventory.AddTrap(trap))
+            {
+                NetworkServer.UnSpawn(gameObject);
+                FunctionTimer.Create(RespawnTrap, trap.respawnAfterSeconds);
+            }
+            else
+                RpcNotifyTrapAlreadyOwned(sender);
+        }
+
+        [TargetRpc]
+        private void RpcNotifyTrapAlreadyOwned(NetworkConnectionToClient target)
+        {
+            OnTrapNotAdded?.Invoke(this, trap);
+        }
+
+        [Server]
+        private void RespawnTrap()
+        {
+            Debug.Log($"Respawning trap {trap}");
+            NetworkServer.Spawn(gameObject);
         }
     }
 }

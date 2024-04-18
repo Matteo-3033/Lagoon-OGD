@@ -85,9 +85,13 @@ public class Inventory : NetworkBehaviour
             AddStatsModifier(modifier.synergy);
     }
     
-    public void AddTrap(TrapModifier trap)
+    public bool AddTrap(TrapModifier trap)
     {
+        if (traps.Contains(trap))
+            return false;
+        
         traps.Add(trap);
+        return true;
     }
     
     public void RemoveStatsModifier(StatsModifier modifier)

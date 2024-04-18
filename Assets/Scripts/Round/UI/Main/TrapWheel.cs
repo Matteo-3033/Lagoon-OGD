@@ -21,6 +21,8 @@ namespace Round.UI.Main
         {
             Player.LocalPlayer.TrapSelector.OnTrapSelected += OnTrapSelected;
             Player.LocalPlayer.Inventory.OnTrapsUpdated += OnTrapsUpdated;
+            
+            UpdateSprites(selectedIndex);
         }
         
         private void OnTrapSelected(object sender, TrapSelector.OnTrapSelectedArgs args)

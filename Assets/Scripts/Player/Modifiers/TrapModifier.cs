@@ -2,6 +2,7 @@
 using Mirror;
 using Modifiers;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace TrapModifiers
@@ -9,6 +10,7 @@ namespace TrapModifiers
     public abstract class TrapModifier: Modifier
     {
         public float duration;
+        public float respawnAfterSeconds;
         public string description;
         
         [Header("Placement")]
@@ -41,7 +43,7 @@ namespace TrapModifiers
             }
         }
 
-        public static TrapModifier ReadTrapTrapModifier(this NetworkReader reader)
+        public static TrapModifier ReadTrapModifier(this NetworkReader reader)
         {
             var trapName = reader.ReadString();
             
