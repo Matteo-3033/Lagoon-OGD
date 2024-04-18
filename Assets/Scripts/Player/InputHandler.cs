@@ -9,7 +9,9 @@ public interface IInputHanlder
     Vector3 GetMovementDirection();
     Vector3 GetLookDirection();
 
-    public event Action OnInteract;
+    public event EventHandler<EventArgs> OnInteract;
+    public event EventHandler<EventArgs> OnPlaceTrap;
+    public event EventHandler<int> OnSelectTrap;
 }
 
 public class InputHandler : MonoBehaviour, IInputHanlder
@@ -25,7 +27,10 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     public delegate void Move(Vector3 inputDirection);
     
-    public event Action OnInteract;
+    public event EventHandler<EventArgs> OnInteract;
+    public event EventHandler<EventArgs> OnPlaceTrap;
+    public event EventHandler<int> OnSelectTrap;
+    
 
     private void Awake()
     {
@@ -40,8 +45,11 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
         input.Player.MousePosition.performed += MousePosition_performed;
         input.Player.View.performed += View_performed;
+
+        input.Player.Interaction.performed += Interaction_performed;
         
-        input.Player.Interaction.performed += ctx => OnInteract?.Invoke();
+        input.Player.PlaceTrap.performed += PlaceTrap_performed;
+        input.Player.SelectTrap.performed += SelectTrap_performed;
     }
 
     private void OnDisable()
@@ -52,6 +60,11 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
         input.Player.MousePosition.performed -= MousePosition_performed;
         input.Player.View.performed -= View_performed;
+
+        input.Player.Interaction.performed -= Interaction_performed;
+        
+        input.Player.PlaceTrap.performed -= PlaceTrap_performed;
+        input.Player.SelectTrap.performed -= SelectTrap_performed;
     }
 
     private void Movement_performed(InputAction.CallbackContext callbackContext)
@@ -101,5 +114,20 @@ public class InputHandler : MonoBehaviour, IInputHanlder
             Debug.DrawRay(transform.position, lookDirection * (lookPosition - transform.position).magnitude, Color.green);
         }
         return lookDirection;
+    }
+    
+    private void Interaction_performed(InputAction.CallbackContext ctx)
+    {
+        OnInteract?.Invoke(this, EventArgs.Empty);
+    }
+    
+    private void PlaceTrap_performed(InputAction.CallbackContext ctx)
+    {
+        OnPlaceTrap?.Invoke(this, EventArgs.Empty);
+    }
+    
+    private void SelectTrap_performed(InputAction.CallbackContext ctx)
+    {
+        OnSelectTrap?.Invoke(this, (int) ctx.ReadValue<float>());
     }
 }

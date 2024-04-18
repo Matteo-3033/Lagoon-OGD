@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Interaction
@@ -38,7 +39,7 @@ namespace Interaction
                 Deselect();
         }
 
-        private void CheckInteraction()
+        private void CheckInteraction(object sender, EventArgs args)
         {
             if (selectedObj != null && selectedObj.TryGetComponent<IInteractable>(out var interactable)) 
                 interactable?.Interact(this);

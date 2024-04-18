@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using Modifiers;
@@ -10,10 +11,13 @@ public class Inventory : NetworkBehaviour
     [field: SyncVar(hook = nameof(OnKeyFragmentsUpdated))]
     public int KeyFragments { get; private set; } = 1;
 
-    private readonly SyncList<StatsModifier> modifiers = new();
+    private readonly SyncList<StatsModifier> stats = new();
     private readonly SyncList<TrapModifier> traps = new();
     
     private Player player;
+
+    public IEnumerable<StatsModifier> Stats => stats;
+    public IEnumerable<TrapModifier> Traps => traps;
 
     public class OnKeyFragmentUpdatedArgs : EventArgs
     {
@@ -44,7 +48,7 @@ public class Inventory : NetworkBehaviour
     {
         player = gameObject.GetComponent<Player>();
         
-        modifiers.Callback += OnStatsModifiersChanged;
+        stats.Callback += OnStatsModifiersChanged;
         traps.Callback += OnTrapsChanged;
     }
     
@@ -53,7 +57,7 @@ public class Inventory : NetworkBehaviour
     public void Clear()
     {
         KeyFragments = 1;
-        modifiers.Clear();
+        stats.Clear();
     }
 
     public void AddKeyFragment()
@@ -70,13 +74,13 @@ public class Inventory : NetworkBehaviour
     
     public void AddStatsModifier(StatsModifier modifier)
     {
-        if (modifiers.Contains(modifier))
+        if (stats.Contains(modifier))
             return;
-        modifiers.Add(modifier);
+        stats.Add(modifier);
         
         if (modifier.other == null || modifier.synergy == null) return;
         
-        var ok = modifiers.FirstOrDefault(m => m.modifierName == modifier.other.modifierName) != null;
+        var ok = stats.FirstOrDefault(m => m.modifierName == modifier.other.modifierName) != null;
         if (ok)
             AddStatsModifier(modifier.synergy);
     }
@@ -88,7 +92,7 @@ public class Inventory : NetworkBehaviour
     
     public void RemoveStatsModifier(StatsModifier modifier)
     {
-        modifiers.Remove(modifier);
+        stats.Remove(modifier);
     }
 
     private bool StealKeyFragment()
@@ -99,17 +103,20 @@ public class Inventory : NetworkBehaviour
         return true;
     }
     
-    public bool UseTrap(TrapModifier trap)
+    [Command(requiresAuthority = false)]
+    public void UseTrap(TrapModifier trap)
     {
         if (!traps.Contains(trap))
-            return false;
+            return;
         traps.Remove(trap);
+        
+        Debug.Log($"Placing trap {trap}");
+
+        return;
 
         // TODO: check trap position
         var obj =  Instantiate(trap.prefab, player.transform.position, Quaternion.identity);
         NetworkServer.Spawn(obj);
-        
-        return true;
     }
     
     #endregion

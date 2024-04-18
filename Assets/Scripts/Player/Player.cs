@@ -12,10 +12,12 @@ public class Player : NetworkBehaviour
     
     public static Player LocalPlayer { get; private set;  }
     public static Player Opponent { get; private set;  }
+
+    public Inventory Inventory => GetComponent<Inventory>();
+    public PlayerPositionController PositionController => GetComponent<PlayerPositionController>();
+	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
+    public TrapSelector TrapSelector => GetComponent<TrapSelector>();
     
-    public Inventory Inventory { get; private set; }
-	public PlayerPositionController PositionController { get; private set; }
-	public PlayerRotationController RotationController { get; private set; }
 
     [field: SyncVar]
     public string Username { get; private set; }
@@ -31,13 +33,7 @@ public class Player : NetworkBehaviour
     
     [field: SyncVar]
     public int Kills { get; private set; }
-
-    private void Awake()
-    {
-        Inventory = GetComponent<Inventory>();
-		PositionController = GetComponent<PlayerPositionController>();
-		RotationController = GetComponent<PlayerRotationController>();
-    }
+    
 
     #region SERVER
     
@@ -57,7 +53,7 @@ public class Player : NetworkBehaviour
  
         LocalPlayer = this;
         
-        gameObject.layer = LayerMask.NameToLayer("FieldOfView");
+        MakeVisible();
         OnPlayerSpawned?.Invoke(LocalPlayer);
     }
     
@@ -65,7 +61,7 @@ public class Player : NetworkBehaviour
     {
         Opponent = this;
         
-        gameObject.layer = LayerMask.NameToLayer("Behind-FieldOfView");
+        MakeInvisible();
         OnPlayerSpawned?.Invoke(Opponent);
     }
     
@@ -85,6 +81,16 @@ public class Player : NetworkBehaviour
     public void EnableMovement(bool enable)
     {
         PositionController.SetEnabled(enable);    
+    }
+    
+    public void MakeInvisible()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Behind-FieldOfView");
+    }
+    
+    public void MakeVisible()
+    {
+        gameObject.layer = LayerMask.NameToLayer("FieldOfView");
     }
 
     public override void OnStopClient()
