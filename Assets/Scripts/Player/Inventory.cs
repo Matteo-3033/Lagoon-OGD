@@ -44,7 +44,7 @@ public class Inventory : NetworkBehaviour
     {
         player = gameObject.GetComponent<Player>();
         
-        modifiers.Callback += OnModifiersChanged;
+        modifiers.Callback += OnStatsModifiersChanged;
         traps.Callback += OnTrapsChanged;
     }
     
@@ -68,7 +68,7 @@ public class Inventory : NetworkBehaviour
         });
     }
     
-    public void AddModifier(StatsModifier modifier)
+    public void AddStatsModifier(StatsModifier modifier)
     {
         if (modifiers.Contains(modifier))
             return;
@@ -78,7 +78,7 @@ public class Inventory : NetworkBehaviour
         
         var ok = modifiers.FirstOrDefault(m => m.modifierName == modifier.other.modifierName) != null;
         if (ok)
-            AddModifier(modifier.synergy);
+            AddStatsModifier(modifier.synergy);
     }
     
     public void AddTrap(TrapModifier trap)
@@ -86,7 +86,7 @@ public class Inventory : NetworkBehaviour
         traps.Add(trap);
     }
     
-    public void RemoveModifier(StatsModifier modifier)
+    public void RemoveStatsModifier(StatsModifier modifier)
     {
         modifiers.Remove(modifier);
     }
@@ -126,7 +126,7 @@ public class Inventory : NetworkBehaviour
         });
     }
 
-    private void OnModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
+    private void OnStatsModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
     {
         var onLocalPlayer = player.Username == Player.LocalPlayer.Username;
         if (onLocalPlayer)
@@ -134,8 +134,6 @@ public class Inventory : NetworkBehaviour
             switch (op)
             {
                 case SyncList<StatsModifier>.Operation.OP_ADD:
-                    Debug.Log($"Adding modifier {newItem.modifierName} to {player.Username}");
-                    Debug.Log(newItem.GetType().ToString());
                     newItem.Enable();
                     break;
                 case SyncList<StatsModifier>.Operation.OP_REMOVEAT:

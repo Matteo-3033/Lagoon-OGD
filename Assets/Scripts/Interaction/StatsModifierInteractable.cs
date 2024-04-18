@@ -22,7 +22,7 @@ namespace Interaction
         {
             var target = modifier.isBuff ? sender.Player() : sender.Opponent();
             
-            target.Inventory.AddModifier(modifier);
+            target.Inventory.AddStatsModifier(modifier);
             
             NetworkServer.Destroy(gameObject);
         }
