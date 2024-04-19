@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modifierName: Freeze
   duration: 5
+  respawnAfterSeconds: 0
   description: Freeze a player for 5 seconds
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 1968857315731488669, guid: 6d9cce7097205e54298f311c01c15c21, type: 3}

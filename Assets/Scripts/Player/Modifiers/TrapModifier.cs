@@ -9,7 +9,7 @@ namespace TrapModifiers
 {
     public abstract class TrapModifier: Modifier
     {
-        public float duration;
+        public float durationSeconds;
         public float respawnAfterSeconds;
         public string description;
         
@@ -21,7 +21,8 @@ namespace TrapModifiers
 
         public override void Enable()
         {
-            FunctionTimer.Create(Disable, duration);
+            Disabled = false;
+            FunctionTimer.Create(Disable, durationSeconds);
         }
 
         public override void Disable()

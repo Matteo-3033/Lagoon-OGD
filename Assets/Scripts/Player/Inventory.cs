@@ -116,10 +116,15 @@ public class Inventory : NetworkBehaviour
         
         Debug.Log($"Placing trap {trap}");
 
-        return;
+        var playerRadius = player.GetComponent<CapsuleCollider>().radius;
+        var position = player.transform.position + player.transform.forward * playerRadius * 3;
 
-        // TODO: check trap position
-        var obj =  Instantiate(trap.prefab, player.transform.position, Quaternion.identity);
+        if (Physics.Raycast(transform.position, Vector3.down, out var hit))
+            position.y = hit.point.y;
+        else
+            position.y = 0;
+        
+        var obj =  Instantiate(trap.prefab, position, Quaternion.identity);
         NetworkServer.Spawn(obj);
     }
     

@@ -85,18 +85,34 @@ public class Player : NetworkBehaviour
     
     public void MakeInvisible()
     {
-        gameObject.layer = LayerMask.NameToLayer("Behind-FieldOfView");
+        SetLayerRecursively(gameObject, LayerMask.NameToLayer("Behind-FieldOfView"));
     }
     
     public void MakeVisible()
     {
-        gameObject.layer = LayerMask.NameToLayer("FieldOfView");
+        Debug.Log("MakeVisible");
+        SetLayerRecursively(gameObject, LayerMask.NameToLayer("FieldOfView"));
     }
 
     public override void OnStopClient()
     {
         OnPlayerDespawned?.Invoke(this);
         base.OnStopClient();
+    }
+    
+    private void SetLayerRecursively(GameObject obj, int layer)
+    {
+        if (obj == null)
+            return;
+       
+        obj.layer = layer;
+       
+        foreach (Transform child in obj.transform)
+        {
+            if (child == null)
+                continue;
+            SetLayerRecursively(child.gameObject, layer);
+        }
     }
 
     #endregion
