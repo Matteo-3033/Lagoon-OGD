@@ -1,121 +1,138 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.AI;
 
 public class DTSentinel : MonoBehaviour
 {
-
-    private float range = 60f;
-    public float reactionTime = 3f;
+    public float reactionTime = 1f;
     public string targetTag = "Player";
 
-    public Light alarmLight = null;
+    [Header("Alarm")] public Light alarmLight;
     public Color alarmColor = Color.red;
-    private DecisionTree dt;
-    private Color baseColor;     // to reset the light correctly
+
+    [Header("Patrol Positions")] public Transform[] patrolPositions = null;
+
     [SerializeField] public LayerMask obstructionMask;
-    [SerializeField] public LayerMask targetMask;
+
+    private DecisionTree _dt;
+    private Color _baseColor;
+    private NavMeshAgent _agent;
+    private FieldOfVIew _fieldOfView;
+    private Transform _alarmTarget;
+    private Transform _target;
+    private int _currentPatrolPositionIndex;
+
+    private Color _rayColor;
+
     void Start()
     {
+        _agent = GetComponent<NavMeshAgent>();
+        _fieldOfView = GetComponentInChildren<FieldOfVIew>();
 
-        // Define actions
-        //DTAction a1 = new DTAction(Show);
-        DTAction a1 = new DTAction(Alarm);
-        DTAction a2 = new DTAction(NotAlarm);
-        // Define decisions
-        DTDecision d1 = new DTDecision(ScanField);
-        DTDecision d2 = new DTDecision(VisibleEnemy);
-        // Link action with decisions
-        
-        d1.AddLink(true, d2);
-        d2.AddLink(true, a1);
-        //d2.AddLink(false, a1);
-        d1.AddLink(false, a2);
+        if (patrolPositions.Length > 0)
+        {
+            _target = patrolPositions[_currentPatrolPositionIndex];
+        }
 
-        // Setup my DecisionTree at the root node
-        dt = new DecisionTree(d1);
+        DTAction alarmAction = new DTAction(Alarm);
+        DTAction notAlarmAction = new DTAction(NotAlarm);
 
-        // Set to hidden status
-        baseColor = alarmLight.color;
-        // same as - a2.Action();
+        DTDecision scanFieldDecision = new DTDecision(ScanField);
+        DTDecision visibleEnemyDecision = new DTDecision(VisibleEnemy);
 
-        // Start patroling
+        scanFieldDecision.AddLink(true, visibleEnemyDecision);
+        scanFieldDecision.AddLink(false, notAlarmAction);
+        visibleEnemyDecision.AddLink(true, alarmAction);
+        visibleEnemyDecision.AddLink(false, notAlarmAction);
+
+        _dt = new DecisionTree(scanFieldDecision);
+
+        _baseColor = alarmLight.color;
+
         StartCoroutine(Patrol());
     }
 
-    // GIMMICS
-
-    private void OnValidate()
-    {
-        Transform t = transform.Find("Range");
-        if (t != null)
-        { // we assume it is a plane 
-            t.localScale = new Vector3(range / transform.localScale.x, 1f, range / transform.localScale.z) / 5f;
-        }
-    }
-
-    // Take decision every interval, run forever
-    public IEnumerator Patrol()
+    private IEnumerator Patrol()
     {
         while (true)
         {
-            dt.walk();
+            _dt.walk();
             yield return new WaitForSeconds(reactionTime);
         }
     }
 
     // ACTIONS
 
-
     public object Alarm(object o)
     {
         alarmLight.color = alarmColor;
+        _agent.SetDestination(_alarmTarget.position);
         return null;
     }
+
     public object NotAlarm(object o)
     {
-        alarmLight.color = baseColor;
+        alarmLight.color = _baseColor;
+        if (patrolPositions == null || patrolPositions.Length == 0)
+        {
+            _target = null;
+            _agent.isStopped = true;
+            return null;
+        }
+
+        Vector3 targetPosition = _target.position;
+        targetPosition.y = transform.position.y;
+        if ((targetPosition - transform.position).magnitude < .2f)
+        {
+            _currentPatrolPositionIndex = (_currentPatrolPositionIndex + 1) % patrolPositions.Length;
+            _target = patrolPositions[_currentPatrolPositionIndex];
+        }
+
+        _agent.SetDestination(_target.position);
+
         return null;
     }
 
     // DECISIONS
 
-    // Check if there are enemies in range
     public object ScanField(object o)
     {
-        foreach (GameObject go in GameObject.FindGameObjectsWithTag(targetTag))
-        {
-            Vector3 newVector = go.transform.position - transform.position;
-        
-            if ((Vector3.Angle(newVector, transform.forward) < 45.0f) && ((go.transform.position - transform.position).magnitude <= range))                 
-            {
-                    return true;
+        Vector3 distance = Vector3.positiveInfinity;
+        GameObject potentialTarget = null;
+        GameObject[] targetObjects = GameObject.FindGameObjectsWithTag(targetTag);
 
-            } 
+        foreach (GameObject go in targetObjects)
+        {
+            Vector3 tempDistance = go.transform.position - transform.position;
+            if (tempDistance.magnitude < distance.magnitude)
+            {
+                distance = tempDistance;
+                potentialTarget = go;
+            }
         }
+
+        if (potentialTarget &&
+            Vector3.Angle(distance, transform.forward) < _fieldOfView.GetViewAngle() / 2 &&
+            distance.magnitude <= _fieldOfView.GetViewDistance())
+        {
+            _alarmTarget = potentialTarget.transform;
+            return true;
+        }
+
         return false;
     }
 
     public object VisibleEnemy(object o)
     {
-        Collider[] rangeChecks = Physics.OverlapSphere(transform.position, range, targetMask);
-        
-        if (rangeChecks.Length != 0) 
-        {
-            Transform target = rangeChecks[0].transform;
-            Debug.Log(target.position);
-            Vector3 directionToTarget = (target.position - transform.position).normalized;
-            float distanceTotarget = Vector3.Distance(transform.position, target.position);
-            if (!(Physics.Raycast(transform.position, directionToTarget, out RaycastHit hitinfo, distanceTotarget, obstructionMask)))
-            {
-                
-                
-                Debug.Log("MUROOOOO");
+        Vector3 toTarget = _alarmTarget.position - transform.position;
 
-                return true;
-            }
-        }
-        return false;
+        return !Physics.Raycast(transform.position,
+            toTarget.normalized,
+            out RaycastHit _,
+            toTarget.magnitude,
+            obstructionMask);
     }
-
 }

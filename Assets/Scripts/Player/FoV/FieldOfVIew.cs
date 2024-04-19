@@ -88,10 +88,19 @@ public class FieldOfVIew : NetworkBehaviour
         fieldOfViewDegree = angle;
     }
     
+    public float GetViewAngle()
+    {
+        return fieldOfViewDegree;
+    }
+    
+    public float GetViewDistance()
+    {
+        return viewDistance;
+    }
+    
     [ClientCallback]
     private void OnFoVDegreeChanged(float oldValue, float newValue)
     {
-        
         OnFoVUpdated();
     }
     

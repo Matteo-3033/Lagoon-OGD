@@ -27,7 +27,7 @@ public class DTDecision : IDTNode
         links.Add(value, next);
     }
 
-    //Funzione che chiama il selector e controlla se c'� un link valido,
+    //Funzione che chiama il selector e controlla se c'è un link valido,
     //in quel caso segue (Walk()) il link
     public DTAction Walk()
     {
