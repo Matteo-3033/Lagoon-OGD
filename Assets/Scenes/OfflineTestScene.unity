@@ -943,6 +943,16 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1859211958
       objectReference: {fileID: 0}
+    - target: {fileID: 3975535404062468643, guid: 594d11e44342bf548bf324afec0506d2,
+        type: 3}
+      propertyPath: m_FlipX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3975535404062468643, guid: 594d11e44342bf548bf324afec0506d2,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7387685821385831047, guid: 594d11e44342bf548bf324afec0506d2,
         type: 3}
       propertyPath: m_LocalPosition.x

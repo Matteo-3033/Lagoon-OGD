@@ -10,12 +10,22 @@ namespace Round.Obstacles.TrapPressurePlate
     {
         [SerializeField] private TrapModifier trap;
         
+        private bool activated;
+        
         public event EventHandler<bool> OnStateChanged;
 
         private void Awake()
         {
             var spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             spriteRenderer.sprite = trap.icon;
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            
+            var animator = GetComponent<TrapPressurePlateAnimator>();
+            animator.OnDisappearAnimationDone += DestroyTrap;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -27,10 +37,10 @@ namespace Round.Obstacles.TrapPressurePlate
             
             var player = other.GetComponent<Player>();
             
-            if (isServer)
+            if (!activated && isServer)
             {
+                activated = true;
                 TargetEnableTrap(player.connectionToClient);
-                NetworkServer.Destroy(gameObject);
             }
         }
 
@@ -46,6 +56,11 @@ namespace Round.Obstacles.TrapPressurePlate
         private void TargetEnableTrap(NetworkConnectionToClient target)
         {
             trap.Enable();
+        }
+        
+        private void DestroyTrap(object sender, EventArgs args)
+        {
+            NetworkServer.Destroy(gameObject);
         }
     }
 }
