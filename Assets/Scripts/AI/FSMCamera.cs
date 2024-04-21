@@ -9,7 +9,8 @@ using UnityEngine.Serialization;
 public class FSMCamera : MonoBehaviour
 {
     public float reactionTime = 1f;
-    public float rotationSpeed = 150f;
+    public float patrolRotationSpeed = 10f;
+    public float alarmRotationSpeed = 20f;
     public string targetTag = "Player";
 
     [Header("Alarm")] public Light alarmLight;
@@ -22,8 +23,8 @@ public class FSMCamera : MonoBehaviour
 
     private FSM _fsm;
     private Color _baseColor;
-    private NavMeshAgent _agent;
     private FieldOfVIew _fieldOfView;
+    private float _rotationSpeed;
     private float _rotationTarget;
     private Transform _alarmTarget;
     private int _currentPatrolRotationIndex;
@@ -31,7 +32,6 @@ public class FSMCamera : MonoBehaviour
     void Start()
     {
         _baseColor = alarmLight.color;
-        _agent = GetComponent<NavMeshAgent>();
         _fieldOfView = GetComponentInChildren<FieldOfVIew>();
 
         if (patrolRotations.Length > 0)
@@ -40,11 +40,10 @@ public class FSMCamera : MonoBehaviour
         }
 
         FSMState patrolState = new FSMState();
+        patrolState.EnterActions.Add(AlarmReset);
 
         FSMState alarmState = new FSMState();
-        alarmState.EnterActions.Add(AlarmColor);
-        alarmState.StayActions.Add(AlarmFollowTarget);
-        alarmState.ExitActions.Add(AlarmColorReset);
+        alarmState.EnterActions.Add(AlarmStart);
 
         FSMTransition rotationReachedTransition =
             new FSMTransition(RotationReached, new FSMAction[] { NextRotation });
@@ -64,9 +63,25 @@ public class FSMCamera : MonoBehaviour
 
     private void Update()
     {
-        float step = rotationSpeed * Time.fixedDeltaTime;
+        float target;
+
+        if (_alarmTarget)
+        {
+            Vector3 dir = (_alarmTarget.position - transform.position).normalized;
+            dir.y = 0;
+            Vector3 forward = transform.forward;
+            forward.y = 0;
+
+            target = transform.eulerAngles.y + Vector3.SignedAngle(forward, dir, Vector3.up);
+        }
+        else
+        {
+            target = _rotationTarget;
+        }
+
+        float step = _rotationSpeed * Time.fixedDeltaTime;
         transform.rotation =
-            Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, _rotationTarget, 0), step);
+            Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, target, 0), step);
     }
 
     private IEnumerator Patrol()
@@ -80,22 +95,17 @@ public class FSMCamera : MonoBehaviour
 
     // ACTIONS
 
-    private void AlarmColorReset()
+    private void AlarmReset()
     {
         alarmLight.color = _baseColor;
+        _rotationSpeed = patrolRotationSpeed;
+        _alarmTarget = null;
     }
 
-    private void AlarmColor()
+    private void AlarmStart()
     {
         alarmLight.color = alarmColor;
-    }
-
-    private void AlarmFollowTarget()
-    {
-        Vector3 dir = (_alarmTarget.position - transform.position).normalized;
-        dir.y = 0;
-
-        _rotationTarget = Vector3.Angle(dir, Vector3.forward);
+        _rotationSpeed = alarmRotationSpeed;
     }
 
     private bool RotationReached()
@@ -118,7 +128,14 @@ public class FSMCamera : MonoBehaviour
 
     private bool IsEnemyVisible()
     {
-        return ScanField() && VisibleEnemy();
+        Transform potentialTarget = ScanField();
+        bool isEnemyVisible = potentialTarget && VisibleEnemy(potentialTarget);
+        if (isEnemyVisible)
+        {
+            _alarmTarget = potentialTarget;
+        }
+
+        return isEnemyVisible;
     }
 
     private bool NotIsEnemyVisible()
@@ -126,7 +143,7 @@ public class FSMCamera : MonoBehaviour
         return !IsEnemyVisible();
     }
 
-    private bool ScanField()
+    private Transform ScanField()
     {
         Vector3 distance = Vector3.positiveInfinity;
         GameObject potentialTarget = null;
@@ -146,16 +163,15 @@ public class FSMCamera : MonoBehaviour
             Vector3.Angle(distance, transform.forward) < _fieldOfView.GetViewAngle() / 2 &&
             distance.magnitude <= _fieldOfView.GetViewDistance())
         {
-            _alarmTarget = potentialTarget.transform;
-            return true;
+            return potentialTarget.transform;
         }
 
-        return false;
+        return null;
     }
 
-    private bool VisibleEnemy()
+    private bool VisibleEnemy(Transform potentialTarget)
     {
-        Vector3 toTarget = _alarmTarget.position - transform.position;
+        Vector3 toTarget = potentialTarget.position - transform.position;
 
         return !Physics.Raycast(transform.position,
             toTarget.normalized,

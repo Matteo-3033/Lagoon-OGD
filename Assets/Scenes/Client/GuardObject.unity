@@ -696,7 +696,7 @@ Transform:
   m_GameObject: {fileID: 488013466}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.31026167, z: 0, w: 0.9506512}
-  m_LocalPosition: {x: 6.49, y: 1, z: -5.4}
+  m_LocalPosition: {x: 0.08, y: 1, z: -11.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -1817,7 +1817,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   reactionTime: 0.25
-  rotationSpeed: 10
+  patrolRotationSpeed: 10
+  alarmRotationSpeed: 50
   targetTag: Player
   alarmLight: {fileID: 1467609602}
   alarmColor: {r: 1, g: 0, b: 0, a: 1}
@@ -1852,7 +1853,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 94
   m_CollisionDetection: 0
 --- !u!136 &1161026811
 CapsuleCollider:
@@ -1936,7 +1937,7 @@ Transform:
   m_GameObject: {fileID: 1161026806}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -20.78, y: 1, z: -4.11}
+  m_LocalPosition: {x: 7.5, y: 1, z: 5.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
