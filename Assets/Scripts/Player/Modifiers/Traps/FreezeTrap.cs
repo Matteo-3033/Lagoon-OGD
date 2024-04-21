@@ -8,14 +8,14 @@ namespace Modifiers.Traps
     {
         public override void Enable()
         {
-            Player.LocalPlayer.EnableMovement(true);
+            Player.LocalPlayer.EnableMovement(false);
             base.Enable();
         }
 
         public override void Disable()
         {
             if (Disabled) return;
-            Player.LocalPlayer.EnableMovement(false);
+            Player.LocalPlayer.EnableMovement(true);
             base.Disable();
         }
     }

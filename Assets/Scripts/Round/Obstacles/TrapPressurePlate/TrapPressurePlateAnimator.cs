@@ -11,7 +11,7 @@ namespace Round.Obstacles.TrapPressurePlate
         [SerializeField] private UnityEngine.Renderer[] trapRenderers;
         
         private Animator animator;
-        private ParticleSystem particleSystem;
+        private ParticleSystem particles;
 
         private bool disappearing;
 
@@ -20,7 +20,7 @@ namespace Round.Obstacles.TrapPressurePlate
         private void Awake()
         {
             animator = gameObject.GetComponent<Animator>();
-            particleSystem = gameObject.GetComponentInChildren<ParticleSystem>(); 
+            particles = gameObject.GetComponentInChildren<ParticleSystem>(); 
 
             var trapPressurePlate = gameObject.GetComponent<TrapPressurePlate>();
             trapPressurePlate.OnStateChanged += OnStateChanged;
@@ -38,10 +38,10 @@ namespace Round.Obstacles.TrapPressurePlate
         {
             disappearing = true;
             
-            var halfDuration = (particleSystem.main.duration + particleSystem.main.startLifetime.constant) / 2;
+            var halfDuration = (particles.main.duration + particles.main.startLifetime.constant) / 2;
             var materials = trapRenderers.Select(r => r.material).ToList();
          
-            particleSystem.Play();
+            particles.Play();
             
             var elapsedTime = 0F;
             while (elapsedTime < halfDuration)

@@ -249,6 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58abdff6ddd0468e8a7ba9ba17bb152c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectTrapAnimation: {fileID: 7400000, guid: 1bd86bb07e87b9d4fb41746ca3d064b3, type: 2}
 --- !u!114 &5372978510782166586
 MonoBehaviour:
   m_ObjectHideFlags: 0

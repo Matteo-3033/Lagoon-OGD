@@ -8,14 +8,17 @@ public class TrapSelector: MonoBehaviour
 {
     private int selectedIndex;
     private List<TrapModifier> GetTraps() => Player.LocalPlayer.Inventory.Traps.ToList();
-
-    public class OnTrapSelectedArgs : EventArgs
+    
+    [SerializeField] private AnimationClip selectTrapAnimation;
+    private float timeSinceAnimationStart;
+    
+    public class OnSelectedTrapIndexChangedArgs : EventArgs
     {
         public int Index;
-        public TrapModifier Trap;
+        public bool IndexIncreased;
     }
     
-    public event EventHandler<OnTrapSelectedArgs> OnTrapSelected;
+    public event EventHandler<OnSelectedTrapIndexChangedArgs> OnSelectedTrapIndexChanged;
     
     private void Awake()
     {
@@ -24,37 +27,52 @@ public class TrapSelector: MonoBehaviour
         inputHandler.OnSelectTrap += OnChangeSelection;
     }
 
-    private void OnChangeSelection(object sender, int dir)
+    private void OnChangeSelection(object sender, int direction)
     {
-        if (dir == 0)
+        if (AnimationInProgress() || direction == 0)
             return;
         
+        timeSinceAnimationStart = Time.time;
         var traps = GetTraps();
         
-        if (dir > 0)
-            selectedIndex++;
-        else if (selectedIndex < 0)
-            selectedIndex = traps.Count - 1;
+        var newIndex = selectedIndex;
+        if (direction > 0)
+            newIndex++;
+        else if (newIndex < 0)
+            newIndex = traps.Count - 1;
         else
-            selectedIndex--;
+            newIndex--;
 
-        if (selectedIndex < 0 || selectedIndex >= traps.Count)
-            selectedIndex = -1;
+        if (newIndex < 0 || newIndex >= traps.Count)
+            newIndex = -1;
         
-        OnTrapSelected?.Invoke(this, new OnTrapSelectedArgs
+        if (newIndex == selectedIndex)
+            return;
+        
+        selectedIndex = newIndex;
+        
+        OnSelectedTrapIndexChanged?.Invoke(this, new OnSelectedTrapIndexChangedArgs
         {
             Index = selectedIndex,
-            Trap = selectedIndex > 0 ? traps[selectedIndex] : null
+            IndexIncreased = direction > 0
         });
     }
 
     private void PlaceTrap(object sender, EventArgs args)
     {
+        if (AnimationInProgress())
+            return;
+        
         var traps = GetTraps();
         
         if (selectedIndex < 0 || selectedIndex >= traps.Count)
             return;
 
         Player.LocalPlayer.Inventory.UseTrap(traps[selectedIndex]);
+    }
+    
+    private bool AnimationInProgress()
+    {
+        return Time.time - timeSinceAnimationStart < selectTrapAnimation.length;
     }
 }
