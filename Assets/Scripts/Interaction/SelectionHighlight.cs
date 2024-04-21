@@ -9,7 +9,7 @@ public class SelectionHighlight : MonoBehaviour, ISelectable
 
     public virtual void OnDeselected() => Hide();
 
-    private void Awake()
+    protected virtual void Awake()
     {
         Hide();
     }

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
-using Interaction;
-using Network;
+using Interaction.Trap;
 using TrapModifiers;
 using UnityEngine;
 

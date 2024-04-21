@@ -144,8 +144,7 @@ public class Inventory : NetworkBehaviour
 
     private void OnStatsModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
     {
-        var onLocalPlayer = player.Username == Player.LocalPlayer.Username;
-        if (onLocalPlayer)
+        if (isClient && player.Username == Player.LocalPlayer.Username)  // Only the inventory owner applies the effect (and then notifies the server)
         {
             switch (op)
             {
