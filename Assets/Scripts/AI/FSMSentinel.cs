@@ -13,6 +13,7 @@ public class FSMSentinel : MonoBehaviour
 
     [Header("Alarm")] public Light alarmLight;
     public Color alarmColor = Color.red;
+    public Color searchColor = Color.yellow;
 
     [Header("Patrol Positions")] public Transform[] patrolPositions = null;
 
@@ -23,7 +24,8 @@ public class FSMSentinel : MonoBehaviour
     private NavMeshAgent _agent;
     private FieldOfVIew _fieldOfView;
     private Transform _positionTarget;
-    private Transform _alarmTarget;
+    private Vector3 _alarmTargetPosition;
+    private Vector3 _alarmTargetPreviousPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
 
     void Start()
@@ -43,18 +45,25 @@ public class FSMSentinel : MonoBehaviour
         FSMState alarmState = new FSMState();
         alarmState.EnterActions.Add(AlarmColor);
         alarmState.StayActions.Add(AlarmFollowTarget);
-        alarmState.ExitActions.Add(AlarmColorReset);
+        //alarmState.ExitActions.Add(AlarmColorReset);
+        alarmState.ExitActions.Add(FigureOutNewPosition);
+
+        FSMState searchState = new FSMState();
+        searchState.EnterActions.Add(SearchColor);
+        searchState.ExitActions.Add(AlarmColorReset);
 
         FSMTransition positionReachedTransition =
             new FSMTransition(PositionReached, new FSMAction[] { NextPosition });
         FSMTransition enemyVisibleTransition =
             new FSMTransition(IsEnemyVisible);
         FSMTransition notEnemyVisibleTransition =
-            new FSMTransition(NotIsEnemyVisible, new FSMAction[] { NearerPosition });
+            new FSMTransition(NotIsEnemyVisible, new FSMAction[] { NearestPosition });
 
         patrolState.AddTransition(enemyVisibleTransition, alarmState);
         patrolState.AddTransition(positionReachedTransition, patrolState);
-        alarmState.AddTransition(notEnemyVisibleTransition, patrolState);
+        alarmState.AddTransition(notEnemyVisibleTransition, searchState);
+        searchState.AddTransition(enemyVisibleTransition, alarmState);
+        searchState.AddTransition(notEnemyVisibleTransition, patrolState);
 
         _fsm = new FSM(patrolState);
 
@@ -82,9 +91,20 @@ public class FSMSentinel : MonoBehaviour
         alarmLight.color = alarmColor;
     }
 
+    private void SearchColor()
+    {
+        alarmLight.color = searchColor;
+    }
+
     private void AlarmFollowTarget()
     {
-        _agent.SetDestination(_alarmTarget.position);
+        _agent.SetDestination(_alarmTargetPosition);
+    }
+
+    private void FigureOutNewPosition()
+    {
+        Vector3 newPosition = _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition).normalized * reactionTime;
+        _alarmTargetPosition = newPosition;
     }
 
     private void PositionDestination()
@@ -106,7 +126,7 @@ public class FSMSentinel : MonoBehaviour
         _positionTarget = patrolPositions[_currentPatrolPositionIndex];
     }
 
-    private void NearerPosition()
+    private void NearestPosition()
     {
         float distance = float.MaxValue;
 
@@ -126,7 +146,15 @@ public class FSMSentinel : MonoBehaviour
 
     private bool IsEnemyVisible()
     {
-        return ScanField() && VisibleEnemy();
+        Transform potentialTarget = ScanField();
+        bool isEnemyVisible = potentialTarget && VisibleEnemy(potentialTarget);
+        if (isEnemyVisible)
+        {
+            _alarmTargetPreviousPosition = _alarmTargetPosition;
+            _alarmTargetPosition = potentialTarget.position;
+        }
+
+        return isEnemyVisible;
     }
 
     private bool NotIsEnemyVisible()
@@ -134,7 +162,7 @@ public class FSMSentinel : MonoBehaviour
         return !IsEnemyVisible();
     }
 
-    private bool ScanField()
+    private Transform ScanField()
     {
         Vector3 distance = Vector3.positiveInfinity;
         GameObject potentialTarget = null;
@@ -154,16 +182,15 @@ public class FSMSentinel : MonoBehaviour
             Vector3.Angle(distance, transform.forward) < _fieldOfView.GetViewAngle() / 2 &&
             distance.magnitude <= _fieldOfView.GetViewDistance())
         {
-            _alarmTarget = potentialTarget.transform;
-            return true;
+            return potentialTarget.transform;
         }
 
-        return false;
+        return null;
     }
 
-    private bool VisibleEnemy()
+    private bool VisibleEnemy(Transform potentialTarget)
     {
-        Vector3 toTarget = _alarmTarget.position - transform.position;
+        Vector3 toTarget = potentialTarget.position - transform.position;
 
         return !Physics.Raycast(transform.position,
             toTarget.normalized,
