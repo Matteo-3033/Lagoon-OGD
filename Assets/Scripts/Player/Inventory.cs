@@ -58,8 +58,10 @@ public class Inventory : NetworkBehaviour
     {
         KeyFragments = 1;
         stats.Clear();
+        traps.Clear();
     }
 
+    [Server]
     public void AddKeyFragment()
     {
         KeyFragments++;
@@ -99,7 +101,7 @@ public class Inventory : NetworkBehaviour
         stats.Remove(modifier);
     }
 
-    private bool StealKeyFragment()
+    public bool StealKeyFragment()
     {
         if (KeyFragments == 0)
             return false;
