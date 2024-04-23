@@ -58,12 +58,14 @@ public class FSMSentinel : MonoBehaviour
             new FSMTransition(IsEnemyVisible);
         FSMTransition notEnemyVisibleTransition =
             new FSMTransition(NotIsEnemyVisible, new FSMAction[] { NearestPosition });
+        FSMTransition enemyLostTransition =
+            new FSMTransition(EnemyLost, new FSMAction[] { NearestPosition });
 
         patrolState.AddTransition(enemyVisibleTransition, alarmState);
         patrolState.AddTransition(positionReachedTransition, patrolState);
         alarmState.AddTransition(notEnemyVisibleTransition, searchState);
+        searchState.AddTransition(enemyLostTransition, patrolState);
         searchState.AddTransition(enemyVisibleTransition, alarmState);
-        searchState.AddTransition(notEnemyVisibleTransition, patrolState);
 
         _fsm = new FSM(patrolState);
 
@@ -103,7 +105,7 @@ public class FSMSentinel : MonoBehaviour
 
     private void FigureOutNewPosition()
     {
-        Vector3 newPosition = _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition).normalized * reactionTime;
+        Vector3 newPosition = _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition) * reactionTime;
         _alarmTargetPosition = newPosition;
     }
 
@@ -155,6 +157,14 @@ public class FSMSentinel : MonoBehaviour
         }
 
         return isEnemyVisible;
+    }
+
+    private bool EnemyLost()
+    {
+        Vector3 guessPosition = _alarmTargetPosition;
+        guessPosition.y = transform.position.y;
+
+        return (guessPosition - transform.position).magnitude < .2f && NotIsEnemyVisible();
     }
 
     private bool NotIsEnemyVisible()

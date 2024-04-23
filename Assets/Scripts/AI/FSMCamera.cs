@@ -61,7 +61,7 @@ public class FSMCamera : MonoBehaviour
         StartCoroutine(Patrol());
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         float target;
 
