@@ -119,9 +119,12 @@ namespace Round
             RpcNotifyRemainingTime(0F);
             
             if (!CheckIfWinner())
+            {
                 tie = true;
-            foreach (var player in Players)
-                player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
+
+                foreach (var player in Players)
+                    player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
+            }
         }
 
         [Server]
