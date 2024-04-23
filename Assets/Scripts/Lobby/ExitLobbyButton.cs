@@ -7,36 +7,44 @@ namespace Lobby
     [RequireComponent(typeof(Button))]
     public class ExitLobbyButton : MonoBehaviour
     {
+        [SerializeField] private GameObject loading;
+        
         private void Awake()
         {
             var button = GetComponent<Button>();
             button.onClick.AddListener(OnClick);
-            Player.OnPlayerSpawned += OnPlayerSpawned;
-            Player.OnPlayerDespawned += OnPlayerDespawned;
-        }
+            
+            loading.SetActive(false);
 
-        private void OnPlayerDespawned(Player player)
-        {
-            gameObject.SetActive(true);
+            if (Player.Opponent != null)
+                ShowLoading();
+            
+            Player.OnPlayerSpawned += OnPlayerSpawned;
         }
 
         private void OnPlayerSpawned(Player player)
         {
             if (!player.isLocalPlayer)
-                gameObject.SetActive(false);
+                ShowLoading();
+        }
+
+        private void ShowLoading()
+        {
+            loading.SetActive(true);
+            gameObject.SetActive(false);
         }
 
         private void OnClick()
         {
             if (Player.Opponent != null)
                 return;
+            
             NetworkClient.Disconnect();
         }
 
         private void OnDestroy()
         {
             Player.OnPlayerSpawned -= OnPlayerSpawned;
-            Player.OnPlayerDespawned -= OnPlayerDespawned;
         }
     }
 }

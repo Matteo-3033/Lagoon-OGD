@@ -225,6 +225,7 @@ namespace Round
 
             if (isServer)
                 StartRound();
+            else OnCountdown?.Invoke(-1);
             counting = false;
         }
         
