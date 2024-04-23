@@ -54,6 +54,7 @@ public class Inventory : NetworkBehaviour
     
     #region SERVER
 
+    [Server]
     public void Clear()
     {
         KeyFragments = 1;
@@ -74,6 +75,7 @@ public class Inventory : NetworkBehaviour
         });
     }
     
+    [Server]
     public void AddStatsModifier(StatsModifier modifier)
     {
         if (stats.Contains(modifier))
@@ -87,6 +89,7 @@ public class Inventory : NetworkBehaviour
             AddStatsModifier(modifier.synergy);
     }
     
+    [Server]
     public bool AddTrap(TrapModifier trap)
     {
         if (traps.Contains(trap))
@@ -96,16 +99,26 @@ public class Inventory : NetworkBehaviour
         return true;
     }
     
+    [Server]
     public void RemoveStatsModifier(StatsModifier modifier)
     {
         stats.Remove(modifier);
     }
 
+    [Server]
     public bool StealKeyFragment()
     {
         if (KeyFragments == 0)
             return false;
         KeyFragments--;
+        
+        OnKeyFragmentUpdated?.Invoke(this, new OnKeyFragmentUpdatedArgs
+        {
+            OldValue = KeyFragments + 1,
+            NewValue = KeyFragments,
+            Player = player
+        });
+        
         return true;
     }
     
@@ -131,7 +144,7 @@ public class Inventory : NetworkBehaviour
     }
     
     #endregion
-
+    
     #region CLIENT
     
     private void OnKeyFragmentsUpdated(int oldValue, int newValue)
@@ -143,7 +156,11 @@ public class Inventory : NetworkBehaviour
             Player = player
         });
     }
+    
+    #endregion
 
+    #region CALLBACKS (CLIENT AND SERVER)
+    
     private void OnStatsModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
     {
         if (isClient && player.Username == Player.LocalPlayer.Username)  // Only the inventory owner applies the effect (and then notifies the server)
