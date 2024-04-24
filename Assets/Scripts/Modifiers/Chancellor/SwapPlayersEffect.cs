@@ -29,7 +29,7 @@ namespace Modifiers.Chancellor
             
                 player1.TargetGoTo(player2.transform.position);
                 player2.TargetGoTo(player1.transform.position);
-            }, 1F);
+            }, 2F);
         }
 
         private void OnPlayerReady(object sender, Vector3 args)

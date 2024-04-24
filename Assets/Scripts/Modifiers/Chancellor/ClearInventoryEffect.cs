@@ -20,7 +20,7 @@ namespace Modifiers.Chancellor
             {
                 player1.Inventory.Clear();
                 player2.Inventory.Clear();
-            }, 1F);
+            }, 2F);
         }
     }
 }

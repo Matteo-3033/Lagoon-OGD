@@ -118,7 +118,6 @@ public class Player : NetworkBehaviour
     [Client]
     public void MakeVisible()
     {
-        Debug.Log("MakeVisible");
         SetLayerRecursively(gameObject, LayerMask.NameToLayer("FieldOfView"));
     }
 
