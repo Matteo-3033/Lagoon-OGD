@@ -11,8 +11,8 @@ namespace Round
     [RequireComponent(typeof(NetworkIdentity))]
     public class RoundController: NetworkBehaviour
     {
-        private const int ROUND_PLAYERS = 2;
         private const int UPDATE_TIMER_EVERY_SECONDS = 10;
+        private const float LOAD_AFTER_SECONDS = 3F;
 
         public static RoundController Instance { get; private set; }
         
@@ -32,12 +32,14 @@ namespace Round
         public event Action<int> TimerUpdate;
         
         // Server side events
-        public event Action<Player> OnRoundWon;
+        public event Action OnLoadNextRound;
         
         // Both sides events
         public static event Action OnRoundLoaded;
         public event Action OnCountdownStart;
         public event Action<int> OnCountdown;
+        public event Action<Player> OnRoundEnded;
+        
         
         private void Awake()
         {
@@ -84,12 +86,16 @@ namespace Round
             Debug.Log($"Player {username} loaded round");
             
             playersReady.Add(username, true);
-            
+
             if (AllPlayersReady())
-            {
-                RpcOnRoundLoaded();
-                StartCoroutine(StartRoundCountdown());
-            }
+                LoadRound();
+        }
+        
+        [Server]
+        private void LoadRound()
+        {
+            RpcOnRoundLoaded();
+            StartCoroutine(StartRoundCountdown());
         }
         
         [Server]
@@ -141,7 +147,7 @@ namespace Round
             foreach (var player in Players)
             {
                 if (player.Inventory.KeyFragments != Round.keyFragments) continue;
-                OnRoundWon?.Invoke(player);
+                OnRoundEnded?.Invoke(player);
                 return true;
             }
 
@@ -158,7 +164,7 @@ namespace Round
             foreach (var player in Players)
                 player.Inventory.OnKeyFragmentUpdated -= CheckPlayerAdvantage;
             
-            OnRoundWon?.Invoke(args.Player);
+            EndRound(args.Player);
         }
         
         [Command(requiresAuthority = false)]
@@ -168,17 +174,17 @@ namespace Round
                 return;
 
             var player = sender.Player();
-            
+
             if (player.Inventory.KeyFragments == Round.keyFragments)
-                OnRoundWon?.Invoke(player);
-            else 
+                EndRound(player);
+            else
                 TargetNotifyNoWinningCondition(sender);
         }
-
-        [TargetRpc]
-        private void TargetNotifyNoWinningCondition(NetworkConnectionToClient target)
+        
+        private void EndRound(Player winner)
         {
-            OnNoWinningCondition?.Invoke();
+            RpcEndRound(winner);
+            OnRoundEnded?.Invoke(winner);
         }
 
         #endregion
@@ -211,6 +217,19 @@ namespace Round
             TimerUpdate?.Invoke(remainingTime);
         }
         
+        [ClientRpc]
+        private void RpcEndRound(Player winner)
+        {
+            Debug.Log($"Round ended. Winner: {winner.Username}");
+            OnRoundEnded?.Invoke(winner);
+        }
+        
+        [TargetRpc]
+        private void TargetNotifyNoWinningCondition(NetworkConnectionToClient target)
+        {
+            OnNoWinningCondition?.Invoke();
+        }
+        
         #endregion
 
         #region UTILS
@@ -239,7 +258,7 @@ namespace Round
         
         private bool AllPlayersReady()
         {
-            return playersReady.Count == ROUND_PLAYERS && playersReady.Values.All(ready => ready);
+            return playersReady.Count == MatchController.MAX_PLAYERS && playersReady.Values.All(ready => ready);
         }
 
         #endregion

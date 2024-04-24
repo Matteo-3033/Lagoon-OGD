@@ -20,10 +20,9 @@ namespace Network
     
     public class MatchController : NetworkBehaviour
     {
-        private const int MaxPlayers = 2;
+        public const int MAX_PLAYERS = 2;
         
         public static MatchController Instance { get; private set; }
-        
         public bool Started { get; private set; }
         
         private int currentRoundIndex;
@@ -34,6 +33,7 @@ namespace Network
         public RoundConfiguration CurrentRound { get; private set; }
 
         private readonly SyncDictionary<string, MatchPlayerData> players = new();
+        
         
         // Server side events
         public event Action OnMatchStarted;
@@ -80,7 +80,7 @@ namespace Network
             if (!ConnectionsToUsernames.ContainsKey(conn))
                 InitPlayer(conn, username);
             
-            if (players.Count == MaxPlayers)
+            if (players.Count == MAX_PLAYERS)
                 StartCoroutine(StartMatch());
         }
 
@@ -91,7 +91,7 @@ namespace Network
             
             players[username] = new MatchPlayerData { Username = username};
             
-            Debug.LogError($"Adding player {username} to match. Current players: {ConnectionsToUsernames.Count}/{MaxPlayers}");
+            Debug.LogError($"Adding player {username} to match. Current players: {ConnectionsToUsernames.Count}/{MAX_PLAYERS}");
         }
 
         [Server]
@@ -105,10 +105,16 @@ namespace Network
             LoadRound(0);
             Started = true;
             OnMatchStarted?.Invoke();
-            
-            RoundController.OnRoundLoaded += () => RoundController.Instance.OnRoundWon += OnRoundWon;
+
+            RoundController.OnRoundLoaded += OnRoundLoaded;
         }
-        
+
+        private void OnRoundLoaded()
+        {
+            RoundController.Instance.OnRoundEnded += OnRoundWinner;
+            RoundController.Instance.OnLoadNextRound += () => LoadRound(currentRoundIndex + 1);
+        }
+
         [Server]
         private void LoadRound(int roundIndex)
         {
@@ -173,12 +179,11 @@ namespace Network
             players.Remove(username);
         }
 
-        private void OnRoundWon(Player player)
+        private void OnRoundWinner(Player player)
         {
             var data = players[player.Username];
             data.RoundsWon++;
             players[player.Username] = data;
-            LoadRound(currentRoundIndex + 1);
         }
 
         #endregion
