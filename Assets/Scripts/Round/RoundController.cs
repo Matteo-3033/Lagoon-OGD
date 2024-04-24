@@ -11,7 +11,8 @@ namespace Round
     [RequireComponent(typeof(NetworkIdentity))]
     public class RoundController: NetworkBehaviour
     {
-        private const int RoundPlayers = 2;
+        private const int ROUND_PLAYERS = 2;
+        private const int UPDATE_TIMER_EVERY_SECONDS = 10;
 
         public static RoundController Instance { get; private set; }
         
@@ -21,14 +22,14 @@ namespace Round
         
         private readonly Dictionary<string, bool> playersReady = new();
         private bool tie;
-        
-        private IEnumerable<Player> Players => NetworkServer.connections.Values.Select(conn => conn.Player());
+
+        public IEnumerable<Player> Players => NetworkServer.connections.Values.Select(conn => conn.Player());
         
         
         // Client side events
         public event Action OnRoundStarted;
         public event Action OnNoWinningCondition;
-        public event Action<float> TimerUpdate;
+        public event Action<int> TimerUpdate;
         
         // Server side events
         public event Action<Player> OnRoundWon;
@@ -103,20 +104,20 @@ namespace Round
             // Wait one frame after round start
             yield return null;
             
-            var time = Round.timeLimitMinutes * 60;
+            var time = (int)(Round.timeLimitMinutes * 60);
             
-            while (time > 30)
+            while (time > UPDATE_TIMER_EVERY_SECONDS)
             {
                 Debug.Log($"Remaining time: {time}");
-                RpcNotifyRemainingTime(time);
-                yield return new WaitForSeconds(30);
-                time -= 30;
+                NotifyRemainingTime(time);
+                yield return new WaitForSeconds(UPDATE_TIMER_EVERY_SECONDS);
+                time -= UPDATE_TIMER_EVERY_SECONDS;
             }
             
-            RpcNotifyRemainingTime(time);
+            NotifyRemainingTime(time);
             yield return new WaitForSeconds(time);
 
-            RpcNotifyRemainingTime(0F);
+            NotifyRemainingTime(0);
             
             if (!CheckIfWinner())
             {
@@ -125,6 +126,13 @@ namespace Round
                 foreach (var player in Players)
                     player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
             }
+        }
+        
+        [Server]
+        private void NotifyRemainingTime(int time)
+        {
+            TimerUpdate?.Invoke(time);
+            RpcNotifyRemainingTime(time);
         }
 
         [Server]
@@ -197,7 +205,7 @@ namespace Round
         }
         
         [ClientRpc]
-        private void RpcNotifyRemainingTime(float remainingTime)
+        private void RpcNotifyRemainingTime(int remainingTime)
         {
             Debug.Log($"Remaining time: {remainingTime}");
             TimerUpdate?.Invoke(remainingTime);
@@ -231,7 +239,7 @@ namespace Round
         
         private bool AllPlayersReady()
         {
-            return playersReady.Count == RoundPlayers && playersReady.Values.All(ready => ready);
+            return playersReady.Count == ROUND_PLAYERS && playersReady.Values.All(ready => ready);
         }
 
         #endregion

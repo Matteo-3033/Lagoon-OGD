@@ -24,7 +24,7 @@ namespace Modifiers
             }
         }
 
-        public static StatsModifier ReadStatsTrapModifier(this NetworkReader reader)
+        public static StatsModifier ReadStatsModifier(this NetworkReader reader)
         {
             var statsName = reader.ReadString();
             

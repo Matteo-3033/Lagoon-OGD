@@ -46,6 +46,8 @@ namespace Round.UI.Main
             Player.OnPlayerSpawned += OnPlayerSpawned;
             
             TrapInteractable.OnTrapNotAdded += LogTrapNotAdded;
+
+            ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -81,15 +83,21 @@ namespace Round.UI.Main
 
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Acquired)
+            if (args.Op == Inventory.TrapOP.Acquired)
             {
                 LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
                 LogEvent($"{args.Trap.description}");
             }
-            else
+            else if (args.Op == Inventory.TrapOP.Placed)
             {
                 LogEvent($"{args.Trap.modifierName} placed");
             }
+        }
+        
+        private void LogChancellorEffect(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
+        {
+            LogEvent("The <color=#FF0000>Chancellor</color> is awake!", 0.1F);
+            LogEvent(args.Effect.description);
         }
 
         private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
@@ -109,7 +117,7 @@ namespace Round.UI.Main
             LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color> to win the round");
         }
         
-        private void LogTimerUpdate(float remainingTime)
+        private void LogTimerUpdate(int remainingTime)
         {
             if (remainingTime > 1)
                 return;

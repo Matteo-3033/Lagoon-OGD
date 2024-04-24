@@ -26,12 +26,6 @@ public class PlayerPositionController : MonoBehaviour
         inputHandler = GetComponentInParent<IInputHanlder>();
     }
 
-    public void SetEnabled(bool enabled)
-    {
-        this.enabled = enabled;
-        rb.useGravity = enabled;
-    }
-
     private void FixedUpdate()
     {
         Vector3 inputDirection = inputHandler.GetMovementDirection();

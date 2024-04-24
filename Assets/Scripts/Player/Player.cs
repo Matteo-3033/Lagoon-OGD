@@ -1,4 +1,5 @@
 using System;
+using Interaction;
 using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
@@ -9,6 +10,7 @@ public class Player : NetworkBehaviour
 {
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
+    public event EventHandler<Vector3> OnPositionChanged;
     
     public static Player LocalPlayer { get; private set;  }
     public static Player Opponent { get; private set;  }
@@ -17,6 +19,7 @@ public class Player : NetworkBehaviour
     public PlayerPositionController PositionController => GetComponent<PlayerPositionController>();
 	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
     public TrapSelector TrapSelector => GetComponent<TrapSelector>();
+    public Interactor Interactor => GetComponent<Interactor>();
     
 
     [field: SyncVar]
@@ -37,6 +40,26 @@ public class Player : NetworkBehaviour
 
     #region SERVER
     
+    [Server]
+    public void Init(RoomPlayer profile, bool isMangiagalli)
+    {
+        Username = profile.Username;
+        IsMangiagalli = isMangiagalli;
+        Score = profile.Score().Value;
+        Deaths = profile.Deaths().Value;
+        Kills = profile.Kills().Value;
+    }
+    
+    [Command]
+    private void CmdPositionChanged(Vector3 position)
+    {
+        OnPositionChanged?.Invoke(this, position);
+    }
+    
+    #endregion
+
+    #region CLIENT
+    
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -46,7 +69,7 @@ public class Player : NetworkBehaviour
         if (!identity.isLocalPlayer)
             OnStartOpponent();
     }
-
+    
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
@@ -57,6 +80,7 @@ public class Player : NetworkBehaviour
         OnPlayerSpawned?.Invoke(LocalPlayer);
     }
     
+    [Client]
     private void OnStartOpponent()
     {
         Opponent = this;
@@ -65,40 +89,49 @@ public class Player : NetworkBehaviour
         OnPlayerSpawned?.Invoke(Opponent);
     }
     
-    public void Init(RoomPlayer profile, bool isMangiagalli)
+    [TargetRpc]
+    public void TargetEnableMovement(bool enable)
     {
-        Username = profile.Username;
-        IsMangiagalli = isMangiagalli;
-        Score = profile.Score().Value;
-        Deaths = profile.Deaths().Value;
-        Kills = profile.Kills().Value;
+        EnableMovement(enable);
     }
     
-    #endregion
+    [TargetRpc]
+    public void TargetGoTo(Vector3 position)
+    {
+        transform.position = position;
+        CmdPositionChanged(position);
+    }
 
-    #region CLIENT
-    
+    [Client]
     public void EnableMovement(bool enable)
     {
-        PositionController.SetEnabled(enable);    
+        PositionController.enabled = enable;
+        Interactor.enabled = enable;
     }
     
+    [Client]
     public void MakeInvisible()
     {
         SetLayerRecursively(gameObject, LayerMask.NameToLayer("Behind-FieldOfView"));
     }
     
+    [Client]
     public void MakeVisible()
     {
         Debug.Log("MakeVisible");
         SetLayerRecursively(gameObject, LayerMask.NameToLayer("FieldOfView"));
     }
 
+    [Client]
     public override void OnStopClient()
     {
         OnPlayerDespawned?.Invoke(this);
         base.OnStopClient();
     }
+    
+    #endregion
+    
+    #region UTILS
     
     private void SetLayerRecursively(GameObject obj, int layer)
     {

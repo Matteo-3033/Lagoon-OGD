@@ -36,7 +36,14 @@ public class Inventory : NetworkBehaviour
     public class OnTrapsUpdatedArgs : EventArgs
     {
         public TrapModifier Trap;
-        public bool Acquired;
+        public TrapOP Op;
+    }
+    
+    public enum TrapOP
+    {
+        Acquired,
+        Placed,
+        Cleared
     }
     
     public event EventHandler<OnKeyFragmentUpdatedArgs> OnKeyFragmentUpdated;
@@ -57,8 +64,10 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void Clear()
     {
-        KeyFragments = 1;
-        stats.Clear();
+        var statsCopy = stats.ToArray();
+        foreach (var modifier in statsCopy)
+            RemoveStatsModifier(modifier);
+        
         traps.Clear();
     }
 
@@ -185,10 +194,26 @@ public class Inventory : NetworkBehaviour
     }
     
     private void OnTrapsChanged(SyncList<TrapModifier>.Operation op, int itemIndex, TrapModifier oldItem, TrapModifier newItem)
-    { 
+    {
+        TrapOP trapOp;
+        switch (op)
+        {
+            case SyncList<TrapModifier>.Operation.OP_ADD:
+                trapOp = TrapOP.Acquired;
+                break;
+            case SyncList<TrapModifier>.Operation.OP_CLEAR:
+                trapOp = TrapOP.Cleared;
+                break;
+            case SyncList<TrapModifier>.Operation.OP_REMOVEAT:
+                trapOp = TrapOP.Placed;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(op), op, null);
+        }
+        
         OnTrapsUpdated?.Invoke(this, new OnTrapsUpdatedArgs
         {
-            Acquired = op == SyncList<TrapModifier>.Operation.OP_ADD,
+            Op = trapOp,
             Trap = op == SyncList<TrapModifier>.Operation.OP_ADD ? newItem : oldItem
         });
     }
