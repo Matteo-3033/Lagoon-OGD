@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TrapSelector: MonoBehaviour
 {
-    private int selectedIndex;
+    private int selectedIndex = -1;
     private List<TrapModifier> GetTraps() => Player.LocalPlayer.Inventory.Traps.ToList();
     
     [SerializeField] private AnimationClip selectTrapAnimation;
@@ -25,6 +25,7 @@ public class TrapSelector: MonoBehaviour
         var inputHandler = gameObject.GetComponent<IInputHanlder>();
         inputHandler.OnPlaceTrap += PlaceTrap;
         inputHandler.OnSelectTrap += OnChangeSelection;
+        selectedIndex = -1;
     }
 
     private void OnChangeSelection(object sender, int direction)
