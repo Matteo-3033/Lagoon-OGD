@@ -11,7 +11,7 @@ namespace Interaction
 
         public string InteractionPrompt => modifier.modifierName;
         
-        public bool Interact(Interactor interactor)
+        public bool StartInteraction(Interactor interactor)
         {
             CmdInteract();
             return true;

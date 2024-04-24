@@ -14,6 +14,7 @@ namespace Interaction
 
         private IInputHanlder _inputHandler;
         private GameObject selectedObj;
+        private bool interacting = false;
         
         private void Awake()
         {
@@ -39,10 +40,19 @@ namespace Interaction
                 Deselect();
         }
 
-        private void CheckInteraction(object sender, EventArgs args)
+        private void CheckInteraction(object sender, bool pressed)
         {
-            if (selectedObj != null && selectedObj.TryGetComponent<IInteractable>(out var interactable)) 
-                interactable?.Interact(this);
+            if (selectedObj != null && selectedObj.TryGetComponent<IInteractable>(out var interactable))
+            {
+                if (pressed)
+                    interacting = interactable?.StartInteraction(this) ?? false;
+                else if (interacting)
+                {
+                    interactable?.StopInteraction(this);
+                    interacting = false;
+                }
+            }
+            else interacting = false;
         }
 
         private void Select(GameObject obj)
@@ -54,8 +64,14 @@ namespace Interaction
         
         private void Deselect()
         {
-            if (selectedObj != null && selectedObj.TryGetComponent<ISelectable>(out var selectable))
-                selectable.OnDeselected();
+            if (selectedObj != null)
+            {
+                if (interacting && selectedObj.TryGetComponent<IInteractable>(out var interactable))
+                    interactable.StopInteraction(this);
+                if (selectedObj.TryGetComponent<ISelectable>(out var selectable)) 
+                    selectable.OnDeselected();
+            } 
+            interacting = false;
             selectedObj = null;
         }
     }

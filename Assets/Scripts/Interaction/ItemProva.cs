@@ -12,7 +12,7 @@ namespace Interaction
 
         public string InteractionPrompt => throw new System.NotImplementedException();
 
-        public bool Interact(Interactor interactor)
+        public bool StartInteraction(Interactor interactor)
         {
             Destroy(model);
             return true;

@@ -27,7 +27,7 @@ namespace Interaction.Trap
             EnableTrap();
         }
 
-        public bool Interact(Interactor interactor)
+        public bool StartInteraction(Interactor interactor)
         {
             if (!Working)
                 return false;
