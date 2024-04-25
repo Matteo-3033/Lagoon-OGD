@@ -21,6 +21,7 @@ namespace Round.UI.Main
                 OnPlayerSpawned(Player.LocalPlayer);
             if (Player.Opponent != null)
                 OnPlayerSpawned(Player.Opponent);
+            
             Player.OnPlayerSpawned += OnPlayerSpawned;
         }
 
