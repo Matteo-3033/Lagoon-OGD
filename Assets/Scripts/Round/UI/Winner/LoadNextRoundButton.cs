@@ -27,7 +27,7 @@ namespace Round.UI.Winner
 
         private void OnClick()
         {
-            RoundController.Instance.CmdLoadNextRound();
+            RoundController.Instance.AskForNextRound();
             loading.SetActive(true);
             gameObject.SetActive(false);
         }

@@ -12,6 +12,7 @@ namespace Round
     public class RoundController: NetworkBehaviour
     {
         private const int UPDATE_TIMER_EVERY_SECONDS = 10;
+        private const float LOAD_NEXT_ROUND_AFTER_SECONDS = 10F;
 
         public static RoundController Instance { get; private set; }
         public static RoundConfiguration Round => MatchController.Instance.CurrentRound;
@@ -23,7 +24,8 @@ namespace Round
             Loaded,
             Starting,
             Started,
-            Ended
+            Ended,
+            LoadingNext
         }
         
         public static RoundState State { get; private set; } = RoundState.None;
@@ -255,7 +257,7 @@ namespace Round
         }
         
         [Command(requiresAuthority = false)]
-        public void CmdLoadNextRound(NetworkConnectionToClient sender = null)
+        private void CmdRegisterNextRoundRequest(NetworkConnectionToClient sender = null)
         {
             if (sender == null) return;
             
@@ -263,7 +265,24 @@ namespace Round
             playersReady.Add(player.Username);
             
             if (AllPlayersReady())
-                OnLoadNextRound?.Invoke();
+                LoadNextRound();
+            else Invoke(nameof(LoadNextRound), LOAD_NEXT_ROUND_AFTER_SECONDS);
+        }
+
+        [Server]
+        private void LoadNextRound()
+        {
+            if (State < RoundState.Ended)
+            {
+                Debug.LogWarning("Round not ended yet. Cannot load next round.");
+                return;
+            }
+            
+            if (State == RoundState.LoadingNext)
+                return;
+            
+            State = RoundState.LoadingNext;
+            OnLoadNextRound?.Invoke();
         }
 
         #endregion
@@ -304,6 +323,11 @@ namespace Round
             Debug.Log($"Round ended. Winner: {winner.Username}");
             State = RoundState.Ended;
             OnRoundEnded?.Invoke(winner);
+        }
+        
+        public void AskForNextRound()
+        {
+            CmdRegisterNextRoundRequest();
         }
         
         [TargetRpc]
