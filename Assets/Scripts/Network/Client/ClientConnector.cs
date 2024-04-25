@@ -65,16 +65,15 @@ namespace Network
                 return;
             }
             
-            if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName))
+            if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName) || PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName, "") == "")
             {
                 OnFailedConnection();
                 return;
             }
                 
             var username = PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName);
-            if (username == "") return;
             
-            Debug.Log("Connecting to server...");
+            Debug.Log("Authenticating to server...");
            
             AuthBehaviour.Instance.SignIn(username);
         }
