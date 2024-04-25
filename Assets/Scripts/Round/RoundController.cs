@@ -12,22 +12,32 @@ namespace Round
     public class RoundController: NetworkBehaviour
     {
         private const int UPDATE_TIMER_EVERY_SECONDS = 10;
-        private const float LOAD_AFTER_SECONDS = 3F;
 
         public static RoundController Instance { get; private set; }
+        public static RoundConfiguration Round => MatchController.Instance.CurrentRound;
+
         
-        public RoundConfiguration Round => MatchController.Instance.CurrentRound;
-        public static bool Loaded { get; private set; } 
+        public enum RoundState
+        {
+            None,
+            Loaded,
+            Starting,
+            Started,
+            Ended
+        }
         
-        
-        private readonly Dictionary<string, bool> playersReady = new();
+        public static RoundState State { get; private set; } = RoundState.None;
+        public static bool HasLoaded() => Instance != null && State >= RoundState.Loaded;
+
+
+        private readonly HashSet<string> playersReady = new();
         private bool tie;
 
         public IEnumerable<Player> Players => NetworkServer.connections.Values.Select(conn => conn.Player());
+        [field: SyncVar] public Player Winner { get; private set; }
         
         
         // Client side events
-        public event Action OnRoundStarted;
         public event Action OnNoWinningCondition;
         public event Action<int> TimerUpdate;
         
@@ -38,6 +48,7 @@ namespace Round
         public static event Action OnRoundLoaded;
         public event Action OnCountdownStart;
         public event Action<int> OnCountdown;
+        public event Action OnRoundStarted;
         public event Action<Player> OnRoundEnded;
         
         
@@ -56,8 +67,8 @@ namespace Round
 
         private void Start()
         {
+            State = RoundState.Loaded;
             OnRoundLoaded?.Invoke();
-            Loaded = true;
         }
 
         #region SERVER
@@ -80,28 +91,44 @@ namespace Round
         [ServerCallback]
         private void OnAddPlayer(NetworkConnectionToClient conn, string username)
         {
-            if (playersReady.ContainsKey(username))
+            if (playersReady.Contains(username))
                 return;
             
             Debug.Log($"Player {username} loaded round");
             
-            playersReady.Add(username, true);
+            playersReady.Add(username);
 
             if (AllPlayersReady())
-                LoadRound();
+                StartCountdown();
         }
         
         [Server]
-        private void LoadRound()
+        private void StartCountdown()
         {
-            RpcOnRoundLoaded();
-            StartCoroutine(StartRoundCountdown());
+            if (State != RoundState.Loaded)
+            {
+                Debug.LogWarning("Round not loaded yet. Cannot start countdown.");
+                return;
+            }
+            
+            playersReady.Clear();
+            State = RoundState.Starting;
+            RpcStartCountdown();
+            StartCoroutine(Countdown());
         }
         
         [Server]
         private void StartRound()
         {
+            if (State != RoundState.Starting)
+            {
+                Debug.LogWarning("Round not starting yet. Cannot start round.");
+                return;
+            }
+            
+            State = RoundState.Started;
             RpcStartRound();
+            OnRoundStarted?.Invoke();
             StartCoroutine(Timer());
         }
 
@@ -124,30 +151,59 @@ namespace Round
             yield return new WaitForSeconds(time);
 
             NotifyRemainingTime(0);
-            
-            if (!CheckIfWinner())
-            {
-                tie = true;
 
-                foreach (var player in Players)
-                    player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
-            }
+            OnTimerEnd();
         }
-        
+
         [Server]
         private void NotifyRemainingTime(int time)
         {
             TimerUpdate?.Invoke(time);
             RpcNotifyRemainingTime(time);
         }
+        
+        [Server]
+        private void OnTimerEnd()
+        {
+            Debug.Log("Round time ended");
+            if (CheckIfAdvantage(out var winner))
+                EndRound(winner);
+            else
+            {
+                tie = true;
+                foreach (var player in Players)
+                    player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
+            }
+        }
 
         [Server]
-        private bool CheckIfWinner()
+        private bool CheckIfAdvantage(out Player winner)
         {
-            foreach (var player in Players)
+            winner = null;
+
+            var players = Players.ToList();
+            Debug.Log(players.Count);
+            if (players.Count == 0)
+                return false;
+            
+            if (players.Count == 1)
             {
-                if (player.Inventory.KeyFragments != Round.keyFragments) continue;
-                OnRoundEnded?.Invoke(player);
+                winner = players[0];
+                return true;
+            }
+            
+            var player1 = players[0];
+            var player2 = players[1];
+            
+            if (player1.Inventory.KeyFragments > player2.Inventory.KeyFragments)
+            {
+                winner = player1;
+                return true;
+            }
+            
+            if (player1.Inventory.KeyFragments < player2.Inventory.KeyFragments)
+            {
+                winner = player2;
                 return true;
             }
 
@@ -181,10 +237,33 @@ namespace Round
                 TargetNotifyNoWinningCondition(sender);
         }
         
+        [Server]
         private void EndRound(Player winner)
         {
-            RpcEndRound(winner);
+            if (State != RoundState.Started)
+            {
+                Debug.LogWarning("Round not started yet. Cannot end round.");
+                return;
+            }
+            
+            Debug.Log($"Round ended. Winner: {winner.Username}");
+
+            Winner = winner;
+            State = RoundState.Ended;
             OnRoundEnded?.Invoke(winner);
+            RpcEndRound(winner);
+        }
+        
+        [Command(requiresAuthority = false)]
+        public void CmdLoadNextRound(NetworkConnectionToClient sender = null)
+        {
+            if (sender == null) return;
+            
+            var player = sender.Player();
+            playersReady.Add(player.Username);
+            
+            if (AllPlayersReady())
+                OnLoadNextRound?.Invoke();
         }
 
         #endregion
@@ -197,15 +276,17 @@ namespace Round
         }
 
         [ClientRpc]
-        private void RpcOnRoundLoaded()
+        private void RpcStartCountdown()
         {
             Debug.Log("Round starting in 5 seconds...");
-            StartCoroutine(StartRoundCountdown());
+            State = RoundState.Starting;
+            StartCoroutine(Countdown());
         }
 
         [ClientRpc]
         private void RpcStartRound()
         {
+            State = RoundState.Started;
             OnRoundStarted?.Invoke();
             Player.LocalPlayer.EnableMovement(true);
         }
@@ -221,6 +302,7 @@ namespace Round
         private void RpcEndRound(Player winner)
         {
             Debug.Log($"Round ended. Winner: {winner.Username}");
+            State = RoundState.Ended;
             OnRoundEnded?.Invoke(winner);
         }
         
@@ -235,7 +317,7 @@ namespace Round
         #region UTILS
 
         private bool counting;
-        private IEnumerator StartRoundCountdown()
+        private IEnumerator Countdown()
         {
             if (counting) yield break;
             counting = true;
@@ -258,7 +340,7 @@ namespace Round
         
         private bool AllPlayersReady()
         {
-            return playersReady.Count == MatchController.MAX_PLAYERS && playersReady.Values.All(ready => ready);
+            return playersReady.Count == MatchController.MAX_PLAYERS;
         }
 
         #endregion
@@ -267,7 +349,7 @@ namespace Round
         {
             Debug.Log("Destroying RoundController");
             Instance = null;
-            Loaded = false;
+            State = RoundState.None;
         }
     }
 }

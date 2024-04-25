@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Network;
 using UnityEngine;
 using Screen = Utils.Screen;
 
@@ -26,6 +27,9 @@ namespace Round.UI
         
         private void Start()
         {
+            if (!RiseNetworkManager.IsClient)
+                return;
+            
             AddMenu(ScreenKey.Waiting, waiting);
             AddMenu(ScreenKey.Countdown, countdown);
             AddMenu(ScreenKey.Main, round);
@@ -33,7 +37,7 @@ namespace Round.UI
             
             ShowMenu(ScreenKey.Waiting);
             
-            if (RoundController.Loaded)
+            if (RoundController.HasLoaded())
                 RegisterRoundCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundCallbacks;

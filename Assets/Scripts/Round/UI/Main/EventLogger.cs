@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 using Interaction.Trap;
+using Network;
 using TrapModifiers;
 using UnityEngine;
 
@@ -30,10 +31,13 @@ namespace Round.UI.Main
 
         private void Awake()
         {
+            if (!RiseNetworkManager.IsClient)
+                return;
+            
             height = GetComponent<RectTransform>().rect.height;
             eventLogTemplate.gameObject.SetActive(false);
             
-            if (RoundController.Loaded)
+            if (RoundController.HasLoaded())
                 RegisterRoundControllerCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
@@ -111,7 +115,7 @@ namespace Round.UI.Main
 
         private void LogNoWinningCondition()
         {
-            var totalFragments = RoundController.Instance.Round.keyFragments;
+            var totalFragments = RoundController.Round.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
             
             LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color> to win the round");

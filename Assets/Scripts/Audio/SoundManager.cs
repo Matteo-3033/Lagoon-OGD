@@ -34,7 +34,7 @@ namespace Audio
 
         private void Start()
         {
-            if (RoundController.Loaded)
+            if (RoundController.HasLoaded())
                 RegisterRoundControllerCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;

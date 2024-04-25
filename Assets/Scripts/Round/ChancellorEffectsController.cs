@@ -33,7 +33,7 @@ namespace Round
         {
             base.OnStartServer();
             
-            if (RoundController.Loaded)
+            if (RoundController.HasLoaded())
                 RegisterRoundControllerCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
@@ -52,7 +52,7 @@ namespace Round
             if (timeLeftSecs <= 0)
                 return;
             
-            var totalSecs = (int) (RoundController.Instance.Round.timeLimitMinutes * 60);
+            var totalSecs = (int) (RoundController.Round.timeLimitMinutes * 60);
             var timePassed = totalSecs - timeLeftSecs;
             
             Debug.Log($"Time passed: {timePassed}");
