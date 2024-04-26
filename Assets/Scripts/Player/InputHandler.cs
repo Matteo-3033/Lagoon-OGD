@@ -16,7 +16,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 {
     public LayerMask groundLayerMask;
     [Range(0,1)]
-    public float cameraMovementIgnoreTime = .8f;
+    private float cameraMovementIgnoreTime = .8f;
 
     public event EventHandler<int> OnCameraRotation;
 

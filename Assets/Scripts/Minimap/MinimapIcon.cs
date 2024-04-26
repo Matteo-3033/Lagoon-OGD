@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class MinimapIcon : MonoBehaviour
+public class MinimapIcon : NetworkBehaviour
 {
     [SerializeField] private Camera minimapCamera;
-    [SerializeField] private bool showAtStart;
+    [SerializeField] private bool startHidden;
     [Header("Clamp to border")] public bool clampToBorder = true;
     public float offset;
     [Header("Ripple effect")] public GameObject ripplePrefab;
+    public RippleConfiguration defaultRippleConfiguration;
 
     private List<SpriteRenderer> _spriteRenderers;
     private bool _isShown;
@@ -24,19 +26,15 @@ public class MinimapIcon : MonoBehaviour
     private void Awake()
     {
         _spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
-    }
-
-    private void Start()
-    {
         if (minimapCamera == null) minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<Camera>();
 
-        if (showAtStart)
+        if (startHidden)
         {
-            Show();
+            Hide();
         }
         else
         {
-            Hide();
+            Show();
         }
     }
 
@@ -107,6 +105,11 @@ public class MinimapIcon : MonoBehaviour
         ClampToMinimapBorder(wasClamped);
     }
 
+    public void ShowRipple()
+    {
+        ShowRipple(defaultRippleConfiguration);
+    }
+
     public void ShowRipple(RippleConfiguration rippleConfiguration)
     {
         ShowRipple(rippleConfiguration.totalDuration,
@@ -123,6 +126,9 @@ public class MinimapIcon : MonoBehaviour
             color);
     }
 
+#if !UNITY_EDITOR
+    [ClientRpc]
+#endif
     public void ShowRipple(float totalDuration, int repetitions, float scale, Color color)
     {
         GameObject rippleObject = Instantiate(ripplePrefab, transform);

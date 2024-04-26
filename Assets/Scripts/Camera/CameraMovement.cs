@@ -5,8 +5,7 @@ using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
-    public Transform player;
-    public float rotationTime;
+    private float rotationTime = .5f;
 
     private int _targetRotation;
     private int _startRotation;
@@ -18,12 +17,6 @@ public class CameraMovement : MonoBehaviour
 
     private void Awake()
     {
-        if (player == null || player.GetComponent<NetworkIdentity>() == null)
-        {
-            player = Player.LocalPlayer.transform;
-        }
-
-        _inputHandler = player.GetComponent<IInputHanlder>();
     }
 
     void Start()
@@ -32,6 +25,7 @@ public class CameraMovement : MonoBehaviour
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
 
+        _inputHandler = Player.LocalPlayer.GetComponent<IInputHanlder>();
         _inputHandler.OnCameraRotation += OnOnCameraRotation;
     }
 
@@ -44,10 +38,13 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
-        Vector3 newPosition = player.position;
-        newPosition.y = transform.position.y;
+        if (Player.LocalPlayer)
+        {
+            Vector3 newPosition = Player.LocalPlayer.transform.position;
+            newPosition.y = transform.position.y;
 
-        transform.position = newPosition;
+            transform.position = newPosition;
+        }
 
         float t = _currentTime / _durationTime;
         if (1 - t > .001f)

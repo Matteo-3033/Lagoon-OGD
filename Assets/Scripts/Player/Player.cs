@@ -24,12 +24,12 @@ public class Player : NetworkBehaviour
     public static event Action<bool> OnPlayerSpawned;
     public static event Action<bool> OnPlayerDespawned;
 
-
     public override void OnStartClient()
     {
         base.OnStartClient();
 
         var identity = gameObject.GetComponent<NetworkIdentity>();
+
 
         if (!identity.isLocalPlayer)
             OnStartOpponent();

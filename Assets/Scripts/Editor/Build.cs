@@ -32,6 +32,13 @@ namespace Editor
             BuildWindowsServer();
             BuildWindowsClient();
         }
+
+        [MenuItem("Build/Windows/Build Server and Client")]
+        public static void BuildWindowsServerAndClient()
+        {
+            BuildWindowsServer();
+            BuildWindowsClient();
+        }
         
         [MenuItem("Build/Windows/Master Server")]
         public static void BuildWindowsMasterServer()

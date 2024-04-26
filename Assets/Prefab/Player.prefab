@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4667732873808728394}
   - component: {fileID: 455724678192080994}
   - component: {fileID: 8966992613993173721}
-  - component: {fileID: 9007718436325738886}
+  - component: {fileID: 1164967255505282282}
   - component: {fileID: 1402961541625812647}
   - component: {fileID: 5372978510782166586}
   - component: {fileID: 5855581670994239393}
@@ -175,7 +175,7 @@ MonoBehaviour:
   acceleratedMovement: 1
   acceleration: 100
   deacceleration: 50
---- !u!114 &9007718436325738886
+--- !u!114 &1164967255505282282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -529,11 +529,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ef4b5c0c1329a4188529f37ec9c6e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   minimapCamera: {fileID: 0}
-  showAtStart: 0
+  startHidden: 1
   clampToBorder: 1
   offset: 2
-  ripplePrefab: {fileID: 0}
+  ripplePrefab: {fileID: 4363934167238568914, guid: 6bf4c72bafe535e44acdc941706bc7e5,
+    type: 3}
+  defaultRippleConfiguration: {fileID: 11400000, guid: 2b0890d8116656945aeca65e62610431,
+    type: 2}
 --- !u!1 &5021750893386539450
 GameObject:
   m_ObjectHideFlags: 0

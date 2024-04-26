@@ -136,7 +136,7 @@ MonoBehaviour:
     m_Bits: 319
   m_TransparentLayerMask:
     serializedVersion: 2
-    m_Bits: 319
+    m_Bits: 1343
   m_DefaultStencilState:
     overrideStencilState: 0
     stencilReference: 1
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: RenderObjects
+    passTag: MinimapBehindFieldOfView
     Event: 500
     filterSettings:
       RenderQueueType: 1
