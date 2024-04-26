@@ -14,7 +14,7 @@ namespace Editor
         
         private static readonly string[] MatchScenes =
         {
-            Scenes.Menu, Scenes.Lobby, Scenes.TestScene, Scenes.TestScene2
+            Scenes.Menu, Scenes.Lobby, Scenes.TestScene, Scenes.TestScene2, Scenes.TestSceneMinimap
         };
         
         [MenuItem("Build/Build All")]
@@ -29,6 +29,13 @@ namespace Editor
         public static void BuildWindows()
         {
             BuildWindowsMasterServer();
+            BuildWindowsServer();
+            BuildWindowsClient();
+        }
+
+        [MenuItem("Build/Windows/Build Server and Client")]
+        public static void BuildWindowsServerAndClient()
+        {
             BuildWindowsServer();
             BuildWindowsClient();
         }

@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 public class PlayerRotationController : MonoBehaviour
@@ -15,7 +16,7 @@ public class PlayerRotationController : MonoBehaviour
 
     // Update is called once per frame
     private void FixedUpdate()
-    { 
+    {
         var lookDirection = inputHandler.GetLookDirection();
         LookRotation(lookDirection);
     }

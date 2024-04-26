@@ -113,12 +113,14 @@ public class Player : NetworkBehaviour
     public void MakeInvisible()
     {
         SetLayerRecursively(gameObject, LayerMask.NameToLayer("Behind-FieldOfView"));
+        gameObject.GetComponentInChildren<MinimapIcon>().Hide();
     }
     
     [Client]
     public void MakeVisible()
     {
         SetLayerRecursively(gameObject, LayerMask.NameToLayer("FieldOfView"));
+        gameObject.GetComponentInChildren<MinimapIcon>().Show();
     }
 
     [Client]
