@@ -1,19 +1,16 @@
-﻿using System.Collections.Generic;
-using Mirror;
-using UnityEngine;
-using Utils;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 using Screen = Utils.Screen;
 
 namespace MainMenu
 {
     public class UIManager : MonoBehaviour
     {
-        [SerializeField] private Screen connection;
-        [SerializeField] private Screen main;
-        [SerializeField] private Screen search;
+        [SerializeField] private Screen connectionMenu;
+        [SerializeField] private TabletUIManager tabletUIManager;
+        [SerializeField] private CinemachineManager cinemachineManager;
         
-        private readonly Dictionary<MenuKey, Screen> menus = new();
-        private Screen currentMenu;
+        private MenuKey? currentMenu = null;
 
         public enum MenuKey
         {
@@ -32,43 +29,34 @@ namespace MainMenu
                 Destroy(this);
                 return;
             }
+            
             Instance = this;
         }
 
         private void Start()
         {
-            if (connection == null)
-            {
-                Debug.LogError("UIManager: Connection is not set.");
-                return;
-            }
-
-            AddMenu(MenuKey.Connection, connection);
-            AddMenu(MenuKey.MainMenu, main);
-            AddMenu(MenuKey.SearchingMatch, search);
-            
             ShowMenu(MenuKey.Connection);
-        }
-        
-        private void AddMenu(MenuKey key, Screen value)
-        {
-            if (value != null)
-                menus.Add(key, value);
-            value.gameObject.SetActive(false);
         }
 
         public void ShowMenu(MenuKey menuKey)
         {
-            if (currentMenu != null)
-                currentMenu.OnUnfocus();
-            currentMenu = menus[menuKey];
-            currentMenu.OnFocus();
-        }
-
-        private void HideAll()
-        {
-            currentMenu.OnUnfocus();
-            currentMenu = null;
+            if (currentMenu == menuKey) return;
+            
+            if (currentMenu == MenuKey.Connection)
+            {
+                cinemachineManager.ShowMainMenu();
+                connectionMenu.OnUnfocus();
+                tabletUIManager.ShowMenu(MenuKey.MainMenu);
+            }
+            else if (menuKey == MenuKey.Connection)
+            {
+                cinemachineManager.ShowConnectionMenu();
+                connectionMenu.OnFocus();
+            }
+            else
+                tabletUIManager.ShowMenu(menuKey);
+            
+            currentMenu = menuKey;
         }
     }
 }
