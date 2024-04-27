@@ -6,7 +6,5 @@
         public const string Menu = "Assets/Scenes/Client/MainMenu.unity";
         public const string Lobby = "Assets/Scenes/Client/Lobby.unity";
         public const string TestScene = "Assets/Scenes/Client/TestScene.unity";
-        public const string TestScene2 = "Assets/Scenes/Client/TestMovement.unity";
-        public const string TestSceneMinimap = "Assets/Scenes/Client/TestMinimap.unity";
     }
 }

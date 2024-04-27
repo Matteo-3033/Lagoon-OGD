@@ -1,4 +1,5 @@
-﻿using MasterServerToolkit.MasterServer;
+﻿using System.Collections;
+using MasterServerToolkit.MasterServer;
 using MainMenu;
 using MainMenu.Connection;
 using UnityEngine;
@@ -31,11 +32,25 @@ namespace Network
             if (Mst.Client.Auth.HasAuthToken())
                 infoText.ShowNoConnection();
             else infoText.ShowConnecting();
+            
+            StartCoroutine(DoInitClient());
 
+            
+        }
+
+        private IEnumerator DoInitClient()
+        {
+            // Wait for a frame to make sure all the UI elements and events are updated
+            yield return null;
+            
             if (ClientToMasterConnector.Instance.IsConnected)
+            {
+                Debug.Log("Client already connected to server");
                 OnClientConnected();
+            }
             else
             {
+                Debug.Log("CONNECTING");
                 ClientToMasterConnector.Instance.OnConnectedEvent.AddListener(OnClientConnected);
                 ClientToMasterConnector.Instance.OnFailedConnectEvent.AddListener(OnFailedConnection);
                 ClientToMasterConnector.Instance.StartConnection();

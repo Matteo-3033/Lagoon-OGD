@@ -1,7 +1,4 @@
-using System;
-using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
@@ -17,15 +14,11 @@ public class CameraMovement : MonoBehaviour
     private float _currentTime = 0f;
     private float _currentRotation;
 
-    private IInputHanlder _inputHandler;
-
     void Start()
     {
         _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
-
-        _inputHandler = Player.LocalPlayer.GetComponent<IInputHanlder>();
     }
 
     private void OnOnCameraRotation(object sender, int direction)

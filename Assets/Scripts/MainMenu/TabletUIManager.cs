@@ -14,7 +14,7 @@ namespace MainMenu
         private readonly Dictionary<UIManager.MenuKey, Screen> menus = new();
         private Screen currentMenu;
         
-        private void Start()
+        private void Awake()
         {
             if (mainMenu == null)
             {
@@ -39,7 +39,7 @@ namespace MainMenu
         {
             if (currentMenu != null)
                 currentMenu.OnUnfocus();
-            
+
             currentMenu = menus[menuKey];
             currentMenu.OnFocus();
         }

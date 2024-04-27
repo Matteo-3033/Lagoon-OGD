@@ -31,7 +31,9 @@ public class BlurEffect : MonoBehaviour
 
     private void OnDestroy()
     {
-        blurCamera.targetTexture.Release();
+        if (blurCamera != null && blurCamera.targetTexture != null)
+            blurCamera.targetTexture.Release();
+        
         ChancellorEffectsController.OnEffectEnabled -= OnAlarm;
     }
     

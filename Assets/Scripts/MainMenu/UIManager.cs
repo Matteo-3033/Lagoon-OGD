@@ -35,6 +35,7 @@ namespace MainMenu
 
         private void Start()
         {
+            Debug.Log("UIManager: Start");
             ShowMenu(MenuKey.Connection);
         }
 
