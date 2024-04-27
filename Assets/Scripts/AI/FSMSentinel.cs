@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using Round;
 using UnityEditor;
 using UnityEngine.AI;
 
@@ -27,8 +28,9 @@ public class FSMSentinel : NetworkBehaviour
     [SyncVar] private Vector3 _alarmTargetPosition;
     private Vector3 _alarmTargetPreviousPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
+    private GameObject[] _targetObjects;
 
-    void Start()
+    private void Awake()
     {
         _baseColor = alarmLight.color;
         _agent = GetComponent<NavMeshAgent>();
@@ -38,6 +40,29 @@ public class FSMSentinel : NetworkBehaviour
         {
             _positionTarget = patrolPositions[_currentPatrolPositionIndex];
         }
+
+
+        GameObject localPlayer = Player.LocalPlayer?.gameObject;
+        if (!localPlayer)
+        {
+            _targetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
+        }
+        else
+        {
+            GameObject opponent = Player.Opponent?.gameObject;
+            _targetObjects = new[] { localPlayer, opponent };
+        }
+        //RoundController.Instance.OnRoundStarted += OnRoundStarted;
+    }
+
+    private void Start()
+    {
+        OnRoundStarted();
+    }
+
+    private void OnRoundStarted()
+    {
+        if (!authority) return;
 
         FSMState patrolState = new FSMState();
         patrolState.EnterActions.Add(PositionDestination);
@@ -68,7 +93,15 @@ public class FSMSentinel : NetworkBehaviour
         searchState.AddTransition(enemyVisibleTransition, alarmState);
 
         _fsm = new FSM(patrolState);
+        StartPatrolling();
 
+        //RoundController.Instance.OnRoundStarted -= OnRoundStarted;
+    }
+
+    //[Command]
+    private void StartPatrolling()
+    {
+        Debug.Log("Start coroutine");
         StartCoroutine(Patrol());
     }
 
@@ -83,18 +116,23 @@ public class FSMSentinel : NetworkBehaviour
 
     // ACTIONS
 
+    //[ClientRpc]
     private void AlarmColorReset()
     {
         alarmLight.color = _baseColor;
     }
 
+    //[ClientRpc]
     private void AlarmColor()
     {
+        Debug.Log("Entering alarm state");
         alarmLight.color = alarmColor;
     }
 
+    //[ClientRpc]
     private void SearchColor()
     {
+        Debug.Log("Entering search state");
         alarmLight.color = searchColor;
     }
 
@@ -106,21 +144,21 @@ public class FSMSentinel : NetworkBehaviour
     private void FigureOutNewPosition()
     {
         Vector3 newPosition =
-            _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition) * reactionTime;
-        _alarmTargetPosition = newPosition;
+            _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition);
+        Debug.Log($"Old position: {_alarmTargetPreviousPosition}, last position: {_alarmTargetPosition}, prediction: {newPosition}");
+        _agent.SetDestination(newPosition);
     }
 
     private void PositionDestination()
     {
+        Debug.Log("Entering patrol state");
         _agent.SetDestination(_positionTarget.position);
     }
 
     private bool PositionReached()
     {
-        Vector3 targetPosition = _positionTarget.position;
-        targetPosition.y = transform.position.y;
-
-        return (targetPosition - transform.position).magnitude < .2f;
+        return _agent.hasPath &&
+               _agent.remainingDistance <= _agent.stoppingDistance;
     }
 
     private void NextPosition()
@@ -157,15 +195,14 @@ public class FSMSentinel : NetworkBehaviour
             _alarmTargetPosition = potentialTarget.position;
         }
 
+        //Debug.Log("IsEnemyVisible: " + isEnemyVisible);
         return isEnemyVisible;
     }
 
     private bool EnemyLost()
     {
-        Vector3 guessPosition = _alarmTargetPosition;
-        guessPosition.y = transform.position.y;
-
-        return (guessPosition - transform.position).magnitude < .2f && NotIsEnemyVisible();
+        return PositionReached() &&
+               NotIsEnemyVisible();
     }
 
     private bool NotIsEnemyVisible()
@@ -177,9 +214,8 @@ public class FSMSentinel : NetworkBehaviour
     {
         Vector3 distance = Vector3.positiveInfinity;
         Transform potentialTarget = null;
-        Player[] targetObjects = new[] { Player.LocalPlayer, Player.Opponent };
 
-        foreach (Player p in targetObjects)
+        foreach (GameObject p in _targetObjects)
         {
             Vector3 tempDistance = p.transform.position - transform.position;
             if (tempDistance.magnitude < distance.magnitude)

@@ -44,7 +44,7 @@ public class MinimapCamera : MonoBehaviour
     void LateUpdate()
     {
         Player player = Player.LocalPlayer;
-        if (!player?.transform) return;
+        if (!player || player.transform) return;
         
         Vector3 newPosition = player.transform.position;
         newPosition.y = transform.position.y;
