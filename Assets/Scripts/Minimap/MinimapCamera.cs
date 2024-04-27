@@ -1,16 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class MinimapCamera : MonoBehaviour
 {
+    [SerializeField] private Player testPlayer;
+    
     public LayerMask minimapLayerMask;
     public float darkCheckDistance = 5f;
 
     private Vector3 _movementDirection = Vector3.forward;
     private Camera _camera;
+    
+    private Player player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
 
     private void Start()
     {
@@ -43,7 +43,6 @@ public class MinimapCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        Player player = Player.LocalPlayer;
         if (!player?.transform) return;
         
         Vector3 newPosition = player.transform.position;
