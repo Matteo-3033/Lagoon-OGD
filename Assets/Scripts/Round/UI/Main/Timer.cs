@@ -20,19 +20,13 @@ namespace Round.UI.Main
         {
             running = true;
             RoundController.Instance.TimerUpdate += remainingTime=> time = remainingTime;
-            time = RoundController.Instance.Round.timeLimitMinutes * 60;
+            time = RoundController.Round.timeLimitMinutes * 60;
         }
 
         private void Update()
         {
             if (!running)
                 return;
-            
-            if (time <= 0)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
             
             time -= Mathf.Max(Time.deltaTime, 0F);
             

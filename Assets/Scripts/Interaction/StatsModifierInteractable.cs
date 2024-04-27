@@ -11,7 +11,7 @@ namespace Interaction
 
         public string InteractionPrompt => modifier.modifierName;
         
-        public bool Interact(Interactor interactor)
+        public bool StartInteraction(Interactor interactor)
         {
             CmdInteract();
             return true;
@@ -22,7 +22,7 @@ namespace Interaction
         {
             var target = modifier.isBuff ? sender.Player() : sender.Opponent();
             
-            target.Inventory.AddModifier(modifier);
+            target.Inventory.AddStatsModifier(modifier);
             
             NetworkServer.Destroy(gameObject);
         }

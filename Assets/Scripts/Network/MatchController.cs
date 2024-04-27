@@ -20,26 +20,27 @@ namespace Network
     
     public class MatchController : NetworkBehaviour
     {
-        private const int MaxPlayers = 2;
-        
+        public const int MAX_PLAYERS = 2;
         public static MatchController Instance { get; private set; }
         
-        public bool Started { get; private set; }
         
-        private int currentRoundIndex;
         private readonly List<RoundConfiguration> rounds = new();
         internal readonly Dictionary<NetworkConnectionToClient, string> ConnectionsToUsernames = new();
-
-        [field: SyncVar]
-        public RoundConfiguration CurrentRound { get; private set; }
-
+        
+        [field: SyncVar] public bool Started { get; private set; }
+        [field: SyncVar] public RoundConfiguration CurrentRound { get; private set; }
+        [field: SyncVar] public int RoundCnt { get; private set; }
+        public IReadOnlyDictionary<string, MatchPlayerData> Players => players;
         private readonly SyncDictionary<string, MatchPlayerData> players = new();
+        [SyncVar] private int currentRoundIndex;
         
         // Server side events
         public event Action OnMatchStarted;
         public event Action<MatchPlayerData, MatchPlayerData> OnMatchEnded;
         
-        public int RoundCnt => rounds.Count;
+        // Client side events
+        public event Action<string> OnPlayersDataChanged;
+        
         
         private void Awake()
         {
@@ -62,6 +63,7 @@ namespace Network
             Debug.Log("MatchController started on server");
             
             rounds.AddRange(RiseNetworkManager.RoomOptions.CustomOptions.AsString(RoomsModule.RoundsKey).GetRounds());
+            RoundCnt = rounds.Count;
             
             Debug.Log($"Round count: {RoundCnt}");
             
@@ -80,7 +82,7 @@ namespace Network
             if (!ConnectionsToUsernames.ContainsKey(conn))
                 InitPlayer(conn, username);
             
-            if (players.Count == MaxPlayers)
+            if (players.Count == MAX_PLAYERS)
                 StartCoroutine(StartMatch());
         }
 
@@ -91,7 +93,7 @@ namespace Network
             
             players[username] = new MatchPlayerData { Username = username};
             
-            Debug.LogError($"Adding player {username} to match. Current players: {ConnectionsToUsernames.Count}/{MaxPlayers}");
+            Debug.LogError($"Adding player {username} to match. Current players: {ConnectionsToUsernames.Count}/{MAX_PLAYERS}");
         }
 
         [Server]
@@ -105,15 +107,21 @@ namespace Network
             LoadRound(0);
             Started = true;
             OnMatchStarted?.Invoke();
-            
-            RoundController.OnRoundLoaded += () => RoundController.Instance.OnRoundWon += OnRoundWon;
+
+            RoundController.OnRoundLoaded += OnRoundLoaded;
         }
-        
+
+        private void OnRoundLoaded()
+        {
+            RoundController.Instance.OnRoundEnded += OnRoundWinner;
+            RoundController.Instance.OnLoadNextRound += () => LoadRound(currentRoundIndex + 1);
+        }
+
         [Server]
         private void LoadRound(int roundIndex)
         {
             currentRoundIndex = roundIndex;
-            if (currentRoundIndex >= RoundCnt)
+            if (HasWinner())
             {
                 EndMatch();
                 return;
@@ -124,7 +132,7 @@ namespace Network
 
             RiseNetworkManager.singleton.ServerChangeScene(CurrentRound.scene);
         }
-        
+
         [Server]
         private void EndMatch(string disconnectedPlayer = null)
         {
@@ -173,15 +181,30 @@ namespace Network
             players.Remove(username);
         }
 
-        private void OnRoundWon(Player player)
+        private void OnRoundWinner(Player winner)
         {
-            var data = players[player.Username];
+            var data = players[winner.Username];
             data.RoundsWon++;
-            players[player.Username] = data;
-            LoadRound(currentRoundIndex + 1);
+            players[winner.Username] = data;
         }
 
         #endregion
+
+        #region CLIENT
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            
+            players.Callback += (_, username, _) => OnPlayersDataChanged?.Invoke(username);
+        }
+
+        #endregion
+        
+        public bool HasWinner()
+        {
+            return currentRoundIndex >= RoundCnt || players.Values.Any(player => player.RoundsWon >= RoundCnt / 2 + 1);
+        }
 
         private void OnDestroy()
         {

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
+using Interaction.Trap;
 using Network;
+using TrapModifiers;
 using UnityEngine;
 
 namespace Round.UI.Main
@@ -29,10 +31,13 @@ namespace Round.UI.Main
 
         private void Awake()
         {
+            if (!RiseNetworkManager.IsClient)
+                return;
+            
             height = GetComponent<RectTransform>().rect.height;
             eventLogTemplate.gameObject.SetActive(false);
             
-            if (RoundController.Loaded)
+            if (RoundController.HasLoaded())
                 RegisterRoundControllerCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
@@ -43,6 +48,10 @@ namespace Round.UI.Main
                 OnPlayerSpawned(Player.Opponent);
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
+            
+            TrapInteractable.OnTrapNotAdded += LogTrapNotAdded;
+
+            ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -78,15 +87,21 @@ namespace Round.UI.Main
 
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Acquired)
+            if (args.Op == Inventory.TrapOP.Acquired)
             {
                 LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
                 LogEvent($"{args.Trap.description}");
             }
-            else
+            else if (args.Op == Inventory.TrapOP.Placed)
             {
                 LogEvent($"{args.Trap.modifierName} placed");
             }
+        }
+        
+        private void LogChancellorEffect(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
+        {
+            LogEvent("The <color=#FF0000>Chancellor</color> is awake!", 0.1F);
+            LogEvent(args.Effect.description);
         }
 
         private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
@@ -100,13 +115,13 @@ namespace Round.UI.Main
 
         private void LogNoWinningCondition()
         {
-            var totalFragments = RoundController.Instance.Round.keyFragments;
+            var totalFragments = RoundController.Round.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
             
             LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color> to win the round");
         }
         
-        private void LogTimerUpdate(float remainingTime)
+        private void LogTimerUpdate(int remainingTime)
         {
             if (remainingTime > 1)
                 return;
@@ -116,6 +131,11 @@ namespace Round.UI.Main
                 LogEvent("Time limit reached!", 0.1F);
                 LogEvent("Find a badge fragment to win the round");
             }
+        }
+        
+        private void LogTrapNotAdded(object sender, TrapModifier trap)
+        {
+            LogEvent($"{trap.modifierName} already in your inventory!");
         }
 
         [ContextMenu("Test event")]
@@ -157,8 +177,9 @@ namespace Round.UI.Main
 
         private void OnDestroy()
         {
-            Player.OnPlayerSpawned -= OnPlayerSpawned;
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
+            TrapInteractable.OnTrapNotAdded -= LogTrapNotAdded;
         }
     }
 }

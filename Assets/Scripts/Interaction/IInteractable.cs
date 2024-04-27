@@ -3,6 +3,10 @@ namespace Interaction
     public interface IInteractable 
     {
         public string InteractionPrompt { get; }
-        public bool Interact(Interactor interactor);
+        public bool StartInteraction(Interactor interactor);
+
+        public void StopInteraction(Interactor interactor)
+        {
+        }
     }
 }

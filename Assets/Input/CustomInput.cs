@@ -62,6 +62,24 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlaceTrap"",
+                    ""type"": ""Button"",
+                    ""id"": ""7ba08d0d-13d6-4efa-a753-1dedd5cac052"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectTrap"",
+                    ""type"": ""Value"",
+                    ""id"": ""ea8a70ef-05e0-4a37-aa71-79454341fcca"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -251,6 +269,28 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""action"": ""Interaction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a042608a-c085-4d99-9de1-8cc1c31ffc9d"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PlaceTrap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""31ff980e-5645-40f8-9f54-bfdb7c12c8e5"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectTrap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -263,6 +303,8 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         m_Player_View = m_Player.FindAction("View", throwIfNotFound: true);
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_Interaction = m_Player.FindAction("Interaction", throwIfNotFound: true);
+        m_Player_PlaceTrap = m_Player.FindAction("PlaceTrap", throwIfNotFound: true);
+        m_Player_SelectTrap = m_Player.FindAction("SelectTrap", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -328,6 +370,8 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_View;
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_Interaction;
+    private readonly InputAction m_Player_PlaceTrap;
+    private readonly InputAction m_Player_SelectTrap;
     public struct PlayerActions
     {
         private @CustomInput m_Wrapper;
@@ -336,6 +380,8 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         public InputAction @View => m_Wrapper.m_Player_View;
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @Interaction => m_Wrapper.m_Player_Interaction;
+        public InputAction @PlaceTrap => m_Wrapper.m_Player_PlaceTrap;
+        public InputAction @SelectTrap => m_Wrapper.m_Player_SelectTrap;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -357,6 +403,12 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @Interaction.started += instance.OnInteraction;
             @Interaction.performed += instance.OnInteraction;
             @Interaction.canceled += instance.OnInteraction;
+            @PlaceTrap.started += instance.OnPlaceTrap;
+            @PlaceTrap.performed += instance.OnPlaceTrap;
+            @PlaceTrap.canceled += instance.OnPlaceTrap;
+            @SelectTrap.started += instance.OnSelectTrap;
+            @SelectTrap.performed += instance.OnSelectTrap;
+            @SelectTrap.canceled += instance.OnSelectTrap;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -373,6 +425,12 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @Interaction.started -= instance.OnInteraction;
             @Interaction.performed -= instance.OnInteraction;
             @Interaction.canceled -= instance.OnInteraction;
+            @PlaceTrap.started -= instance.OnPlaceTrap;
+            @PlaceTrap.performed -= instance.OnPlaceTrap;
+            @PlaceTrap.canceled -= instance.OnPlaceTrap;
+            @SelectTrap.started -= instance.OnSelectTrap;
+            @SelectTrap.performed -= instance.OnSelectTrap;
+            @SelectTrap.canceled -= instance.OnSelectTrap;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -396,5 +454,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         void OnView(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
         void OnInteraction(InputAction.CallbackContext context);
+        void OnPlaceTrap(InputAction.CallbackContext context);
+        void OnSelectTrap(InputAction.CallbackContext context);
     }
 }

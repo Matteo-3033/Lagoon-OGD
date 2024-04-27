@@ -21,7 +21,7 @@ namespace Round.UI.Main
                 OnPlayerSpawned(Player.Opponent);
             Player.OnPlayerSpawned += OnPlayerSpawned;
             
-            if (RoundController.Loaded)
+            if (RoundController.HasLoaded())
                 RegisterRoundControllerCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
@@ -56,8 +56,8 @@ namespace Round.UI.Main
                 owned = player.Inventory.KeyFragments;
 
             var total = 3;
-            if (RoundController.Instance != null && RoundController.Instance.Round != null)
-                total = RoundController.Instance.Round.keyFragments;
+            if (RoundController.Instance != null && RoundController.Round != null)
+                total = RoundController.Round.keyFragments;
             
             text.text = $"{owned}/{total}";
         }

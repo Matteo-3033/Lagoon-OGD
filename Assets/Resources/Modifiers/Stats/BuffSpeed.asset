@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f99b77561154c6585481bce5006ba2b, type: 3}
   m_Name: BuffSpeed
   m_EditorClassIdentifier: 
-  modifierName: Speed +
+  modifierName: Speed+
   isBuff: 1
   other: {fileID: 0}
   synergy: {fileID: 0}

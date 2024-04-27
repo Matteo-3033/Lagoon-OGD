@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using kcp2k;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
@@ -45,6 +44,9 @@ namespace Network
 
         public static bool IsClient => !Mst.Server.Spawners.IsSpawnedProccess && !Application.isBatchMode;
         public static RoomOptions RoomOptions => singleton.roomServerManager.RoomOptions;
+
+        private string firstPlayerConnected;
+        
 
         public override void Awake()
         {
@@ -178,12 +180,14 @@ namespace Network
             
             var profile = roomServerManager.GetPlayerProfile(conn);
             
+            firstPlayerConnected ??= profile?.Username;
+            
             player.name = profile?.Username ?? $"Player {conn.connectionId}";
-            player.GetComponent<Player>().Init(profile, roomServerManager.Players.Count() == 1);
+            player.GetComponent<Player>().Init(profile, profile?.Username == firstPlayerConnected);
             
             NetworkServer.AddPlayerForConnection(conn, player);
             
-            Debug.Log("Player object created");
+            Debug.Log($"Player {profile?.Username} object created");
             
             OnServerPlayerAdded?.Invoke(conn, profile?.Username);
         }
