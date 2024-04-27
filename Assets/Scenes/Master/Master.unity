@@ -641,14 +641,14 @@ MonoBehaviour:
   logLevel: 0
   spawnerLogLevel: 0
   machineIp: 127.0.0.1
-  executableFilePath: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
+  executableFilePath: D:\Files\Projects\Unity\Lagoon-OGD\Builds\Windows\Server\Server.exe
   maxProcesses: 10
   spawnWebSocketServers: 0
   region: International
   killProcessesWhenStop: 1
   autoStartInEditor: 1
   overrideExePathInEditor: 1
-  exePathFromEditor: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
+  exePathFromEditor: D:\Files\Projects\Unity\Lagoon-OGD\Builds\Windows\Server\Server.exe
   OnSpawnerStartedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -702,7 +702,7 @@ MonoBehaviour:
   logLevel: 0
   registerRoomPermissionLevel: 0
   roundPool:
-  - {fileID: 11400000, guid: bc3c7aa4ba2c2fe439f5d8263b45552f, type: 2}
+  - {fileID: 11400000, guid: b0d4880c78523de458e3917fc487a8d6, type: 2}
 --- !u!1 &1977181801
 GameObject:
   m_ObjectHideFlags: 0

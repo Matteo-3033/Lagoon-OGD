@@ -123,18 +123,21 @@ public class FieldOfVIew : NetworkBehaviour
     }
 }
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(FieldOfVIew))]
 public class FieldOfViewEditor : Editor
 {
     public void OnSceneGUI()
     {
         var fov = target as FieldOfVIew;
+        if (!fov) return;
+
         var transform = fov.transform;
         var pos = transform.position;
 
         float angle = fov.GetViewAngle();
         float radius = fov.GetViewDistance();
-        
+
         float startAngle = transform.eulerAngles.y - angle / 2;
         float endAngle = transform.eulerAngles.y + angle / 2;
         Vector3 startDir = new Vector3(Mathf.Sin(startAngle * Mathf.Deg2Rad), 0, Mathf.Cos(startAngle * Mathf.Deg2Rad));
@@ -150,3 +153,4 @@ public class FieldOfViewEditor : Editor
         Handles.DrawLine(transform.position, transform.position + endDir * radius);
     }
 }
+#endif

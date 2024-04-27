@@ -3,13 +3,13 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using UnityEditor;
 using UnityEngine.AI;
 
-public class FSMSentinel : MonoBehaviour
+public class FSMSentinel : NetworkBehaviour
 {
     public float reactionTime = 1f;
-    public string targetTag = "Player";
 
     [Header("Alarm")] public Light alarmLight;
     public Color alarmColor = Color.red;
@@ -24,7 +24,7 @@ public class FSMSentinel : MonoBehaviour
     private NavMeshAgent _agent;
     private FieldOfVIew _fieldOfView;
     private Transform _positionTarget;
-    private Vector3 _alarmTargetPosition;
+    [SyncVar] private Vector3 _alarmTargetPosition;
     private Vector3 _alarmTargetPreviousPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
 
@@ -105,7 +105,8 @@ public class FSMSentinel : MonoBehaviour
 
     private void FigureOutNewPosition()
     {
-        Vector3 newPosition = _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition) * reactionTime;
+        Vector3 newPosition =
+            _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition) * reactionTime;
         _alarmTargetPosition = newPosition;
     }
 
@@ -175,16 +176,16 @@ public class FSMSentinel : MonoBehaviour
     private Transform ScanField()
     {
         Vector3 distance = Vector3.positiveInfinity;
-        GameObject potentialTarget = null;
-        GameObject[] targetObjects = GameObject.FindGameObjectsWithTag(targetTag);
+        Transform potentialTarget = null;
+        Player[] targetObjects = new[] { Player.LocalPlayer, Player.Opponent };
 
-        foreach (GameObject go in targetObjects)
+        foreach (Player p in targetObjects)
         {
-            Vector3 tempDistance = go.transform.position - transform.position;
+            Vector3 tempDistance = p.transform.position - transform.position;
             if (tempDistance.magnitude < distance.magnitude)
             {
                 distance = tempDistance;
-                potentialTarget = go;
+                potentialTarget = p.transform;
             }
         }
 
@@ -192,7 +193,7 @@ public class FSMSentinel : MonoBehaviour
             Vector3.Angle(distance, transform.forward) < _fieldOfView.GetViewAngle() / 2 &&
             distance.magnitude <= _fieldOfView.GetViewDistance())
         {
-            return potentialTarget.transform;
+            return potentialTarget;
         }
 
         return null;

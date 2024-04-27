@@ -25,7 +25,7 @@ public class CameraMovement : MonoBehaviour
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
 
-        _inputHandler = Player.LocalPlayer.GetComponent<IInputHanlder>();
+        _inputHandler = Player.LocalPlayer?.GetComponent<IInputHanlder>();
     }
 
     private void OnOnCameraRotation(object sender, int direction)
