@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Utils;
 
 [RequireComponent(typeof(Light))]
 public class Torchlight : MonoBehaviour
@@ -9,7 +11,7 @@ public class Torchlight : MonoBehaviour
     
     private void Start()
     {
-        if (!GetComponentInParent<Player>().isLocalPlayer)
+        if (!GetComponentInParent<Player>().isLocalPlayer || SceneManager.GetActiveScene().name == Scenes.Lobby)
             gameObject.SetActive(false);
         else
         {
