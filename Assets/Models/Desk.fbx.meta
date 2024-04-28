@@ -1,0 +1,274 @@
+fileFormatVersion: 2
+guid: 2c3246e0cc859ff47bdf5b682d2542a5
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chair.001
+    second: {fileID: 2100000, guid: 167e34454070733499e2f7897ca093c7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Desk.001
+    second: {fileID: 2100000, guid: f235ddca169571948925191de5d3f64d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Desk_Objects.001
+    second: {fileID: 2100000, guid: 222fd21d705d36d4cb0625dac7725c2f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Keyboard_Keys
+    second: {fileID: 2100000, guid: 30dd8410fa4372f418d4c3d3fc4d11eb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: c98161360f02a6b4da2494fb64bd953d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MaterialFBXASC032FBXASC0352142150880
+    second: {fileID: 2100000, guid: 32bdfa703f1e4c54cb95933c16fee435, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MaterialFBXASC032FBXASC0352142170964
+    second: {fileID: 2100000, guid: f67f85f5fdfea3143a3db7eb87a47b46, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SG_LightW
+    second: {fileID: 2100000, guid: 677809629a2271743bc86662a26b978b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TransparentObjects.001
+    second: {fileID: 2100000, guid: 01c34964e165e5848b18a643bec85900, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: iMac_Grey_Aluminium
+    second: {fileID: 2100000, guid: 683e30f782b1a864ea6696f2d1fb6bbd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: iMac_Grey_Shader
+    second: {fileID: 2100000, guid: 43f6efd1bd464ba4b8c36525d5c168f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: iMac_Screen
+    second: {fileID: 2100000, guid: d14b89aabe69f9a468d3539bb71f7e1e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: iMac_White_Glass_001
+    second: {fileID: 2100000, guid: 530be487eeac7f14e8026bd5d9eb1e51, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 403-error
+    second: {fileID: 2800000, guid: a4d84f9a917d8e845ac738165036728d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Chair_baseColor
+    second: {fileID: 2800000, guid: 245bdb9fe238ebb40a997d77ad4f1ca4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Chair_metallicRoughness_metal
+    second: {fileID: 2800000, guid: 7d7a0865932c8004cb0a0474a8a39443, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Chair_metallicRoughness_rough
+    second: {fileID: 2800000, guid: 35d30172a4627304cac108bebdd1da35, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Chair_normal
+    second: {fileID: 2800000, guid: 33f1a091fa486644ab3b12d59a409254, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_Objects_baseColor
+    second: {fileID: 2800000, guid: 85150f1838210884db31aab270619bdf, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_baseColor
+    second: {fileID: 2800000, guid: fc83004bbfc699d4a8ef1064b494ca74, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_metallicRoughness_metal
+    second: {fileID: 2800000, guid: 386b0838bbdf6c64fb8080280c5240f3, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_metallicRoughness_rough
+    second: {fileID: 2800000, guid: fa21c47efd1d1c9438699f390bf457c2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Desk_normal
+    second: {fileID: 2800000, guid: 3d6b99c5e211f124c88bda740ef64e00, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Keyboard_Keys_baseColor
+    second: {fileID: 2800000, guid: 83c5be36534bb3e40b8d41821a8747f9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: MaterialFBXASC032FBXASC0352142150880_baseColor
+    second: {fileID: 2800000, guid: 68f4fbe46e4ea7d4199154d79d5250d9, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: MaterialFBXASC032FBXASC0352142150880_metallicRoughness_metal
+    second: {fileID: 2800000, guid: 928b4b5bd79be4244828aeb0e97deaa4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: MaterialFBXASC032FBXASC0352142150880_metallicRoughness_rough
+    second: {fileID: 2800000, guid: 751e6e4673bc7b5489c6b70336442c87, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: MaterialFBXASC032FBXASC0352142170964_emissive
+    second: {fileID: 2800000, guid: 4dcc5a7e1ca39984ab05c28756625506, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Material_baseColor
+    second: {fileID: 2800000, guid: 3fd59e5e662fa9442a1421fb52381614, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: TransparentObjects_baseColor_scale0
+    second: {fileID: 2800000, guid: 352d18a080a994248ac93bc1a8516f95, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: iMac_Grey_Shader_baseColor
+    second: {fileID: 2800000, guid: 2e6fe765e10c5a243838e2fa8e1a162b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: iMac_Grey_Shader_metallicRoughness_metal
+    second: {fileID: 2800000, guid: b619fa6854c0d53459432c508ac6d7c4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: iMac_Grey_Shader_metallicRoughness_rough
+    second: {fileID: 2800000, guid: 53374d805d39c434b9816276fd9c19a7, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

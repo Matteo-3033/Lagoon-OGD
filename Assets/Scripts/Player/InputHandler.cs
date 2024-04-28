@@ -65,6 +65,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         input.Player.View.performed -= View_performed;
 
         input.Player.Interaction.performed -= Interaction;
+        input.Player.Interaction.canceled -= Interaction;
         
         input.Player.PlaceTrap.performed -= PlaceTrap_performed;
         input.Player.SelectTrap.performed -= SelectTrap_performed;

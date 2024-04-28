@@ -1,10 +1,11 @@
-using System;
-using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
+    [SerializeField] private Player testPlayer;
+    
+    private Player player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
+    
     private float rotationTime = .5f;
 
     private int _targetRotation;
@@ -13,19 +14,11 @@ public class CameraMovement : MonoBehaviour
     private float _currentTime = 0f;
     private float _currentRotation;
 
-    private IInputHanlder _inputHandler;
-
-    private void Awake()
-    {
-    }
-
     void Start()
     {
         _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
-
-        _inputHandler = Player.LocalPlayer?.GetComponent<IInputHanlder>();
     }
 
     private void OnOnCameraRotation(object sender, int direction)
@@ -37,9 +30,9 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
-        if (Player.LocalPlayer)
+        if (!player)
         {
-            Vector3 newPosition = Player.LocalPlayer.transform.position;
+            Vector3 newPosition = player.transform.position;
             newPosition.y = transform.position.y;
 
             transform.position = newPosition;

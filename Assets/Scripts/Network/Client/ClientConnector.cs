@@ -1,5 +1,7 @@
-﻿using MasterServerToolkit.MasterServer;
+﻿using System.Collections;
+using MasterServerToolkit.MasterServer;
 using MainMenu;
+using MainMenu.Connection;
 using UnityEngine;
 
 namespace Network
@@ -8,12 +10,12 @@ namespace Network
     {
         [SerializeField] private GameObject dataInput;
         [SerializeField] private GameObject loadingSpinner;
-        [SerializeField] private GameObject noConnection;
+        [SerializeField] private ConnectionInfoText infoText;
         
         private void Awake()
         {
             loadingSpinner.SetActive(false);
-            noConnection.SetActive(false);
+            infoText.gameObject.SetActive(true);
             dataInput.SetActive(false);
         }
 
@@ -27,12 +29,28 @@ namespace Network
             
             loadingSpinner.SetActive(true);
             dataInput.SetActive(false);
-            noConnection.SetActive(Mst.Client.Auth.HasAuthToken());
+            if (Mst.Client.Auth.HasAuthToken())
+                infoText.ShowNoConnection();
+            else infoText.ShowConnecting();
+            
+            StartCoroutine(DoInitClient());
 
+            
+        }
+
+        private IEnumerator DoInitClient()
+        {
+            // Wait for a frame to make sure all the UI elements and events are updated
+            yield return null;
+            
             if (ClientToMasterConnector.Instance.IsConnected)
+            {
+                Debug.Log("Client already connected to server");
                 OnClientConnected();
+            }
             else
             {
+                Debug.Log("CONNECTING");
                 ClientToMasterConnector.Instance.OnConnectedEvent.AddListener(OnClientConnected);
                 ClientToMasterConnector.Instance.OnFailedConnectEvent.AddListener(OnFailedConnection);
                 ClientToMasterConnector.Instance.StartConnection();
@@ -62,16 +80,15 @@ namespace Network
                 return;
             }
             
-            if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName))
+            if (!PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.PlayerName) || PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName, "") == "")
             {
                 OnFailedConnection();
                 return;
             }
                 
             var username = PlayerPrefs.GetString(Utils.PlayerPrefsKeys.PlayerName);
-            if (username == "") return;
             
-            Debug.Log("Connecting to server...");
+            Debug.Log("Authenticating to server...");
            
             AuthBehaviour.Instance.SignIn(username);
         }
@@ -93,8 +110,8 @@ namespace Network
                 loadingSpinner.SetActive(false);
             if (dataInput)
                 dataInput.SetActive(true);
-            if (noConnection)
-                noConnection.SetActive(true);
+            if (infoText)
+                infoText.ShowConnectionLoss();
             
             UIManager.Instance.ShowMenu(UIManager.MenuKey.Connection);
         }
@@ -105,7 +122,7 @@ namespace Network
             
             loadingSpinner.SetActive(false);
             dataInput.SetActive(true);
-            noConnection.SetActive(true);
+            infoText.ShowNoConnection();
         }
 
         private void OnDestroy()

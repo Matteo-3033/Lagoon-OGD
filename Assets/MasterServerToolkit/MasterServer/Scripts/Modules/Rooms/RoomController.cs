@@ -1,7 +1,9 @@
 ﻿using MasterServerToolkit.Logging;
 using MasterServerToolkit.Networking;
 using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using Logger = MasterServerToolkit.Logging.Logger;
 
 namespace MasterServerToolkit.MasterServer
 {
