@@ -12,9 +12,9 @@ namespace Round.UI.Winner
             var textField = GetComponent<TextMeshProUGUI>();
             
             if (MatchController.Instance.HasWinner())
-                textField.text += "wins the match!";
+                textField.text = "wins the match!";
             else
-                textField.text += "wins the round!";
+                textField.text = "wins the round!";
         }
     }
 }
