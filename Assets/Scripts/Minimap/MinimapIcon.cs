@@ -105,6 +105,7 @@ public class MinimapIcon : NetworkBehaviour
         ClampToMinimapBorder(wasClamped);
     }
 
+    [ContextMenu("Show ripple effect")]
     public void ShowRipple()
     {
         ShowRipple(defaultRippleConfiguration);
@@ -132,6 +133,7 @@ public class MinimapIcon : NetworkBehaviour
     public void ShowRipple(float totalDuration, int repetitions, float scale, Color color)
     {
         GameObject rippleObject = Instantiate(ripplePrefab, transform);
+        rippleObject.layer = gameObject.layer;
         rippleObject.transform.localScale = Vector3.one * scale;
         ParticleSystem rippleEffect = rippleObject.GetComponent<ParticleSystem>();
 
