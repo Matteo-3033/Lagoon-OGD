@@ -3,7 +3,7 @@ using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
-public class FieldOfVIew : NetworkBehaviour
+public class FieldOfView : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnFoVDegreeChanged)), SerializeField] private float fieldOfViewDegree = 120F;
     [SyncVar(hook = nameof(OnViewDistanceChanged)), SerializeField] private float viewDistance = 10F;

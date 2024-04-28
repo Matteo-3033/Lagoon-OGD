@@ -4950,7 +4950,7 @@ GameObject:
   - component: {fileID: 1952963324}
   - component: {fileID: 1952963325}
   m_Layer: 0
-  m_Name: TabletUICinemachine
+  m_Name: TabletCinemachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

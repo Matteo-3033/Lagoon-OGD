@@ -16,6 +16,7 @@ namespace Round.UI.Winner
         protected override void Awake()
         {
             base.Awake();
+            loading.SetActive(false);
             
             var textField = button.GetComponentInChildren<TextMeshProUGUI>();
 
