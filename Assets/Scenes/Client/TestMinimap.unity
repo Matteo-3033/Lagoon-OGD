@@ -914,6 +914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2220506e2399e9f40ad74db3bd1d64c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testPlayer: {fileID: 0}
 --- !u!1 &577938758
 GameObject:
   m_ObjectHideFlags: 0
@@ -3156,6 +3157,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2978100010713892951, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
         type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2978100010713892951, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
+        type: 3}
       propertyPath: m_LocalPosition.z
       value: -12.45
       objectReference: {fileID: 0}
@@ -3219,6 +3225,26 @@ PrefabInstance:
       propertyPath: patrolPositions.Array.data[3]
       value: 
       objectReference: {fileID: 673554985}
+    - target: {fileID: 5788770782703317568, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5788770782703317568, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5788770782703317568, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5788770782703317568, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8576469748361526691, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
         type: 3}
       propertyPath: sceneId
