@@ -3,7 +3,7 @@ using Interaction;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Utils
+namespace Utils.UI
 {
     public class LongPressButton : MonoBehaviour, IInteractable
     {

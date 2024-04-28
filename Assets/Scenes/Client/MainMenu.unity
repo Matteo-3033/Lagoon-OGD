@@ -225,6 +225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee2659e00cba2049aae57d4c163a6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &50845915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3056,6 +3058,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b911cac8902a4afe8dc5023aaddf5740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &999850097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3860,6 +3864,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7801b3a3fa81f47b39c2275eaf82e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &1388637554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4299,6 +4305,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640c81f469a244e083f83040de0d49dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
   connector: {fileID: 914781029}
 --- !u!114 &1728556432
 MonoBehaviour:
@@ -4690,8 +4698,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8884ec0c39e031e4cbae88eba93920cc, type: 2}
-  m_sharedMaterial: {fileID: -7884225980981589507, guid: 8884ec0c39e031e4cbae88eba93920cc,
+  m_fontAsset: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  m_sharedMaterial: {fileID: -6249716115816544840, guid: d2a299e442074b5459da4d2d41516af3,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -5311,6 +5319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee2659e00cba2049aae57d4c163a6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &2000587821
 MonoBehaviour:
   m_ObjectHideFlags: 0

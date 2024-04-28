@@ -1,18 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
+using Utils.UI;
 
 namespace MainMenu
 {
-    [RequireComponent(typeof(Button))]
-    public class QuitButton : MonoBehaviour
+    public class QuitButton : ChangeFontOnClickButton
     {
-        private void Start()
-        {
-            var button = gameObject.GetComponent<Button>();
-            button.onClick.AddListener(OnClick);
-        }
-
-        private void OnClick()
+        protected override void OnClick()
         {
             Application.Quit();
         }

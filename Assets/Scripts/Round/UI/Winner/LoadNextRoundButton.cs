@@ -18,7 +18,7 @@ namespace Round.UI.Winner
             button.onClick.AddListener(OnClick);
             
             var textField = button.GetComponentInChildren<TextMeshProUGUI>();
-            
+
             if (MatchController.Instance.HasWinner())
                 textField.text = "Continue";
             else

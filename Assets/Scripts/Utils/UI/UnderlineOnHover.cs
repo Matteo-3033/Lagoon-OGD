@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Utils
+namespace Utils.UI
 {
     [RequireComponent(typeof(Button)), RequireComponent(typeof(EventTrigger))]
     public class UnderlineOnHover : MonoBehaviour
@@ -37,6 +37,7 @@ namespace Utils
 
         private void OnHoverStart(BaseEventData arg0)
         {
+            originalText = textField.text;
             textField.text = $"<u>{originalText}</u>";
         }
         

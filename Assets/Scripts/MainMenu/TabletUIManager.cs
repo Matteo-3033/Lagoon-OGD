@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using Screen = Utils.Screen;
+using Screen = Utils.UI.Screen;
 
 namespace MainMenu
 {

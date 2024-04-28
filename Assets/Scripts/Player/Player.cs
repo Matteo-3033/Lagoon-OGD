@@ -109,17 +109,19 @@ public class Player : NetworkBehaviour
         Interactor.enabled = enable;
     }
     
+    // On client only
     [Client]
     public void MakeInvisible()
     {
-        SetLayerRecursively(gameObject, LayerMask.NameToLayer("Behind-FieldOfView"));
+        Utils.Layers.SetLayerRecursively(gameObject, Utils.Layers.BehindFieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Hide();
     }
     
+    // On client only
     [Client]
     public void MakeVisible()
     {
-        SetLayerRecursively(gameObject, LayerMask.NameToLayer("FieldOfView"));
+        Utils.Layers.SetLayerRecursively(gameObject, Utils.Layers.FieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Show();
     }
 
@@ -130,24 +132,5 @@ public class Player : NetworkBehaviour
         base.OnStopClient();
     }
     
-    #endregion
-    
-    #region UTILS
-    
-    private void SetLayerRecursively(GameObject obj, int layer)
-    {
-        if (obj == null)
-            return;
-       
-        obj.layer = layer;
-       
-        foreach (Transform child in obj.transform)
-        {
-            if (child == null)
-                continue;
-            SetLayerRecursively(child.gameObject, layer);
-        }
-    }
-
     #endregion
 }
