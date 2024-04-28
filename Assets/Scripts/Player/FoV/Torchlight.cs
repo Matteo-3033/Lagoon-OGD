@@ -11,7 +11,7 @@ public class Torchlight : MonoBehaviour
     
     private void Start()
     {
-        if (!GetComponentInParent<Player>().isLocalPlayer || SceneManager.GetActiveScene().name == Scenes.Lobby)
+        if (!GetComponentInParent<Player>().isLocalPlayer)
             gameObject.SetActive(false);
         else
         {
