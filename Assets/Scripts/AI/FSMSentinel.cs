@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cinemachine.Utility;
 using Mirror;
 using Round;
 using UnityEditor;
@@ -32,19 +33,21 @@ public class FSMSentinel : NetworkBehaviour
     private Vector3 _alarmTargetLastPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
     private GameObject[] _targetObjects;
-    private float _previousRemainingDistance;
+    private Vector3 _previousPosition;
+    private Animator _animator;
+    private static readonly int SpeedParam = Animator.StringToHash("speed");
 
     private void Awake()
     {
         _baseColor = alarmLight.color;
         _agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponentInChildren<Animator>();
         _fieldOfView = GetComponentInChildren<FieldOfVIew>();
 
         if (patrolPositions.Length > 0)
         {
             _positionTarget = patrolPositions[_currentPatrolPositionIndex];
         }
-
 
         GameObject localPlayer = Player.LocalPlayer?.gameObject;
         if (!localPlayer)
@@ -99,6 +102,11 @@ public class FSMSentinel : NetworkBehaviour
         StartPatrolling();
 
         //RoundController.Instance.OnRoundStarted -= OnRoundStarted;
+    }
+
+    private void Update()
+    {
+        _animator.SetFloat(SpeedParam, _agent.velocity.magnitude);
     }
 
     //[Command]
@@ -156,9 +164,9 @@ public class FSMSentinel : NetworkBehaviour
     private bool PositionReached()
     {
         bool reached = _agent.hasPath &&
-                       (Mathf.Approximately(_previousRemainingDistance, _agent.remainingDistance) ||
+                       ((_previousPosition - transform.position).magnitude < 0.1f ||
                         _agent.remainingDistance <= _agent.stoppingDistance);
-        _previousRemainingDistance = reached ? -1 : _agent.remainingDistance;
+        _previousPosition = reached ? Vector3.zero : transform.position;
         return reached;
     }
 

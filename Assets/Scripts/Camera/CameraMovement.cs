@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private Player testPlayer;
-    
-    private Player player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
-    
+    [SerializeField] private Transform testTarget;
+
+    private Transform Target => Player.LocalPlayer ? Player.LocalPlayer.transform : testTarget?.transform;
+
     private float rotationTime = .5f;
 
     private int _targetRotation;
@@ -30,9 +31,9 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!player)
+        if (!Target)
         {
-            Vector3 newPosition = player.transform.position;
+            Vector3 newPosition = Target.position;
             newPosition.y = transform.position.y;
 
             transform.position = newPosition;
