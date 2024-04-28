@@ -24,11 +24,15 @@ public class FSMSentinel : NetworkBehaviour
     private Color _baseColor;
     private NavMeshAgent _agent;
     private FieldOfVIew _fieldOfView;
+
     private Transform _positionTarget;
-    [SyncVar] private Vector3 _alarmTargetPosition;
-    private Vector3 _alarmTargetPreviousPosition = Vector3.zero;
+
+    //[SyncVar]
+    private Transform _alarmTarget;
+    private Vector3 _alarmTargetLastPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
     private GameObject[] _targetObjects;
+    private float _previousRemainingDistance;
 
     private void Awake()
     {
@@ -57,10 +61,10 @@ public class FSMSentinel : NetworkBehaviour
 
     private void Start()
     {
-        OnRoundStarted();
+        SetUpFSM();
     }
 
-    private void OnRoundStarted()
+    private void SetUpFSM()
     {
         if (!authority) return;
 
@@ -70,8 +74,7 @@ public class FSMSentinel : NetworkBehaviour
         FSMState alarmState = new FSMState();
         alarmState.EnterActions.Add(AlarmColor);
         alarmState.StayActions.Add(AlarmFollowTarget);
-        //alarmState.ExitActions.Add(AlarmColorReset);
-        alarmState.ExitActions.Add(FigureOutNewPosition);
+        alarmState.ExitActions.Add(PredictNewPosition);
 
         FSMState searchState = new FSMState();
         searchState.EnterActions.Add(SearchColor);
@@ -82,7 +85,7 @@ public class FSMSentinel : NetworkBehaviour
         FSMTransition enemyVisibleTransition =
             new FSMTransition(IsEnemyVisible);
         FSMTransition notEnemyVisibleTransition =
-            new FSMTransition(NotIsEnemyVisible, new FSMAction[] { NearestPosition });
+            new FSMTransition(EnemyNoMoreVisible, new FSMAction[] { NearestPosition });
         FSMTransition enemyLostTransition =
             new FSMTransition(EnemyLost, new FSMAction[] { NearestPosition });
 
@@ -101,7 +104,6 @@ public class FSMSentinel : NetworkBehaviour
     //[Command]
     private void StartPatrolling()
     {
-        Debug.Log("Start coroutine");
         StartCoroutine(Patrol());
     }
 
@@ -125,40 +127,39 @@ public class FSMSentinel : NetworkBehaviour
     //[ClientRpc]
     private void AlarmColor()
     {
-        Debug.Log("Entering alarm state");
         alarmLight.color = alarmColor;
     }
 
     //[ClientRpc]
     private void SearchColor()
     {
-        Debug.Log("Entering search state");
         alarmLight.color = searchColor;
     }
 
     private void AlarmFollowTarget()
     {
-        _agent.SetDestination(_alarmTargetPosition);
+        _agent.SetDestination(_alarmTarget.position);
     }
 
-    private void FigureOutNewPosition()
+    private void PredictNewPosition()
     {
         Vector3 newPosition =
-            _alarmTargetPosition + (_alarmTargetPosition - _alarmTargetPreviousPosition);
-        Debug.Log($"Old position: {_alarmTargetPreviousPosition}, last position: {_alarmTargetPosition}, prediction: {newPosition}");
+            _alarmTarget.position + (_alarmTarget.position - _alarmTargetLastPosition) * reactionTime * 2;
         _agent.SetDestination(newPosition);
     }
 
     private void PositionDestination()
     {
-        Debug.Log("Entering patrol state");
         _agent.SetDestination(_positionTarget.position);
     }
 
     private bool PositionReached()
     {
-        return _agent.hasPath &&
-               _agent.remainingDistance <= _agent.stoppingDistance;
+        bool reached = _agent.hasPath &&
+                       (Mathf.Approximately(_previousRemainingDistance, _agent.remainingDistance) ||
+                        _agent.remainingDistance <= _agent.stoppingDistance);
+        _previousRemainingDistance = reached ? -1 : _agent.remainingDistance;
+        return reached;
     }
 
     private void NextPosition()
@@ -189,25 +190,29 @@ public class FSMSentinel : NetworkBehaviour
     {
         Transform potentialTarget = ScanField();
         bool isEnemyVisible = potentialTarget && VisibleEnemy(potentialTarget);
-        if (isEnemyVisible)
-        {
-            _alarmTargetPreviousPosition = _alarmTargetPosition;
-            _alarmTargetPosition = potentialTarget.position;
-        }
 
-        //Debug.Log("IsEnemyVisible: " + isEnemyVisible);
+        if (!potentialTarget) return isEnemyVisible;
+
+        _alarmTargetLastPosition = potentialTarget.position;
+        _alarmTarget = potentialTarget;
+
         return isEnemyVisible;
     }
 
     private bool EnemyLost()
     {
         return PositionReached() &&
-               NotIsEnemyVisible();
+               !IsEnemyVisible();
     }
 
-    private bool NotIsEnemyVisible()
+    private bool EnemyNoMoreVisible()
     {
-        return !IsEnemyVisible();
+        Transform potentialTarget = ScanField();
+        var isEnemyVisible = VisibleEnemy(!potentialTarget ? _alarmTarget : potentialTarget);
+
+        if (potentialTarget) _alarmTarget = potentialTarget;
+
+        return !isEnemyVisible;
     }
 
     private Transform ScanField()
@@ -241,7 +246,6 @@ public class FSMSentinel : NetworkBehaviour
 
         return !Physics.Raycast(transform.position,
             toTarget.normalized,
-            out RaycastHit _,
             toTarget.magnitude,
             obstructionMask);
     }
