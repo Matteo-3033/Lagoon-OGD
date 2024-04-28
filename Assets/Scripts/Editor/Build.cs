@@ -126,7 +126,7 @@ namespace Editor
                 new object[] { false, new BuildPlayerOptions() }
             );
             buildPlayerOptions.scenes = MatchScenes;
-            buildPlayerOptions.locationPathName = "Builds/Linux/Client/Client.exe";
+            buildPlayerOptions.locationPathName = "Builds/Linux/Client/Client.x86_64";
             buildPlayerOptions.target = BuildTarget.StandaloneLinux64;
             buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
