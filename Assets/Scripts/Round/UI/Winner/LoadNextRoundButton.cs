@@ -2,20 +2,20 @@ using Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils.UI;
 
 namespace Round.UI.Winner
 {
     [RequireComponent(typeof(Button))]
-    public class LoadNextRoundButton : MonoBehaviour
+    public class LoadNextRoundButton : ChangeFontOnClickButton
     {
         [SerializeField] private GameObject loading;
         
         private Button button;
-        
-        private void Awake()
+
+        protected override void Awake()
         {
-            button = gameObject.GetComponent<Button>();
-            button.onClick.AddListener(OnClick);
+            base.Awake();
             
             var textField = button.GetComponentInChildren<TextMeshProUGUI>();
 
@@ -25,7 +25,7 @@ namespace Round.UI.Winner
                 textField.text = "Next round";
         }
 
-        private void OnClick()
+        protected override void OnClick()
         {
             RoundController.Instance.AskForNextRound();
             loading.SetActive(true);
