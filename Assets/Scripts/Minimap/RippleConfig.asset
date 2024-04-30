@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0aafd1e9add8344a2072150d1b1ffe, type: 3}
   m_Name: RippleConfig
   m_EditorClassIdentifier: 
-  totalDuration: 5
   singleRippleDuration: 1
-  repetitions: 5
-  scale: 150
+  interval: 2
+  scale: 100
   rippleColor: {r: 0.2478441, g: 1, b: 0, a: 1}

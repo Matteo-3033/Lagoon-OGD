@@ -17,7 +17,7 @@ public class MinimapIcon : NetworkBehaviour
     [Header("Ripple effect")] public GameObject ripplePrefab;
     public RippleConfiguration defaultRippleConfiguration;
 
-    private List<SpriteRenderer> _spriteRenderers;
+    private List<SimpleIcon> _simpleIcons;
     private bool _isShown;
     private GameObject _currentRippleObject;
     private Coroutine _currentClampIntermittentCoroutine;
@@ -29,7 +29,7 @@ public class MinimapIcon : NetworkBehaviour
 
     private void Awake()
     {
-        _spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
+        _simpleIcons = GetComponentsInChildren<SimpleIcon>().ToList();
         if (minimapCamera == null) minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<Camera>();
 
         if (startHidden)
@@ -78,9 +78,9 @@ public class MinimapIcon : NetworkBehaviour
 
     private void SetIconShown(bool active)
     {
-        if (_spriteRenderers.Count == 0) return;
+        if (_simpleIcons.Count == 0) return;
 
-        _spriteRenderers.ForEach(x => x.enabled = active);
+        _simpleIcons.ForEach(x => x.enabled = active);
         _isShown = active;
         OnIconShown?.Invoke(this, active);
     }
@@ -114,7 +114,7 @@ public class MinimapIcon : NetworkBehaviour
         ClampToMinimapBorder(wasClamped);
     }
 
-    private IEnumerator EnableIntermittentIcon(float interval, float clampDuration)
+    private IEnumerator EnableIntermittentIcon(float interval, float duration)
     {
         bool wasShown = _isShown;
         bool wasClamped = clampToBorder;
@@ -124,51 +124,20 @@ public class MinimapIcon : NetworkBehaviour
         ClampToMinimapBorder(true);
         Show();
 
-            Debug.Log("FadeOutIcon: " + ps);
+        Debug.Log("FadeOutIcon: " + ps);
         while (ps && ps.isPlaying)
         {
-            StartCoroutine(FadeOutIcon(clampDuration));
+            _simpleIcons.ForEach(x => x.FadeOutIcon(duration));
             yield return new WaitForSeconds(interval);
         }
 
         SetIconShown(wasShown);
 
-        _spriteRenderers.ForEach(x =>
-        {
-            Color color = x.color;
-            color.a = 1;
-            x.color = color;
-        });
+        _simpleIcons.ForEach(x => x.MakeOpaque());
 
         ClampToMinimapBorder(wasClamped);
     }
 
-    private IEnumerator FadeOutIcon(float duration)
-    {
-        float time = 0;
-
-        _spriteRenderers.ForEach(x =>
-        {
-            Color color = x.color;
-            color.a = 1;
-            x.color = color;
-        });
-
-        while (time < duration)
-        {
-            _spriteRenderers.ForEach(x =>
-            {
-                Color color = x.color;
-                color.a = 1 - time / duration;
-
-                x.color = color;
-            });
-
-            yield return null;
-
-            time += Time.deltaTime;
-        }
-    }
 
     public void ShowRipple()
     {
@@ -206,7 +175,7 @@ public class MinimapIcon : NetworkBehaviour
 
         rippleEffect.Play();
         _currentClampIntermittentCoroutine = ShowIconIntermittent(interval, rippleLifetime);
-        
+
         OnRippleStarted?.Invoke(this, EventArgs.Empty);
     }
 
