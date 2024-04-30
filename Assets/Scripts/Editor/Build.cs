@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using Utils;
+using System.IO;
 
 namespace Editor
 {
@@ -126,7 +127,9 @@ namespace Editor
                 new object[] { false, new BuildPlayerOptions() }
             );
             buildPlayerOptions.scenes = MatchScenes;
-            buildPlayerOptions.locationPathName = "Builds/Linux/Client/Client.exe";
+            string path = Path.Combine("Builds", "Linux", "Client");
+            Directory.CreateDirectory(path);
+            buildPlayerOptions.locationPathName = Path.Combine(path, "Client.x86_64");
             buildPlayerOptions.target = BuildTarget.StandaloneLinux64;
             buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
