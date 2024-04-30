@@ -2279,6 +2279,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4664312221691487621, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
         type: 3}
+      propertyPath: patrolPositions.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4664312221691487621, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
+        type: 3}
       propertyPath: patrolPositions.Array.data[0]
       value: 
       objectReference: {fileID: 1031977593}
@@ -2298,11 +2303,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 673554985}
     - target: {fileID: 4952866525100025168, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7053716938837481562, guid: dbbfaa1d4906f6b40827f0c2a6884e51,
         type: 3}
       propertyPath: m_Enabled
       value: 1

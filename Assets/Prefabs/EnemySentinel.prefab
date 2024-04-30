@@ -134,7 +134,7 @@ Transform:
   m_GameObject: {fileID: 4478235319672859268}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -161,10 +161,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.6
+  m_Height: 3.2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1.6, z: 0}
 --- !u!54 &2046755621458877475
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -213,9 +213,6 @@ MonoBehaviour:
   searchColor: {r: 1, g: 0.72619367, b: 0.015686274, a: 1}
   patrolPositions:
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   obstructionMask:
     serializedVersion: 2
     m_Bits: 256
@@ -238,7 +235,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 1
+  m_BaseOffset: 0
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 3
 --- !u!114 &8576469748361526691
