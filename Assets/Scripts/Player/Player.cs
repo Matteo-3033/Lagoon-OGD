@@ -73,7 +73,7 @@ public class Player : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
- 
+        
         LocalPlayer = this;
         
         MakeVisible();

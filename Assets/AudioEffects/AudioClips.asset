@@ -13,3 +13,8 @@ MonoBehaviour:
   m_Name: AudioClips
   m_EditorClassIdentifier: 
   chancellorAlarm: {fileID: 8300000, guid: 829ae1a4b38a9404d9f32f537275862b, type: 3}
+  footsteps:
+  - {fileID: 8300000, guid: 7eaa75f5aa7a5284d8ae3c7bf35c26db, type: 3}
+  - {fileID: 8300000, guid: cea523d483539364ebc9ee416e64bfc6, type: 3}
+  - {fileID: 8300000, guid: 4e196caa41b0c374188c00887fd6e617, type: 3}
+  - {fileID: 8300000, guid: 18e3a6af7f0df61418d4074d9561d6fe, type: 3}

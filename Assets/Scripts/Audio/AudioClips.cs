@@ -7,5 +7,6 @@ namespace Audio
     public class AudioClips: ScriptableObject
     {
         public AudioClip chancellorAlarm;
+        public AudioClip[] footsteps;
     }
 }

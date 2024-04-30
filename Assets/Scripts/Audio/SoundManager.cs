@@ -12,10 +12,13 @@ namespace Audio
         private const string PLAYER_PREFS_SOUND_EFFECTS_VOLUME = "SoundEffectsVolume";
 
         public static SoundManager Instance { get; private set; }
-        
+
+        [SerializeField] private float maxDistance = 40F;
         [SerializeField] private AudioClips audioClips;
         
-        private float volume = 1f;
+        private float baseVolume = 1f;
+        
+        private Vector3 Target => Player.LocalPlayer?.transform.position ?? Camera.main.transform.position;
 
 
         private void Awake()
@@ -29,7 +32,7 @@ namespace Audio
             
             Instance = this;
 
-            volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, 1f);
+            baseVolume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, 1f);
         }
 
         private void Start()
@@ -49,38 +52,57 @@ namespace Audio
 
         private void OnEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
         {
-            PlaySound(audioClips.chancellorAlarm, Player.LocalPlayer?.transform.position ?? Vector3.zero);
+            PlayClipAtPoint(audioClips.chancellorAlarm, Target);
         }
         
-        private void PlaySound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f)
+        private void PlaySound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
         {
-            PlaySound(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier);
+            PlayClipAtPoint(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier, threeD);
         }
 
-        private void PlaySound(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1f)
+        private void PlayClipAtPoint(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1F, bool threeD = false)
         {
-            AudioSource.PlayClipAtPoint(audioClip, position, volumeMultiplier * volume);
-        }
-
-        public void ChangeVolume()
-        {
-            volume += .1f;
-            if (volume > 1f)
-                volume = 0f;
-
-            PlayerPrefs.SetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, volume);
-            PlayerPrefs.Save();
-        }
-
-        public float GetVolume()
-        {
-            return volume;
+            var obj = new GameObject("One shot audio");
+            obj.transform.position = position;
+            
+            var audioSource = (AudioSource) obj.AddComponent(typeof (AudioSource));
+            audioSource.clip = audioClip;
+            audioSource.spatialBlend = threeD ? 1F : 0F;
+            audioSource.volume = volumeMultiplier * baseVolume;
+            audioSource.maxDistance = maxDistance;
+            audioSource.rolloffMode = AudioRolloffMode.Linear;
+            audioSource.spatialize = threeD;
+            audioSource.spread = threeD ? 360F : 0F;
+            
+            audioSource.Play();
+            
+            Destroy(obj, audioClip.length * (Time.timeScale < 0.009999999776482582 ? 0.01f : Time.timeScale));
         }
 
         private void OnDestroy()
         {
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
             ChancellorEffectsController.OnEffectEnabled -= OnEffectEnabled;
+        }
+        
+        public void PlayFootstepsSound(Vector3 source, float footstepsVolume = 1F)
+        {
+            PlaySound(audioClips.footsteps, source, footstepsVolume, true);
+        }
+
+        public void ChangeVolume()
+        {
+            baseVolume += .1f;
+            if (baseVolume > 1f)
+                baseVolume = 0f;
+
+            PlayerPrefs.SetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, baseVolume);
+            PlayerPrefs.Save();
+        }
+
+        public float GetVolume()
+        {
+            return baseVolume;
         }
     }
 }
