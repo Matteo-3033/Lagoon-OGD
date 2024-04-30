@@ -76,8 +76,10 @@ public class FSMSentinel : NetworkBehaviour
 
         FSMState alarmState = new FSMState();
         alarmState.EnterActions.Add(AlarmColor);
+        alarmState.EnterActions.Add(SignalOnTarget);
         alarmState.StayActions.Add(AlarmFollowTarget);
         alarmState.ExitActions.Add(PredictNewPosition);
+        alarmState.ExitActions.Add(StopSignalOnTarget);
 
         FSMState searchState = new FSMState();
         searchState.EnterActions.Add(SearchColor);
@@ -190,6 +192,24 @@ public class FSMSentinel : NetworkBehaviour
             _currentPatrolPositionIndex = i;
             distance = positionDistance;
         }
+    }
+
+    private void SignalOnTarget()
+    {
+        MinimapIcon minimapIcon = _alarmTarget.GetComponentInChildren<MinimapIcon>();
+        if (!minimapIcon) return;
+
+        Debug.Log("ShowRipple");
+        minimapIcon.ShowRipple();
+    }
+
+    private void StopSignalOnTarget()
+    {
+        MinimapIcon minimapIcon = _alarmTarget.GetComponentInChildren<MinimapIcon>();
+        if (!minimapIcon) return;
+
+        Debug.Log("StopRipple");
+        minimapIcon.StopRipple();
     }
 
     // TRANSITIONS

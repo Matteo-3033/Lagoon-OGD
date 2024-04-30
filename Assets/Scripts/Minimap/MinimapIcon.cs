@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using Mirror.SimpleWeb;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,6 +19,8 @@ public class MinimapIcon : NetworkBehaviour
 
     private List<SpriteRenderer> _spriteRenderers;
     private bool _isShown;
+    private GameObject _currentRippleObject;
+    private Coroutine _currentClampIntermittentCoroutine;
 
     public event EventHandler<bool> OnIconShown;
     public event EventHandler<bool> OnIconClamped;
@@ -89,10 +93,15 @@ public class MinimapIcon : NetworkBehaviour
 
     public void ClampForSeconds(float seconds)
     {
-        StartCoroutine(EnableClampForSeconds(seconds));
+        StartCoroutine(EnableShowForSeconds(seconds));
     }
 
-    private IEnumerator EnableClampForSeconds(float seconds)
+    public Coroutine ShowIconIntermittent(float interval, float clampDuration)
+    {
+        return StartCoroutine(EnableIntermittentIcon(interval, clampDuration));
+    }
+
+    private IEnumerator EnableShowForSeconds(float seconds)
     {
         bool wasShown = _isShown;
         bool wasClamped = clampToBorder;
@@ -105,6 +114,62 @@ public class MinimapIcon : NetworkBehaviour
         ClampToMinimapBorder(wasClamped);
     }
 
+    private IEnumerator EnableIntermittentIcon(float interval, float clampDuration)
+    {
+        bool wasShown = _isShown;
+        bool wasClamped = clampToBorder;
+
+        ParticleSystem ps = _currentRippleObject?.GetComponent<ParticleSystem>();
+
+        ClampToMinimapBorder(true);
+        Show();
+
+            Debug.Log("FadeOutIcon: " + ps);
+        while (ps && ps.isPlaying)
+        {
+            StartCoroutine(FadeOutIcon(clampDuration));
+            yield return new WaitForSeconds(interval);
+        }
+
+        SetIconShown(wasShown);
+
+        _spriteRenderers.ForEach(x =>
+        {
+            Color color = x.color;
+            color.a = 1;
+            x.color = color;
+        });
+
+        ClampToMinimapBorder(wasClamped);
+    }
+
+    private IEnumerator FadeOutIcon(float duration)
+    {
+        float time = 0;
+
+        _spriteRenderers.ForEach(x =>
+        {
+            Color color = x.color;
+            color.a = 1;
+            x.color = color;
+        });
+
+        while (time < duration)
+        {
+            _spriteRenderers.ForEach(x =>
+            {
+                Color color = x.color;
+                color.a = 1 - time / duration;
+
+                x.color = color;
+            });
+
+            yield return null;
+
+            time += Time.deltaTime;
+        }
+    }
+
     public void ShowRipple()
     {
         ShowRipple(defaultRippleConfiguration);
@@ -112,47 +177,48 @@ public class MinimapIcon : NetworkBehaviour
 
     public void ShowRipple(RippleConfiguration rippleConfiguration)
     {
-        ShowRipple(rippleConfiguration.totalDuration,
-            rippleConfiguration.repetitions,
+        ShowRipple(rippleConfiguration.singleRippleDuration,
+            rippleConfiguration.singleRippleDuration,
             rippleConfiguration.scale,
             rippleConfiguration.rippleColor);
-    }
-
-    public void ShowRipple(float totalDuration, float singleRippleDuration, float scale, Color color)
-    {
-        ShowRipple(totalDuration,
-            (int)(totalDuration / singleRippleDuration),
-            scale,
-            color);
     }
 
 #if !UNITY_EDITOR
     [ClientRpc]
 #endif
-    public void ShowRipple(float totalDuration, int repetitions, float scale, Color color)
+    public void ShowRipple(float rippleLifetime, float interval, float scale, Color color)
     {
-        GameObject rippleObject = Instantiate(ripplePrefab, transform);
-        rippleObject.transform.localScale = Vector3.one * scale;
-        ParticleSystem rippleEffect = rippleObject.GetComponent<ParticleSystem>();
+        if (!_currentRippleObject)
+        {
+            _currentRippleObject = Instantiate(ripplePrefab, transform);
+        }
+
+        _currentRippleObject.transform.localScale = Vector3.one * scale;
+        ParticleSystem rippleEffect = _currentRippleObject.GetComponent<ParticleSystem>();
+        rippleEffect.Stop();
 
         ParticleSystem.MainModule rippleEffectMain = rippleEffect.main;
-        rippleEffectMain.duration = totalDuration;
-        float rippleLifetime = totalDuration / repetitions;
+        rippleEffectMain.duration = interval;
         rippleEffectMain.startLifetime = rippleLifetime;
         rippleEffectMain.startColor = color;
 
-        rippleEffect.emission.SetBursts(new[] { new ParticleSystem.Burst(0, 1, repetitions, rippleLifetime) });
+        rippleEffect.emission.SetBursts(new[] { new ParticleSystem.Burst(0, 1, 0, interval) });
 
-        ClampForSeconds(totalDuration);
         rippleEffect.Play();
-
-        StartCoroutine(RippleEventCoroutine(totalDuration));
+        _currentClampIntermittentCoroutine = ShowIconIntermittent(interval, rippleLifetime);
+        
+        OnRippleStarted?.Invoke(this, EventArgs.Empty);
     }
 
-    private IEnumerator RippleEventCoroutine(float totalDuration)
+    public void StopRipple()
     {
-        OnRippleStarted?.Invoke(this, EventArgs.Empty);
-        yield return new WaitForSeconds(totalDuration);
+        _currentRippleObject?.GetComponent<ParticleSystem>()?.Stop();
+        if (_currentClampIntermittentCoroutine != null)
+        {
+            StopCoroutine(_currentClampIntermittentCoroutine);
+            _currentClampIntermittentCoroutine = null;
+        }
+
         OnRippleEnded?.Invoke(this, EventArgs.Empty);
     }
 }
