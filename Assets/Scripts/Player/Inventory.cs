@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class Inventory : NetworkBehaviour
 {
+    [SerializeField] private LayerMask obstaclesMask;
+    
     [field: SyncVar(hook = nameof(OnKeyFragmentsUpdated))]
     public int KeyFragments { get; private set; } = 1;
 
@@ -136,7 +138,6 @@ public class Inventory : NetworkBehaviour
     {
         if (!traps.Contains(trap))
             return;
-        traps.Remove(trap);
         
         Debug.Log($"Placing trap {trap}");
 
@@ -144,10 +145,17 @@ public class Inventory : NetworkBehaviour
         var position = player.transform.position + player.transform.forward * playerRadius * 3;
 
         if (Physics.Raycast(transform.position, Vector3.down, out var hit))
+        {
             position.y = hit.point.y;
+            
+            var obstacles = Physics.OverlapBoxNonAlloc(position, new Vector3(0.5F, 0.5F, 0.5F), new Collider[5],  Quaternion.identity, obstaclesMask);
+            if (obstacles > 0)
+                return;
+        }
         else
             position.y = 0;
         
+        traps.Remove(trap);
         var obj =  Instantiate(trap.prefab, position, Quaternion.identity);
         NetworkServer.Spawn(obj);
     }

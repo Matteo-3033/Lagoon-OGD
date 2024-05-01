@@ -222,6 +222,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  obstaclesMask:
+    serializedVersion: 2
+    m_Bits: 1527
 --- !u!114 &4660722701455473856
 MonoBehaviour:
   m_ObjectHideFlags: 0
