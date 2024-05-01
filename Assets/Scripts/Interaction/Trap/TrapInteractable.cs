@@ -12,6 +12,7 @@ namespace Interaction.Trap
         [SerializeField] private TrapModifier trap;
         [SerializeField] private GameObject enabledState;
         [SerializeField] private GameObject disabledState;
+        [SerializeField] private SpriteRenderer icon;
 
         public string InteractionPrompt => trap.modifierName;
         
@@ -19,6 +20,12 @@ namespace Interaction.Trap
 
         [field: SyncVar(hook = nameof(OnStateChanged))]
         public bool Working { get; private set; }
+
+        private void Awake()
+        {
+            icon.sprite = trap.icon;
+            icon.gameObject.SetActive(false);
+        }
 
         public override void OnStartServer()
         {
@@ -46,9 +53,12 @@ namespace Interaction.Trap
             
             var player = sender.Player();
             if (player.Inventory.AddTrap(trap))
+            {
                 DisableTrap();
+                TargetShowTrapIcon(sender);
+            }
             else
-                RpcNotifyTrapAlreadyOwned(sender);
+                TargetNotifyTrapAlreadyOwned(sender);
         }
         
         [Server]
@@ -70,9 +80,15 @@ namespace Interaction.Trap
         #region CLIENT
 
         [TargetRpc]
-        private void RpcNotifyTrapAlreadyOwned(NetworkConnectionToClient target)
+        private void TargetNotifyTrapAlreadyOwned(NetworkConnectionToClient target)
         {
             OnTrapNotAdded?.Invoke(this, trap);
+        }
+        
+        [TargetRpc]
+        private void TargetShowTrapIcon(NetworkConnectionToClient target)
+        {
+            icon.gameObject.SetActive(true);
         }
         
         private void OnStateChanged(bool oldValue, bool newValue)
