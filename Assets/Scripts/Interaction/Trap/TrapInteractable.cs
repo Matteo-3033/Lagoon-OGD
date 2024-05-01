@@ -51,6 +51,8 @@ namespace Interaction.Trap
             if (!Working)
                 return;
             
+            Debug.Log($"Interacting with {trap.modifierName}");
+            
             var player = sender.Player();
             if (player.Inventory.AddTrap(trap))
             {

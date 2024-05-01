@@ -14,7 +14,6 @@ namespace Utils.UI
         private bool isInteracting;
         private float interactionTimer;
 
-        public delegate void Interact();
         public event EventHandler<EventArgs> OnInteractionCompleted;
         public event EventHandler<EventArgs> OnInteractionStart;
         public event EventHandler<EventArgs> OnImageEmptied;

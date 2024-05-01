@@ -13,6 +13,7 @@ namespace Interaction
         
         public bool StartInteraction(Interactor interactor)
         {
+            Debug.Log("Interacting with " + modifier.modifierName);
             CmdInteract();
             return true;
         }

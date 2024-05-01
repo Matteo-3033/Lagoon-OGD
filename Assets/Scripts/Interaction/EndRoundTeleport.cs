@@ -30,6 +30,7 @@ public class EndRoundTeleport : MonoBehaviour, IInteractable
 
     public bool StartInteraction(Interactor interactor)
     {
+        Debug.Log("Interacting with end round teleport");
         RoundController.Instance.CheckWinningCondition();
         return true;
     }

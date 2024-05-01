@@ -76,6 +76,8 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void AddKeyFragment()
     {
+        Debug.Log($"Adding key fragment to {player.Username}");
+        
         KeyFragments++;
         
         OnKeyFragmentUpdated?.Invoke(this, new OnKeyFragmentUpdatedArgs
@@ -89,6 +91,8 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void AddStatsModifier(StatsModifier modifier)
     {
+        Debug.Log($"Adding modifier {modifier} to {player.Username}");
+        
         if (stats.Contains(modifier))
             return;
         stats.Add(modifier);
@@ -103,6 +107,8 @@ public class Inventory : NetworkBehaviour
     [Server]
     public bool AddTrap(TrapModifier trap)
     {
+        Debug.Log($"Adding trap {trap} to {player.Username}");
+        
         if (traps.Contains(trap))
             return false;
         
@@ -113,6 +119,8 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void RemoveStatsModifier(StatsModifier modifier)
     {
+        Debug.Log($"Removing modifier {modifier} from {player.Username}");
+        
         stats.Remove(modifier);
     }
 
@@ -136,6 +144,7 @@ public class Inventory : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void UseTrap(TrapModifier trap)
     {
+        Debug.Log($"Using trap {trap} from {player.Username}");
         if (!traps.Contains(trap))
             return;
         
