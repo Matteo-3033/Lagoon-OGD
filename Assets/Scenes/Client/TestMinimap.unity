@@ -1771,12 +1771,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!1 &1291960827 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 215138077781146388, guid: de871802091702d4fb5a459cd7261e2e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1740078415}
-  m_PrefabAsset: {fileID: 0}
 --- !u!20 &1310962263 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 214835941968431308, guid: 76e675e5a9e82cf47bda8e5fc4379ad5,
@@ -3422,14 +3416,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 215138077781146388, guid: de871802091702d4fb5a459cd7261e2e,
-        type: 3}
-      insertIndex: 10
-      addedObject: {fileID: 1864852586}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de871802091702d4fb5a459cd7261e2e, type: 3}
 --- !u!1 &1741465775
 GameObject:
@@ -3791,22 +3782,10 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1740078415}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1291960827}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0eb70c802d4240438912da4fff00886f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1864852586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1291960827}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28bab56c11db5af4ba599a71c5cd5544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1957725799

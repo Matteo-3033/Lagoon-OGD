@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c0aafd1e9add8344a2072150d1b1ffe, type: 3}
-  m_Name: RippleConfig
+  m_Name: KeyRippleConfig
   m_EditorClassIdentifier: 
-  singleRippleDuration: 1
-  interval: 2
+  singleRippleDuration: 2
+  interval: 5
   scale: 100
-  rippleColor: {r: 0.2478441, g: 1, b: 0, a: 1}
+  rippleColor: {r: 1, g: 0.072962716, b: 0, a: 1}

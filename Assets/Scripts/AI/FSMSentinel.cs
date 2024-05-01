@@ -196,20 +196,18 @@ public class FSMSentinel : NetworkBehaviour
 
     private void SignalOnTarget()
     {
-        MinimapIcon minimapIcon = _alarmTarget.GetComponentInChildren<MinimapIcon>();
-        if (!minimapIcon) return;
+        RippleController rippleController = _alarmTarget.GetComponentInChildren<RippleController>();
+        if (!rippleController) return;
 
-        Debug.Log("ShowRipple");
-        minimapIcon.ShowRipple();
+        rippleController.ShowAlarmRipple();
     }
 
     private void StopSignalOnTarget()
     {
-        MinimapIcon minimapIcon = _alarmTarget.GetComponentInChildren<MinimapIcon>();
-        if (!minimapIcon) return;
+        RippleController rippleController = _alarmTarget.GetComponentInChildren<RippleController>();
+        if (!rippleController) return;
 
-        Debug.Log("StopRipple");
-        minimapIcon.StopRipple();
+        rippleController.StopAlarmRipple();
     }
 
     // TRANSITIONS
