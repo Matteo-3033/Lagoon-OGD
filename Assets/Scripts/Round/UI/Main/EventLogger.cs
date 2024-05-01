@@ -117,8 +117,9 @@ namespace Round.UI.Main
         {
             var totalFragments = RoundController.Round.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
-            
-            LogEvent($"You're missing <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color> to win the round");
+
+            LogEvent($"Next round teleport disabled", 0.1F);
+            LogEvent("Find other <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color>");
         }
         
         private void LogTimerUpdate(int remainingTime)
