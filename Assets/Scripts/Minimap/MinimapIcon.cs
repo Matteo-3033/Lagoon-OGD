@@ -10,10 +10,10 @@ using UnityEngine.Serialization;
 
 public class MinimapIcon : NetworkBehaviour
 {
-    [SerializeField] private Camera minimapCamera;
+    [SerializeField] private MinimapCamera minimapCamera;
     [SerializeField] private bool startHidden;
     [Header("Clamp to border")] public bool clampToBorder = true;
-    public float offset;
+    public bool circleClamp = false;
     [Header("Ripple effect")] public GameObject ripplePrefab;
     public RippleConfiguration defaultRippleConfiguration;
 
@@ -22,13 +22,19 @@ public class MinimapIcon : NetworkBehaviour
     private GameObject _currentRippleObject;
     private Coroutine _currentClampIntermittentCoroutine;
 
+    private Vector3 MinimapCameraPosition => minimapCamera.transform.position;
+    private float MinimapCameraOrthographicSize => minimapCamera.Camera.orthographicSize;
+    private float ClampOffset => minimapCamera.clampOffset;
+
+
     public event EventHandler<bool> OnIconShown;
     public event EventHandler<bool> OnIconClamped;
 
     private void Awake()
     {
         _simpleIcons = GetComponentsInChildren<SimpleIcon>();
-        if (minimapCamera == null) minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<Camera>();
+        if (minimapCamera == null)
+            minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<MinimapCamera>();
     }
 
     private void Start()
@@ -56,15 +62,52 @@ public class MinimapIcon : NetworkBehaviour
             return;
         }
 
+        if (circleClamp)
+        {
+            CircleClamp();
+        }
+        else
+        {
+            SquareClamp();
+        }
+    }
+
+    private void SquareClamp()
+    {
         transform.position = new Vector3(
             Mathf.Clamp(transform.parent.position.x,
-                minimapCamera.transform.position.x - minimapCamera.orthographicSize + offset,
-                minimapCamera.transform.position.x + minimapCamera.orthographicSize - offset),
+                MinimapCameraPosition.x - MinimapCameraOrthographicSize + ClampOffset,
+                MinimapCameraPosition.x + MinimapCameraOrthographicSize - ClampOffset),
             transform.position.y,
             Mathf.Clamp(transform.parent.position.z,
-                minimapCamera.transform.position.z - minimapCamera.orthographicSize + offset,
-                minimapCamera.transform.position.z + minimapCamera.orthographicSize - offset)
+                MinimapCameraPosition.z - MinimapCameraOrthographicSize + ClampOffset,
+                MinimapCameraPosition.z + MinimapCameraOrthographicSize - ClampOffset)
         );
+    }
+
+    private void CircleClamp()
+    {
+        Vector3 centerPosition = MinimapCameraPosition;
+        centerPosition.y = transform.parent.position.y;
+
+        Vector3 toParent = transform.parent.position - centerPosition;
+
+        if (toParent.magnitude < MinimapCameraOrthographicSize - ClampOffset)
+        {
+            transform.position = new Vector3(transform.parent.position.x,
+                transform.position.y,
+                transform.parent.position.z
+            );
+            return;
+        }
+
+        Vector3 newPosition = minimapCamera.transform.position +
+                              toParent.normalized * (MinimapCameraOrthographicSize - ClampOffset);
+        transform.position = new Vector3(newPosition.x,
+            transform.position.y,
+            newPosition.z);
+        Debug.DrawRay(minimapCamera.transform.position, toParent.normalized * MinimapCameraOrthographicSize,
+            Color.cyan);
     }
 
     public void Show()

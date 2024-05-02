@@ -31,7 +31,7 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!Target)
+        if (Target)
         {
             Vector3 newPosition = Target.position;
             newPosition.y = transform.position.y;

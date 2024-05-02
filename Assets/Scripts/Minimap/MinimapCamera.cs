@@ -3,18 +3,21 @@ using UnityEngine;
 public class MinimapCamera : MonoBehaviour
 {
     [SerializeField] private Player testPlayer;
-    
+
     public LayerMask minimapLayerMask;
+    public float clampOffset = 2f;
     public float darkCheckDistance = 5f;
+    public Camera Camera { get; private set; }
 
     private Vector3 _movementDirection = Vector3.forward;
-    private Camera _camera;
-    
-    private Player player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
+    private Camera _mainCamera;
+
+    private Player Player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
 
     private void Start()
     {
-        _camera = Camera.main;
+        _mainCamera = Camera.main;
+        Camera = GetComponent<Camera>();
     }
 
     private void FixedUpdate()
@@ -43,9 +46,9 @@ public class MinimapCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!player?.transform) return;
-        
-        Vector3 newPosition = player.transform.position;
+        if (!Player?.transform) return;
+
+        Vector3 newPosition = Player.transform.position;
         newPosition.y = transform.position.y;
 
         Vector3 newMovementDirection = newPosition - transform.position;
@@ -56,6 +59,6 @@ public class MinimapCamera : MonoBehaviour
 
         transform.position = newPosition;
 
-        transform.rotation = Quaternion.Euler(90, _camera.transform.rotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Euler(90, _mainCamera.transform.rotation.eulerAngles.y, 0);
     }
 }
