@@ -44,7 +44,7 @@ public class FieldOfVIew : NetworkBehaviour
 
     private void Update()
     {
-        if (isClient && player && !player.isLocalPlayer)
+        if (isClient && player && Player.Opponent?.transform == transform.root)
             return;
 
         var vertices = new Vector3[rayCount + 2]; // +2 for the origin and the last vertex

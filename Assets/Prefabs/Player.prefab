@@ -578,7 +578,7 @@ MonoBehaviour:
   minimapCamera: {fileID: 0}
   startHidden: 1
   clampToBorder: 1
-  offset: 2
+  circleClamp: 0
   ripplePrefab: {fileID: 4363934167238568914, guid: 6bf4c72bafe535e44acdc941706bc7e5,
     type: 3}
   defaultRippleConfiguration: {fileID: 11400000, guid: 2b0890d8116656945aeca65e62610431,
@@ -932,7 +932,7 @@ PrefabInstance:
     - target: {fileID: 6540458423482487645, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6540458423482487645, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}
@@ -1033,7 +1033,7 @@ PrefabInstance:
     - target: {fileID: 6540458423482487645, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6540458423482487645, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}
