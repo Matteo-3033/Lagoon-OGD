@@ -55,7 +55,7 @@ namespace Audio
             PlayClipAtPoint(audioClips.chancellorAlarm, Target);
         }
         
-        private void PlaySound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
+        private void PlayClipAtPoint(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
         {
             PlayClipAtPoint(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier, threeD);
         }
@@ -87,7 +87,7 @@ namespace Audio
         
         public void PlayFootstepsSound(Vector3 source, float footstepsVolume = 1F)
         {
-            PlaySound(audioClips.footsteps, source, footstepsVolume, true);
+            PlayClipAtPoint(audioClips.footsteps, source, footstepsVolume, true);
         }
 
         public void ChangeVolume()
