@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Round;
+using Round.Obstacles.TrapPressurePlate;
 using TrapModifiers;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -48,11 +49,13 @@ namespace Audio
                 Player.OnPlayerSpawned += RegisterPlayerCallbacks;
             
             ChancellorEffectsController.OnEffectEnabled += OnChancellorEffectEnabled;
+            TrapPressurePlate.OnStateChanged += OnTrapPressurePlateStateChanged;
         }
 
         private void RegisterRoundControllerCallbacks()
         {
             RoundController.Instance.OnCountdown += OnCountdown;
+            RoundController.Instance.OnRoundStarted += OnRoundStart;
             RoundController.Instance.OnNoWinningCondition += OnError;
         }
 
@@ -63,6 +66,13 @@ namespace Audio
 
             player.Inventory.OnTrapsUpdated += OnTrapsUpdated;
             player.Inventory.OnStatsUpdate += OnStatsUpdated;
+            player.Inventory.OnKeyFragmentUpdated += OnKeyFragmentUpdated;
+        }
+
+        private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
+        {
+            if (args.NewValue > args.OldValue)
+                PlayClipAtPoint(audioClips.keyFragmentAcquisition, Target);
         }
 
         private void OnStatsUpdated(object sender, Inventory.OnStatsUpdatedArgs args)
@@ -84,10 +94,27 @@ namespace Audio
         {
             PlayClipAtPoint(audioClips.countdown, Target);
         }
-
+        
+        private void OnRoundStart()
+        {
+            PlayClipAtPoint(audioClips.roundStart, Target);
+        }
+        
         private void OnChancellorEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
         {
             PlayClipAtPoint(audioClips.chancellorAlarm, Target);
+        }
+        
+        private void OnTrapPressurePlateStateChanged(object sender, bool pressed)
+        {
+            if (!pressed) return;
+            
+            PlayClipAtPoint(
+                audioClips.trapActivation,
+                ((GameObject) sender).transform.position,
+                1f,
+                true
+            );
         }
         
         private void OnError()

@@ -119,7 +119,7 @@ namespace Round.UI.Main
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
 
             LogEvent($"Next round teleport disabled", 0.1F);
-            LogEvent("Find other <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color>");
+            LogEvent($"Find other <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color>");
         }
         
         private void LogTimerUpdate(int remainingTime)

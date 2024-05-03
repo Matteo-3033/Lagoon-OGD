@@ -12,13 +12,15 @@ namespace Audio
         public AudioClip[] error;
         public AudioClip[] buffActivation;
         public AudioClip[] debuffActivation;
-        public AudioClip keyFragmentAcquisition;
-        public AudioClip trapActivation;
+        public AudioClip[] keyFragmentAcquisition;
+        public AudioClip[] trapActivation;
         public AudioClip[] kill;
         public AudioClip roundEnd;
-        public AudioClip roundStart;
+        public AudioClip[] roundStart;
         public AudioClip fightBegin;
         public AudioClip guardDetection;
         public AudioClip cameraDetection;
+        public AudioClip doorOpen;
+        public AudioClip doorClose;
     }
 }

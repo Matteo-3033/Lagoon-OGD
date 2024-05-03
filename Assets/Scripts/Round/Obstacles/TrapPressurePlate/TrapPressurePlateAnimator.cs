@@ -22,12 +22,15 @@ namespace Round.Obstacles.TrapPressurePlate
             animator = gameObject.GetComponent<Animator>();
             particles = gameObject.GetComponentInChildren<ParticleSystem>(); 
 
-            var trapPressurePlate = gameObject.GetComponent<TrapPressurePlate>();
-            trapPressurePlate.OnStateChanged += OnStateChanged;
+            TrapPressurePlate.OnStateChanged += OnStateChanged;
         }
 
         private void OnStateChanged(object sender, bool pressed)
         {
+            var trapPressurePlate = gameObject.GetComponent<TrapPressurePlate>();
+            if ((TrapPressurePlate) sender != trapPressurePlate)
+                return;
+            
             animator.SetBool(PressedParameter, pressed);
             
             if (pressed && !disappearing)
