@@ -148,8 +148,6 @@ public class Inventory : NetworkBehaviour
         if (!traps.Contains(trap))
             return;
         
-        Debug.Log($"Placing trap {trap}");
-
         var playerRadius = player.GetComponent<CapsuleCollider>().radius;
         var position = player.transform.position + player.transform.forward * playerRadius * 3;
 

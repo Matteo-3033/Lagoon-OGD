@@ -14,6 +14,7 @@ namespace Audio
         public AudioClip[] debuffActivation;
         public AudioClip[] keyFragmentAcquisition;
         public AudioClip[] trapActivation;
+        public AudioClip trapPlacement;
         public AudioClip[] kill;
         public AudioClip roundEnd;
         public AudioClip[] roundStart;

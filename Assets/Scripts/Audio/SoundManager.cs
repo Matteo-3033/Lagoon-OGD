@@ -88,6 +88,8 @@ namespace Audio
         {
             if (args.Op == Inventory.TrapOP.Acquired)
                 PlayClipAtPoint(audioClips.trapVendingMachine, Target);
+            else if (args.Op == Inventory.TrapOP.Placed)
+                PlayClipAtPoint(audioClips.trapPlacement, Target);
         }
 
         private void OnCountdown(int obj)
