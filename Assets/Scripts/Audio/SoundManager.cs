@@ -42,17 +42,47 @@ namespace Audio
             else
                 RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
             
-            ChancellorEffectsController.OnEffectEnabled += OnEffectEnabled;
+            if (Player.LocalPlayer != null)
+                RegisterPlayerCallbacks(Player.LocalPlayer);
+            else 
+                Player.OnPlayerSpawned += RegisterPlayerCallbacks;
+            
+            ChancellorEffectsController.OnEffectEnabled += OnChancellorEffectEnabled;
         }
 
         private void RegisterRoundControllerCallbacks()
         {
-            
+            RoundController.Instance.OnCountdown += OnCountdown;
+            RoundController.Instance.OnNoWinningCondition += OnError;
         }
 
-        private void OnEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
+        private void RegisterPlayerCallbacks(Player player)
+        {
+            if (!player.isLocalPlayer)
+                return;
+
+            player.Inventory.OnTrapsUpdated += OnTrapsUpdated;
+        }
+
+        private void OnTrapsUpdated(object sender, Inventory.OnTrapsUpdatedArgs args)
+        {
+            if (args.Op == Inventory.TrapOP.Acquired)
+                PlayClipAtPoint(audioClips.trapVendingMachine, Target);
+        }
+
+        private void OnCountdown(int obj)
+        {
+            PlayClipAtPoint(audioClips.countdown, Target);
+        }
+
+        private void OnChancellorEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
         {
             PlayClipAtPoint(audioClips.chancellorAlarm, Target);
+        }
+        
+        private void OnError()
+        {
+            PlayClipAtPoint(audioClips.error, Target);
         }
         
         private void PlayClipAtPoint(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
@@ -82,7 +112,8 @@ namespace Audio
         private void OnDestroy()
         {
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
-            ChancellorEffectsController.OnEffectEnabled -= OnEffectEnabled;
+            ChancellorEffectsController.OnEffectEnabled -= OnChancellorEffectEnabled;
+            Player.OnPlayerSpawned -= RegisterPlayerCallbacks;
         }
         
         public void PlayFootstepsSound(Vector3 source, float footstepsVolume = 1F)

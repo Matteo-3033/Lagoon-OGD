@@ -18,3 +18,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: cea523d483539364ebc9ee416e64bfc6, type: 3}
   - {fileID: 8300000, guid: 4e196caa41b0c374188c00887fd6e617, type: 3}
   - {fileID: 8300000, guid: 18e3a6af7f0df61418d4074d9561d6fe, type: 3}
+  trapVendingMachine:
+  - {fileID: 8300000, guid: ef469d07f9120cf499dac3df87a6b0c5, type: 3}
+  - {fileID: 8300000, guid: 6137d1e14901ce146893748a54618f55, type: 3}
+  - {fileID: 8300000, guid: 5bd806ad999cbe9459da9318e6a42307, type: 3}
+  countdown: {fileID: 8300000, guid: 4c5adeca2b424f84ea83c87ecfdf0fa9, type: 3}
+  error: {fileID: 8300000, guid: 94fa66a911c041c42ad1f79e5bd89e62, type: 3}
+  buffActivation: {fileID: 0}
+  debuffActivation: {fileID: 0}
+  keyFragmentAcquisition: {fileID: 0}
+  trapActivation: {fileID: 0}
+  kill: []
+  roundEnd: {fileID: 0}
+  roundStart: {fileID: 0}
