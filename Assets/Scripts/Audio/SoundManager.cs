@@ -62,6 +62,16 @@ namespace Audio
                 return;
 
             player.Inventory.OnTrapsUpdated += OnTrapsUpdated;
+            player.Inventory.OnStatsUpdate += OnStatsUpdated;
+        }
+
+        private void OnStatsUpdated(object sender, Inventory.OnStatsUpdatedArgs args)
+        {
+            if (args.Enabled)
+                PlayClipAtPoint(
+                    args.Modifier.isBuff ? audioClips.buffActivation : audioClips.debuffActivation,
+                    Target
+                );
         }
 
         private void OnTrapsUpdated(object sender, Inventory.OnTrapsUpdatedArgs args)

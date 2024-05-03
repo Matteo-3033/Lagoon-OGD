@@ -23,11 +23,20 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6137d1e14901ce146893748a54618f55, type: 3}
   - {fileID: 8300000, guid: 5bd806ad999cbe9459da9318e6a42307, type: 3}
   countdown: {fileID: 8300000, guid: 4c5adeca2b424f84ea83c87ecfdf0fa9, type: 3}
-  error: {fileID: 8300000, guid: 94fa66a911c041c42ad1f79e5bd89e62, type: 3}
-  buffActivation: {fileID: 0}
-  debuffActivation: {fileID: 0}
+  error:
+  - {fileID: 8300000, guid: 9a56cb0514ae7d448972fff2f9d1fcad, type: 3}
+  - {fileID: 8300000, guid: 8c5a448e94f81cc428fe7ef88bc9c00d, type: 3}
+  buffActivation: []
+  debuffActivation:
+  - {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
+  - {fileID: 8300000, guid: 0d8c9f98e6f187e4cbd0209850c2869f, type: 3}
   keyFragmentAcquisition: {fileID: 0}
   trapActivation: {fileID: 0}
-  kill: []
+  kill:
+  - {fileID: 8300000, guid: e362af1b065d0f6419d3c5a1b8959114, type: 3}
+  - {fileID: 8300000, guid: bd5885344ffa0a2458b7f0168aecfb6d, type: 3}
   roundEnd: {fileID: 0}
   roundStart: {fileID: 0}
+  fightBegin: {fileID: 8300000, guid: bdbf05b3a5d57c9468f732c45fb6750b, type: 3}
+  guardDetection: {fileID: 8300000, guid: cd0bd28fc6254014e91e49458fbc8684, type: 3}
+  cameraDetection: {fileID: 8300000, guid: 63593607ec58108468187f3e752fd015, type: 3}
