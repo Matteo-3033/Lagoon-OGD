@@ -17,6 +17,7 @@ public class RippleController : MonoBehaviour
     private int _keyFragments;
 
     private bool _isAlarmState;
+    private Coroutine _currentRippleCoroutine;
 
     public event EventHandler OnAlarmRippleStarted;
     public event EventHandler OnAlarmRippleEnded;
@@ -41,32 +42,37 @@ public class RippleController : MonoBehaviour
     public void ShowAlarmRipple()
     {
         _isAlarmState = true;
-        keyRippleSignal.StopRipple();
-        _minimapIcon.StopIconIntermittent();
-        alarmRippleSignal.PlayRipple();
-        _minimapIcon.ShowIconIntermittent(alarmRippleSignal.RippleLifetime, alarmRippleSignal.Interval);
+        StopCurrentRipple();
+        PlayAlarmRipple();
         OnAlarmRippleStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public void StopAlarmRipple()
     {
         _isAlarmState = false;
-        alarmRippleSignal.StopRipple();
-        _minimapIcon.StopIconIntermittent();
-
+        StopCurrentRipple();
         PlayKeyRipple();
         OnAlarmRippleEnded?.Invoke(this, EventArgs.Empty);
     }
 
     private void PlayKeyRipple()
     {
-        if (_keyFragments <= minimumKeyNumber)
-        {
-            return;
-        }
+        if (_keyFragments <= minimumKeyNumber) return;
 
-        keyRippleSignal.PlayRipple();
-        _minimapIcon.ShowIconIntermittent(keyRippleSignal.RippleLifetime, keyRippleSignal.Interval);
+        _currentRippleCoroutine = StartCoroutine(RippleLoop(keyRippleSignal));
+    }
+
+    private void PlayAlarmRipple()
+    {
+        _currentRippleCoroutine = StartCoroutine(RippleLoop(alarmRippleSignal));
+    }
+
+    private void StopCurrentRipple()
+    {
+        if (_currentRippleCoroutine == null) return;
+
+        StopCoroutine(_currentRippleCoroutine);
+        _currentRippleCoroutine = null;
     }
 
     private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs e)
@@ -77,10 +83,11 @@ public class RippleController : MonoBehaviour
     private void UpdateKeyRippleEffect(int keys)
     {
         _keyFragments = keys;
-        if (_keyFragments <= minimumKeyNumber)
+        Debug.Log("Keys:" + keys);
+        if (!_isAlarmState && _keyFragments <= minimumKeyNumber)
         {
-            keyRippleSignal.StopRipple();
-
+            StopCurrentRipple();
+            _minimapIcon.Hide();
             return;
         }
 
@@ -89,9 +96,17 @@ public class RippleController : MonoBehaviour
             keyRippleConfig.scale,
             keyRippleConfig.rippleColor);
 
-        if (_isAlarmState) return;
+        if (_currentRippleCoroutine == null) PlayKeyRipple();
+    }
 
-        _minimapIcon.StopIconIntermittent();
-        PlayKeyRipple();
+    private IEnumerator RippleLoop(RippleSignal rippleSignal)
+    {
+        while (true)
+        {
+            Debug.Log("RippleLoop");
+            rippleSignal.PlayRipple();
+            _minimapIcon.PlayIconFade(rippleSignal.RippleLifetime / 2);
+            yield return new WaitForSeconds(rippleSignal.Interval);
+        }
     }
 }

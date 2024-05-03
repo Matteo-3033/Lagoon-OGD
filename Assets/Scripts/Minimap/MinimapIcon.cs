@@ -117,6 +117,8 @@ public class MinimapIcon : NetworkBehaviour
 
     public void Hide()
     {
+        if (Player.LocalPlayer?.transform == transform.root) return;
+        
         SetIconShown(false);
     }
 
@@ -139,37 +141,18 @@ public class MinimapIcon : NetworkBehaviour
         OnIconClamped?.Invoke(this, active);
     }
 
-    public void ShowIconIntermittent(float fadeDuration, float interval)
+    public void PlayIconFade(float fadeDuration)
     {
-        if (fadeDuration <= 0 || interval <= 0)
+        if (Player.LocalPlayer?.transform == transform.root) return;
+
+        if (fadeDuration <= 0)
         {
             Hide();
         }
 
-        _currentClampIntermittentCoroutine = StartCoroutine(EnableIntermittentIcon(fadeDuration, interval));
-    }
-
-    public void StopIconIntermittent()
-    {
-        if (_currentClampIntermittentCoroutine == null) return;
-
-        StopCoroutine(_currentClampIntermittentCoroutine);
-        _currentClampIntermittentCoroutine = null;
-    }
-
-    private IEnumerator EnableIntermittentIcon(float fadeDuration, float interval)
-    {
-        ClampToMinimapBorder(true);
-        Show();
-
-        while (true)
+        foreach (SimpleIcon icon in _simpleIcons)
         {
-            foreach (SimpleIcon icon in _simpleIcons)
-            {
-                icon.FadeOutIcon(fadeDuration);
-            }
-
-            yield return new WaitForSeconds(interval);
+            icon.FadeOutIcon(fadeDuration);
         }
     }
 }

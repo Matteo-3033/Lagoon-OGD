@@ -24,6 +24,7 @@ public class RippleSignal : MonoBehaviour
 
         ParticleSystem.MainModule rippleEffectMain = ParticleSystem.main;
         rippleEffectMain.duration = interval;
+        rippleEffectMain.loop = false;
         rippleEffectMain.startLifetime = rippleLifetime;
         rippleEffectMain.startColor = color;
 
