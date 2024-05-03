@@ -113,7 +113,7 @@ namespace Audio
             
             PlayClipAtPoint(
                 audioClips.trapActivation,
-                ((GameObject) sender).transform.position,
+                ((MonoBehaviour) sender).transform.position,
                 1f,
                 true
             );
