@@ -118,7 +118,7 @@ public class MinimapIcon : NetworkBehaviour
     public void Hide()
     {
         if (Player.LocalPlayer?.transform == transform.root) return;
-        
+
         SetIconShown(false);
     }
 

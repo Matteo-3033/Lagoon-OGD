@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 7450001231177733742}
   - component: {fileID: 8576469748361526691}
   - component: {fileID: 3721330816512938901}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: EnemySentinel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

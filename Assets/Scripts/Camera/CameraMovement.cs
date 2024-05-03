@@ -26,7 +26,6 @@ public class CameraMovement : MonoBehaviour
     {
         _targetRotation += direction * 90;
         _durationTime += rotationTime;
-        Debug.Log("----- Target rotation: " + _targetRotation);
     }
 
     void LateUpdate()

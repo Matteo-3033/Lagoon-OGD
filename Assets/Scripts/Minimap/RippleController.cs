@@ -83,7 +83,6 @@ public class RippleController : MonoBehaviour
     private void UpdateKeyRippleEffect(int keys)
     {
         _keyFragments = keys;
-        Debug.Log("Keys:" + keys);
         if (!_isAlarmState && _keyFragments <= minimumKeyNumber)
         {
             StopCurrentRipple();
@@ -103,7 +102,6 @@ public class RippleController : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("RippleLoop");
             rippleSignal.PlayRipple();
             _minimapIcon.PlayIconFade(rippleSignal.RippleLifetime / 2);
             yield return new WaitForSeconds(rippleSignal.Interval);
