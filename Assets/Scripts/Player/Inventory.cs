@@ -32,19 +32,19 @@ public class Inventory : NetworkBehaviour
     {
         public StatsModifier Modifier;
         public Player Player;
-        public bool Enabled;
+        public InventoryOp Op;
     }
     
     public class OnTrapsUpdatedArgs : EventArgs
     {
         public TrapModifier Trap;
-        public TrapOp Op;
+        public InventoryOp Op;
     }
     
-    public enum TrapOp
+    public enum InventoryOp
     {
         Acquired,
-        Placed,
+        Removed,
         Cleared
     }
     
@@ -66,10 +66,7 @@ public class Inventory : NetworkBehaviour
     [Server]
     public void Clear()
     {
-        var statsCopy = stats.ToArray();
-        foreach (var modifier in statsCopy)
-            RemoveStatsModifier(modifier);
-        
+        stats.Clear();
         traps.Clear();
     }
 
@@ -115,14 +112,6 @@ public class Inventory : NetworkBehaviour
         
         traps.Add(trap);
         return true;
-    }
-    
-    [Server]
-    public void RemoveStatsModifier(StatsModifier modifier)
-    {
-        Debug.Log($"Removing modifier {modifier} from {player.Username}");
-        
-        stats.Remove(modifier);
     }
 
     [Server]
@@ -194,40 +183,60 @@ public class Inventory : NetworkBehaviour
     
     private void OnStatsModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
     {
+        InventoryOp inventoryOp;
+        switch (op)
+        {
+            case SyncList<StatsModifier>.Operation.OP_ADD:
+                inventoryOp = InventoryOp.Acquired;
+                break;
+            case SyncList<StatsModifier>.Operation.OP_REMOVEAT:
+                inventoryOp = InventoryOp.Removed;
+                break;
+            case SyncList<StatsModifier>.Operation.OP_CLEAR:
+                inventoryOp = InventoryOp.Cleared;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(op), op, null);
+        }
+        
         if (isClient && player.Username == Player.LocalPlayer.Username)  // Only the inventory owner applies the effect
         {
-            switch (op)
+            switch (inventoryOp)
             {
-                case SyncList<StatsModifier>.Operation.OP_ADD:
+                case InventoryOp.Acquired:
                     newItem.Enable();
                     break;
-                case SyncList<StatsModifier>.Operation.OP_REMOVEAT:
+                case InventoryOp.Removed:
                     oldItem.Disable();
+                    break;
+                case InventoryOp.Cleared:
+                    foreach (var modifier in stats)
+                        modifier.Disable();
                     break;
             }
         }
 
         OnStatsUpdate?.Invoke(this, new OnStatsUpdatedArgs
         {
-            Enabled = op == SyncList<StatsModifier>.Operation.OP_ADD,
-            Modifier = op == SyncList<StatsModifier>.Operation.OP_ADD ? newItem : oldItem,
+            Op = inventoryOp,
+            Modifier = inventoryOp == InventoryOp.Acquired ? newItem : oldItem,
             Player = player
         });
     }
 
     private void OnTrapsChanged(SyncList<TrapModifier>.Operation op, int itemIndex, TrapModifier oldItem, TrapModifier newItem)
     {
-        TrapOp trapOp;
+        InventoryOp trapOp;
         switch (op)
         {
             case SyncList<TrapModifier>.Operation.OP_ADD:
-                trapOp = TrapOp.Acquired;
+                trapOp = InventoryOp.Acquired;
                 break;
             case SyncList<TrapModifier>.Operation.OP_CLEAR:
-                trapOp = TrapOp.Cleared;
+                trapOp = InventoryOp.Cleared;
                 break;
             case SyncList<TrapModifier>.Operation.OP_REMOVEAT:
-                trapOp = TrapOp.Placed;
+                trapOp = InventoryOp.Removed;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(op), op, null);

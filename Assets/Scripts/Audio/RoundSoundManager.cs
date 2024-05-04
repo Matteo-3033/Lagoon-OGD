@@ -74,14 +74,18 @@ namespace Audio
 
         private void OnStatsUpdated(object sender, Inventory.OnStatsUpdatedArgs args)
         {
-            if (!args.Enabled) return;
+            if (args.Op != Inventory.InventoryOp.Acquired) return;
             
             if (args.Modifier.isBuff && !args.Modifier.canBeFoundInGame)
+            {
                 PlayClipAtPoint(
-                    audioClips.superBuffActivation,
+                    args.Player.isLocalPlayer
+                        ? audioClips.superBuffActivation
+                        : audioClips.superBuffActivationOnOpponent,
                     Target
-                );  
-            else
+                );
+            } 
+            else if (args.Player.isLocalPlayer)
                 PlayClipAtPoint(
                     args.Modifier.isBuff ? audioClips.buffActivation : audioClips.debuffActivation,
                     Target
@@ -90,7 +94,7 @@ namespace Audio
 
         private void OnTrapsUpdated(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Op == Inventory.TrapOp.Placed)
+            if (args.Op == Inventory.InventoryOp.Removed)
                 PlayClipAtPoint(audioClips.trapPlacement, Target);
         }
 

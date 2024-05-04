@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 287d87927f774cd6b463f17560fcb980, type: 3}
   m_Name: RoundSounds
   m_EditorClassIdentifier: 
-  chancellorAlarm: {fileID: 8300000, guid: 829ae1a4b38a9404d9f32f537275862b, type: 3}
+  chancellorAlarm: {fileID: 8300000, guid: f5621c9eaf28f094199b3f837d80582b, type: 3}
   footsteps:
   - {fileID: 8300000, guid: 7eaa75f5aa7a5284d8ae3c7bf35c26db, type: 3}
   - {fileID: 8300000, guid: cea523d483539364ebc9ee416e64bfc6, type: 3}
@@ -26,13 +26,13 @@ MonoBehaviour:
   error:
   - {fileID: 8300000, guid: 9a56cb0514ae7d448972fff2f9d1fcad, type: 3}
   - {fileID: 8300000, guid: 8c5a448e94f81cc428fe7ef88bc9c00d, type: 3}
-  buffActivation: []
-  superBuffActivation: {fileID: 0}
-  debuffActivation:
-  - {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
-  - {fileID: 8300000, guid: 0d8c9f98e6f187e4cbd0209850c2869f, type: 3}
+  buffActivation: {fileID: 8300000, guid: b249ecd0474ba7a4a878678939d49358, type: 3}
+  superBuffActivation: {fileID: 8300000, guid: 9a3e195585d7f89418e99e164c6056ab, type: 3}
+  superBuffActivationOnOpponent: {fileID: 8300000, guid: 17bf1cd826eee9a439692d1a33a88a32,
+    type: 3}
+  debuffActivation: {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
   keyFragmentAcquisition:
-  - {fileID: 8300000, guid: e3f45e3dd021e8f4b9a151eef87e4c59, type: 3}
+  - {fileID: 8300000, guid: 4b279b4e34285ce42b230aa7b310cc79, type: 3}
   trapActivation:
   - {fileID: 8300000, guid: 096ebe0fa37eabc4b9d5dd243808c28c, type: 3}
   - {fileID: 8300000, guid: 5e37ad3d17f342643ace29a220a42945, type: 3}

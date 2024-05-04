@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Audio
 {
@@ -10,9 +11,10 @@ namespace Audio
         public AudioClip[] trapVendingMachine;
         public AudioClip countdown;
         public AudioClip[] error;
-        public AudioClip[] buffActivation;
+        public AudioClip buffActivation;
         public AudioClip superBuffActivation;
-        public AudioClip[] debuffActivation;
+        public AudioClip superBuffActivationOnOpponent;
+        public AudioClip debuffActivation;
         public AudioClip[] keyFragmentAcquisition;
         public AudioClip[] trapActivation;
         public AudioClip trapPlacement;
