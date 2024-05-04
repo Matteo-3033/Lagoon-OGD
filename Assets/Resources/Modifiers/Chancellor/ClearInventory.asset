@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb6c414450e4beb99336d1450656be4, type: 3}
   m_Name: ClearInventory
   m_EditorClassIdentifier: 
-  modifierName: Clear inventory
+  modifierName: Everything is cleared!
   description: Your inventory will be emptied
