@@ -2,7 +2,7 @@
 
 namespace Audio
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/AudioClips", fileName = "AudioClips")]
+    [CreateAssetMenu(menuName = "ScriptableObjects/AudioClips/Round", fileName = "Round")]
     public class AudioClips: ScriptableObject
     {
         public AudioClip chancellorAlarm;
@@ -17,7 +17,7 @@ namespace Audio
         public AudioClip[] trapActivation;
         public AudioClip trapPlacement;
         public AudioClip[] kill;
-        public AudioClip roundEnd;
+        public AudioClip[] roundEnd;
         public AudioClip[] roundStart;
         public AudioClip fightBegin;
         public AudioClip guardDetection;

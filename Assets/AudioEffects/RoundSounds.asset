@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 287d87927f774cd6b463f17560fcb980, type: 3}
-  m_Name: AudioClips
+  m_Name: RoundSounds
   m_EditorClassIdentifier: 
   chancellorAlarm: {fileID: 8300000, guid: 829ae1a4b38a9404d9f32f537275862b, type: 3}
   footsteps:
@@ -26,8 +26,8 @@ MonoBehaviour:
   error:
   - {fileID: 8300000, guid: 9a56cb0514ae7d448972fff2f9d1fcad, type: 3}
   - {fileID: 8300000, guid: 8c5a448e94f81cc428fe7ef88bc9c00d, type: 3}
-  buffActivation:
-  - {fileID: 0}
+  buffActivation: []
+  superBuffActivation: {fileID: 0}
   debuffActivation:
   - {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
   - {fileID: 8300000, guid: 0d8c9f98e6f187e4cbd0209850c2869f, type: 3}
@@ -36,11 +36,14 @@ MonoBehaviour:
   trapActivation:
   - {fileID: 8300000, guid: 096ebe0fa37eabc4b9d5dd243808c28c, type: 3}
   - {fileID: 8300000, guid: 5e37ad3d17f342643ace29a220a42945, type: 3}
-  trapPlacement: {fileID: 0}
+  trapPlacement: {fileID: 8300000, guid: 57faeebc94e2f1f4d8c0fb3669bb7193, type: 3}
   kill:
   - {fileID: 8300000, guid: e362af1b065d0f6419d3c5a1b8959114, type: 3}
   - {fileID: 8300000, guid: bd5885344ffa0a2458b7f0168aecfb6d, type: 3}
-  roundEnd: {fileID: 0}
+  roundEnd:
+  - {fileID: 8300000, guid: 622eccf8778574b4888ce74169bcbb3d, type: 3}
+  - {fileID: 8300000, guid: ce73d3447e099c5438a984804e1f7b2c, type: 3}
+  - {fileID: 8300000, guid: 4eb79cb5fa7fcb544bcb5eb4028447fe, type: 3}
   roundStart:
   - {fileID: 8300000, guid: 622eccf8778574b4888ce74169bcbb3d, type: 3}
   - {fileID: 8300000, guid: ce73d3447e099c5438a984804e1f7b2c, type: 3}

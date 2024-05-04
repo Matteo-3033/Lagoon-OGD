@@ -22,7 +22,7 @@ namespace Utils
                 return;
             }
             
-            if (SoundManager.Instance != null)
+            if (RoundSoundManager.Instance != null)
                 StartCoroutine(FootstepsLoop());
         }
 
@@ -33,7 +33,7 @@ namespace Utils
                 yield return new WaitForSeconds(delay);
 
                 if (SourceIsMoving())
-                    SoundManager.Instance.PlayFootstepsSound(sourceObj.transform.position, volume);
+                    RoundSoundManager.Instance.PlayFootstepsSound(sourceObj.transform.position, volume);
                 
                 lastPosition = sourceObj.transform.position;
             }
