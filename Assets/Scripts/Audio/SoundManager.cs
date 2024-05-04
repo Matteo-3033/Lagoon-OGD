@@ -136,11 +136,15 @@ namespace Audio
         
         private void PlayClipAtPoint(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
         {
-            PlayClipAtPoint(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier, threeD);
+            if (audioClipArray.Count > 0)
+                PlayClipAtPoint(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier, threeD);
         }
 
         private void PlayClipAtPoint(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1F, bool threeD = false)
         {
+            if (audioClip == null)
+                return;
+            
             var obj = new GameObject("One shot audio");
             obj.transform.position = position;
             
