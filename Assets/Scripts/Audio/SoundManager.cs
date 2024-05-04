@@ -82,7 +82,14 @@ namespace Audio
 
         private void OnStatsUpdated(object sender, Inventory.OnStatsUpdatedArgs args)
         {
-            if (args.Enabled)
+            if (!args.Enabled) return;
+            
+            if (args.Modifier.isBuff && !args.Modifier.canBeFoundInGame)
+                PlayClipAtPoint(
+                    audioClips.superBuffActivation,
+                    Target
+                );  
+            else
                 PlayClipAtPoint(
                     args.Modifier.isBuff ? audioClips.buffActivation : audioClips.debuffActivation,
                     Target

@@ -11,6 +11,7 @@ namespace Audio
         public AudioClip countdown;
         public AudioClip[] error;
         public AudioClip[] buffActivation;
+        public AudioClip superBuffActivation;
         public AudioClip[] debuffActivation;
         public AudioClip[] keyFragmentAcquisition;
         public AudioClip[] trapActivation;
