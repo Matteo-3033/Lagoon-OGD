@@ -49,7 +49,7 @@ namespace Round.UI.Main
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
             
-            TrapInteractable.OnTrapNotAdded += LogTrapNotAdded;
+            TrapVendingMachineInteractable.OnTrapNotAdded += LogTrapNotAdded;
 
             ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
         }
@@ -88,29 +88,32 @@ namespace Round.UI.Main
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
             if (args.Op == Inventory.TrapOP.Acquired)
-            {
                 LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
-                LogEvent($"{args.Trap.description}");
-            }
             else if (args.Op == Inventory.TrapOP.Placed)
-            {
                 LogEvent($"{args.Trap.modifierName} placed");
-            }
         }
         
         private void LogChancellorEffect(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
         {
             LogEvent("The <color=#FF0000>Chancellor</color> is awake!", 0.1F);
-            LogEvent(args.Effect.description);
+            LogEvent($"<color=#FF0000>{args.Effect.name}</color>");
         }
 
         private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
         {
-            if (args.NewValue < args.OldValue) return;
+            if (args.NewValue > args.OldValue)
+            {
+                LogEvent(args.Player.isLocalPlayer
+                    ? $"Key fragment acquired!"
+                    : $"<color=#FF0000>{Player.Opponent.Username}</color> acquired a badge fragment!");
 
-            LogEvent(args.Player.isLocalPlayer
-                ? $"Key fragment acquired!"
-                : $"<color=#FF0000>{Player.Opponent.Username}</color> found a badge fragment!");
+                if (args.NewValue == RoundController.Round.keyFragments)
+                    LogEvent(args.Player.isLocalPlayer
+                        ? "Next round teleport enabled"
+                        : $"<color=#FF0000>{args.Player.Username}</color> has all badge fragments!"
+                    );
+            } else if (args.Player.isLocalPlayer && args.OldValue == RoundController.Round.keyFragments)
+                LogEvent("Next round teleport disabled");
         }
 
         private void LogNoWinningCondition()
@@ -180,7 +183,7 @@ namespace Round.UI.Main
         {
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
             Player.OnPlayerSpawned -= OnPlayerSpawned;
-            TrapInteractable.OnTrapNotAdded -= LogTrapNotAdded;
+            TrapVendingMachineInteractable.OnTrapNotAdded -= LogTrapNotAdded;
         }
     }
 }
