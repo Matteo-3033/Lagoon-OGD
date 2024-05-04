@@ -161,8 +161,14 @@ public class Inventory : NetworkBehaviour
         }
         else
             position.y = 0;
-        
-        traps.Remove(trap);
+
+        lock (traps)
+        {
+            if (!traps.Contains(trap))
+                return;
+            traps.Remove(trap);
+        }
+
         var obj =  Instantiate(trap.prefab, position, Quaternion.identity);
         NetworkServer.Spawn(obj);
     }

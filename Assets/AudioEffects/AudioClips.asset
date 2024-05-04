@@ -27,7 +27,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9a56cb0514ae7d448972fff2f9d1fcad, type: 3}
   - {fileID: 8300000, guid: 8c5a448e94f81cc428fe7ef88bc9c00d, type: 3}
   buffActivation:
-  - {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
+  - {fileID: 0}
   debuffActivation:
   - {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
   - {fileID: 8300000, guid: 0d8c9f98e6f187e4cbd0209850c2869f, type: 3}
@@ -36,6 +36,7 @@ MonoBehaviour:
   trapActivation:
   - {fileID: 8300000, guid: 096ebe0fa37eabc4b9d5dd243808c28c, type: 3}
   - {fileID: 8300000, guid: 5e37ad3d17f342643ace29a220a42945, type: 3}
+  trapPlacement: {fileID: 0}
   kill:
   - {fileID: 8300000, guid: e362af1b065d0f6419d3c5a1b8959114, type: 3}
   - {fileID: 8300000, guid: bd5885344ffa0a2458b7f0168aecfb6d, type: 3}
@@ -47,5 +48,5 @@ MonoBehaviour:
   fightBegin: {fileID: 8300000, guid: bdbf05b3a5d57c9468f732c45fb6750b, type: 3}
   guardDetection: {fileID: 8300000, guid: cd0bd28fc6254014e91e49458fbc8684, type: 3}
   cameraDetection: {fileID: 8300000, guid: 63593607ec58108468187f3e752fd015, type: 3}
-  doorOpen: {fileID: 0}
-  doorClose: {fileID: 0}
+  doorOpen: {fileID: 8300000, guid: 58fd39d5ae004144a9407abc0bc70eaa, type: 3}
+  doorClose: {fileID: 8300000, guid: 1116a3a79134fd24ab709c3ac5aa2513, type: 3}

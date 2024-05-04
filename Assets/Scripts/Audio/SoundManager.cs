@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Interaction;
 using Round;
 using Round.Obstacles.TrapPressurePlate;
 using TrapModifiers;
@@ -50,6 +51,7 @@ namespace Audio
             
             ChancellorEffectsController.OnEffectEnabled += OnChancellorEffectEnabled;
             TrapPressurePlate.OnStateChanged += OnTrapPressurePlateStateChanged;
+            DoorInteractable.OnStateChanged += OnDoorStateChanged;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -119,6 +121,14 @@ namespace Audio
             );
         }
         
+        private void OnDoorStateChanged(object sender, bool open)
+        {
+            if (open)
+                PlayClipAtPoint(audioClips.doorOpen, Target);
+            else
+                PlayClipAtPoint(audioClips.doorClose, Target);
+        }
+        
         private void OnError()
         {
             PlayClipAtPoint(audioClips.error, Target);
@@ -153,6 +163,8 @@ namespace Audio
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
             ChancellorEffectsController.OnEffectEnabled -= OnChancellorEffectEnabled;
             Player.OnPlayerSpawned -= RegisterPlayerCallbacks;
+            TrapPressurePlate.OnStateChanged -= OnTrapPressurePlateStateChanged;
+            DoorInteractable.OnStateChanged -= OnDoorStateChanged;
         }
         
         public void PlayFootstepsSound(Vector3 source, float footstepsVolume = 1F)
