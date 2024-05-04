@@ -56,6 +56,21 @@ namespace Audio
         {
             PlaySound(audioClips.sentinelSteps, position);
         }
+
+        public void OnSentinelAlarm(Vector3 position)
+        {
+            PlaySound(audioClips.sentinelAlarm, position);
+        }
+
+        public void OnSentinelEnemyLost(Vector3 position)
+        {
+            PlaySound(audioClips.sentinelEnemyLost, position);
+        }
+
+        public void OnSentinelSearching(Vector3 position)
+        {
+            PlaySound(audioClips.sentinelSearchingSound, position);
+        }
         
         private void PlaySound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f)
         {

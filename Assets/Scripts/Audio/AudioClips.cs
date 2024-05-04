@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Audio
@@ -7,7 +8,10 @@ namespace Audio
     public class AudioClips : ScriptableObject
     {
         public AudioClip chancellorAlarm;
-        public AudioClip[] sentinelSteps;
+
+        [Header("Sentinel")] public AudioClip[] sentinelSteps;
         public AudioClip sentinelAlarm;
+        public AudioClip sentinelEnemyLost;
+        public AudioClip sentinelSearchingSound;
     }
 }

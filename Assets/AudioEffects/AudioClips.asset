@@ -16,4 +16,7 @@ MonoBehaviour:
   sentinelSteps:
   - {fileID: 8300000, guid: 42602f3a4c2d3c34490959c4d88205b6, type: 3}
   - {fileID: 8300000, guid: 7909ca1958cc1bf4a93ae8bb72f7378e, type: 3}
-  sentinelAlarm: {fileID: 0}
+  sentinelAlarm: {fileID: 8300000, guid: 783f40e89ee2e5b44bbc2a49b9e981e2, type: 3}
+  sentinelEnemyLost: {fileID: 8300000, guid: 23c745d273d4b8849b0494cd5892b0d9, type: 3}
+  sentinelSearchingSound: {fileID: 8300000, guid: 18c6849bb4481ef42951f2548abd40bb,
+    type: 3}

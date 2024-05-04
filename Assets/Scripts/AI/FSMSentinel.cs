@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Audio;
 using Cinemachine.Utility;
 using Mirror;
 using Round;
@@ -88,11 +89,11 @@ public class FSMSentinel : NetworkBehaviour
         FSMTransition positionReachedTransition =
             new FSMTransition(PositionReached, new FSMAction[] { NextPosition });
         FSMTransition enemyVisibleTransition =
-            new FSMTransition(IsEnemyVisible);
+            new FSMTransition(IsEnemyVisible, new FSMAction[] { PlayAlarmSound });
         FSMTransition notEnemyVisibleTransition =
-            new FSMTransition(EnemyNoMoreVisible, new FSMAction[] { NearestPosition });
+            new FSMTransition(EnemyNoMoreVisible, new FSMAction[] { PlaySearchingSound, NearestPosition });
         FSMTransition enemyLostTransition =
-            new FSMTransition(EnemyLost, new FSMAction[] { NearestPosition });
+            new FSMTransition(EnemyLost, new FSMAction[] { PlayEnemyLostSound, NearestPosition });
 
         patrolState.AddTransition(enemyVisibleTransition, alarmState);
         patrolState.AddTransition(positionReachedTransition, patrolState);
@@ -274,5 +275,20 @@ public class FSMSentinel : NetworkBehaviour
             toTarget.normalized,
             toTarget.magnitude,
             obstructionMask);
+    }
+
+    private void PlayAlarmSound()
+    {
+        SoundManager.Instance?.OnSentinelAlarm(transform.position);
+    }
+
+    private void PlayEnemyLostSound()
+    {
+        SoundManager.Instance?.OnSentinelEnemyLost(transform.position);
+    }
+    
+    private void PlaySearchingSound()
+    {
+        SoundManager.Instance?.OnSentinelSearching(transform.position);
     }
 }
