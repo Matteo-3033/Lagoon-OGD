@@ -116,17 +116,19 @@ namespace Audio
             PlayClipAtPoint(
                 audioClips.trapActivation,
                 ((MonoBehaviour) sender).transform.position,
-                1f,
+                1F,
                 true
             );
         }
         
         private void OnDoorStateChanged(object sender, bool open)
         {
-            if (open)
-                PlayClipAtPoint(audioClips.doorOpen, Target);
-            else
-                PlayClipAtPoint(audioClips.doorClose, Target);
+            PlayClipAtPoint(
+                open ? audioClips.doorOpen : audioClips.doorClose,
+                ((MonoBehaviour) sender).transform.position,
+                1F,
+                true
+            );
         }
         
         private void OnError()
