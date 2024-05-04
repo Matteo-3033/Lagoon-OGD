@@ -91,7 +91,7 @@ namespace Audio
 
         private void OnTrapsUpdated(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Op == Inventory.TrapOP.Placed)
+            if (args.Op == Inventory.TrapOp.Placed)
                 PlayClipAtPoint(audioClips.trapPlacement, Target);
         }
 

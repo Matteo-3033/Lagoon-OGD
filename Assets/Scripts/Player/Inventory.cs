@@ -38,10 +38,10 @@ public class Inventory : NetworkBehaviour
     public class OnTrapsUpdatedArgs : EventArgs
     {
         public TrapModifier Trap;
-        public TrapOP Op;
+        public TrapOp Op;
     }
     
-    public enum TrapOP
+    public enum TrapOp
     {
         Acquired,
         Placed,
@@ -89,19 +89,20 @@ public class Inventory : NetworkBehaviour
     }
     
     [Server]
-    public void AddStatsModifier(StatsModifier modifier)
+    public bool AddStatsModifier(StatsModifier modifier)
     {
         Debug.Log($"Adding modifier {modifier} to {player.Username}");
         
         if (stats.Contains(modifier))
-            return;
+            return false;
         stats.Add(modifier);
         
-        if (modifier.other == null || modifier.synergy == null) return;
+        if (modifier.other == null || modifier.synergy == null) return true;
         
         var ok = stats.FirstOrDefault(m => m.modifierName == modifier.other.modifierName) != null;
         if (ok)
             AddStatsModifier(modifier.synergy);
+        return true;
     }
     
     [Server]
@@ -193,7 +194,7 @@ public class Inventory : NetworkBehaviour
     
     private void OnStatsModifiersChanged(SyncList<StatsModifier>.Operation op, int itemIndex, StatsModifier oldItem, StatsModifier newItem)
     {
-        if (isClient && player.Username == Player.LocalPlayer.Username)  // Only the inventory owner applies the effect (and then notifies the server)
+        if (isClient && player.Username == Player.LocalPlayer.Username)  // Only the inventory owner applies the effect
         {
             switch (op)
             {
@@ -213,20 +214,20 @@ public class Inventory : NetworkBehaviour
             Player = player
         });
     }
-    
+
     private void OnTrapsChanged(SyncList<TrapModifier>.Operation op, int itemIndex, TrapModifier oldItem, TrapModifier newItem)
     {
-        TrapOP trapOp;
+        TrapOp trapOp;
         switch (op)
         {
             case SyncList<TrapModifier>.Operation.OP_ADD:
-                trapOp = TrapOP.Acquired;
+                trapOp = TrapOp.Acquired;
                 break;
             case SyncList<TrapModifier>.Operation.OP_CLEAR:
-                trapOp = TrapOP.Cleared;
+                trapOp = TrapOp.Cleared;
                 break;
             case SyncList<TrapModifier>.Operation.OP_REMOVEAT:
-                trapOp = TrapOP.Placed;
+                trapOp = TrapOp.Placed;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(op), op, null);

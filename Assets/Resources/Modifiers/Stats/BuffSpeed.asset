@@ -16,4 +16,5 @@ MonoBehaviour:
   isBuff: 1
   other: {fileID: 0}
   synergy: {fileID: 0}
+  canBeFoundInGame: 1
   multiplicationFactor: 1.5

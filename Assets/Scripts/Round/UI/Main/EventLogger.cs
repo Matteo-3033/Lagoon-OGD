@@ -71,25 +71,47 @@ namespace Round.UI.Main
 
         private void LogStatsUpdate(object sender, Inventory.OnStatsUpdatedArgs args)
         {
+            if (args.Player.isLocalPlayer)
+                LogStatsUpdateLocalPlayer(args);
+            else LogStatsUpdateOpponent(args);
+           
+        }
+
+        private void LogStatsUpdateOpponent(Inventory.OnStatsUpdatedArgs args)
+        {
             if (args.Enabled)
             {
-                LogEvent(args.Player.isLocalPlayer
-                    ? $"{args.Modifier.modifierName} activated!"
-                    : $"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
+                if (args.Modifier.canBeFoundInGame)
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> found {args.Modifier.modifierName}!");    
+                else
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> activated a super effect!");
+                    
             }
             else
+                LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> lost {args.Modifier.modifierName}!");
+        }
+
+        private void LogStatsUpdateLocalPlayer(Inventory.OnStatsUpdatedArgs args)
+        {
+            if (args.Enabled)
             {
-                LogEvent(args.Player.isLocalPlayer
-                    ? $"{args.Modifier.modifierName} disabled!"
-                    : $"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
+                if (args.Modifier.canBeFoundInGame)
+                    LogEvent($"{args.Modifier.modifierName} activated!");
+                else
+                {
+                    LogEvent($"Super effect activated!", 0.1F);
+                    LogEvent($"<color=red>{args.Modifier.name}</color>");
+                }
             }
+            else
+                LogEvent($"{args.Modifier.modifierName} deactivated...");
         }
 
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Op == Inventory.TrapOP.Acquired)
+            if (args.Op == Inventory.TrapOp.Acquired)
                 LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
-            else if (args.Op == Inventory.TrapOP.Placed)
+            else if (args.Op == Inventory.TrapOp.Placed)
                 LogEvent($"{args.Trap.modifierName} placed");
         }
         
