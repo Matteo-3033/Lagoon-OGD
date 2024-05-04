@@ -23,7 +23,7 @@ namespace Audio
             
             if (Instance != null && Instance != this)
             {
-                Debug.LogWarning("SoundManager already exists in the scene. Deleting duplicate.");
+                Debug.LogWarning("RoundSoundManager already exists in the scene. Deleting duplicate.");
                 Destroy(gameObject);
                 return;
             }

@@ -18,7 +18,7 @@ public class PlayerPositionController : MonoBehaviour
     private Rigidbody rb;
 
     private Vector3 currentSpeed;
-    private List<Vector3> additionalVectors = new List<Vector3>();
+    private List<Vector3> additionalVectors = new();
 
     private void Awake()
     {

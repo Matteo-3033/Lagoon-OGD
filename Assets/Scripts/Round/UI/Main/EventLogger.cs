@@ -109,7 +109,7 @@ namespace Round.UI.Main
                     break;
                 case Inventory.InventoryOp.Acquired:
                     LogEvent($"Super effect activated!", Duration.SHORT);
-                    LogEvent($"<color=red>{args.Modifier.name}</color>");
+                    LogEvent($"<color=red>{args.Modifier.modifierName}</color>");
                     break;
                 case Inventory.InventoryOp.Removed:
                     LogEvent($"{args.Modifier.modifierName} deactivated...");
@@ -156,7 +156,7 @@ namespace Round.UI.Main
             LogEvent($"Next round teleport disabled", Duration.SHORT);
             LogEvent($"Find other <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color>", Duration.SHORT);
         }
-        
+         
         private void LogTimerUpdate(int remainingTime)
         {
             if (remainingTime > 1)

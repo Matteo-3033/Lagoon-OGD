@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modifierName: Speed-
   isBuff: 0
-  other: {fileID: 0}
-  synergy: {fileID: 0}
+  other: {fileID: 11400000, guid: d61f94bd9dc10a14bac9b5573ec5614e, type: 2}
+  synergy: {fileID: 11400000, guid: bb9fdcc20ea1ace4197e9f1cb8bde258, type: 2}
   canBeFoundInGame: 1
   divisionFactor: 1.5
