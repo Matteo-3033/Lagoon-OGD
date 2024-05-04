@@ -1,5 +1,4 @@
-﻿using System;
-using Mirror;
+﻿using Mirror;
 using Modifiers;
 using Network;
 using UnityEngine;
