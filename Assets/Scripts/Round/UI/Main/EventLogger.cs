@@ -89,7 +89,7 @@ namespace Round.UI.Main
             switch (args.Op)
             {
                 case Inventory.InventoryOp.Acquired when args.Modifier.canBeFoundInGame:
-                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> found {args.Modifier.modifierName}!");
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> found {args.Modifier.modifierName}!", Duration.LONG);
                     break;
                 case Inventory.InventoryOp.Acquired:
                     LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> activated a super effect!");
@@ -105,11 +105,11 @@ namespace Round.UI.Main
             switch (args.Op)
             {
                 case Inventory.InventoryOp.Acquired when args.Modifier.canBeFoundInGame:
-                    LogEvent($"{args.Modifier.modifierName} activated!");
+                    LogEvent($"{args.Modifier.modifierName} activated!", Duration.LONG);
                     break;
                 case Inventory.InventoryOp.Acquired:
                     LogEvent($"Super effect activated!", Duration.SHORT);
-                    LogEvent($"<color=red>{args.Modifier.modifierName}</color>");
+                    LogEvent($"<color=red>{args.Modifier.modifierName}</color>", Duration.LONG);
                     break;
                 case Inventory.InventoryOp.Removed:
                     LogEvent($"{args.Modifier.modifierName} deactivated...");
