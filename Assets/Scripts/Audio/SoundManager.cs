@@ -51,6 +51,11 @@ namespace Audio
         {
             PlaySound(audioClips.chancellorAlarm, Player.LocalPlayer?.transform.position ?? Vector3.zero);
         }
+
+        public void OnSentinelStep(Vector3 position)
+        {
+            PlaySound(audioClips.sentinelSteps, position);
+        }
         
         private void PlaySound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f)
         {
