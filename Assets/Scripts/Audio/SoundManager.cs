@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Interaction;
+using Interaction.Trap;
 using Round;
 using Round.Obstacles.TrapPressurePlate;
 using TrapModifiers;
@@ -52,6 +54,7 @@ namespace Audio
             ChancellorEffectsController.OnEffectEnabled += OnChancellorEffectEnabled;
             TrapPressurePlate.OnStateChanged += OnTrapPressurePlateStateChanged;
             DoorInteractable.OnStateChanged += OnDoorStateChanged;
+            TrapVendingMachineInteractable.OnVendingMachineUsed += OnVendingMachineUsed;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -88,9 +91,7 @@ namespace Audio
 
         private void OnTrapsUpdated(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Op == Inventory.TrapOP.Acquired)
-                PlayClipAtPoint(audioClips.trapVendingMachine, Target);
-            else if (args.Op == Inventory.TrapOP.Placed)
+            if (args.Op == Inventory.TrapOP.Placed)
                 PlayClipAtPoint(audioClips.trapPlacement, Target);
         }
 
@@ -125,6 +126,16 @@ namespace Audio
         {
             PlayClipAtPoint(
                 open ? audioClips.doorOpen : audioClips.doorClose,
+                ((MonoBehaviour) sender).transform.position,
+                1F,
+                true
+            );
+        }
+        
+        private void OnVendingMachineUsed(object sender, EventArgs args)
+        {
+            PlayClipAtPoint(
+                audioClips.trapVendingMachine,
                 ((MonoBehaviour) sender).transform.position,
                 1F,
                 true
@@ -171,6 +182,7 @@ namespace Audio
             Player.OnPlayerSpawned -= RegisterPlayerCallbacks;
             TrapPressurePlate.OnStateChanged -= OnTrapPressurePlateStateChanged;
             DoorInteractable.OnStateChanged -= OnDoorStateChanged;
+            TrapVendingMachineInteractable.OnVendingMachineUsed -= OnVendingMachineUsed;
         }
         
         public void PlayFootstepsSound(Vector3 source, float footstepsVolume = 1F)

@@ -7,7 +7,7 @@ using Utils;
 
 namespace Interaction.Trap
 {
-    public class TrapInteractable: NetworkBehaviour, IInteractable
+    public class TrapVendingMachineInteractable: NetworkBehaviour, IInteractable
     {
         [SerializeField] private TrapModifier trap;
         [SerializeField] private GameObject enabledState;
@@ -17,6 +17,8 @@ namespace Interaction.Trap
         public string InteractionPrompt => trap.modifierName;
         
         public static event EventHandler<TrapModifier> OnTrapNotAdded;
+
+        public static event EventHandler<EventArgs> OnVendingMachineUsed;
 
         [field: SyncVar(hook = nameof(OnStateChanged))]
         public bool Working { get; private set; }
@@ -62,7 +64,7 @@ namespace Interaction.Trap
             else
                 TargetNotifyTrapAlreadyOwned(sender);
         }
-        
+
         [Server]
         private void DisableTrap()
         {
@@ -80,7 +82,7 @@ namespace Interaction.Trap
         #endregion
 
         #region CLIENT
-
+        
         [TargetRpc]
         private void TargetNotifyTrapAlreadyOwned(NetworkConnectionToClient target)
         {
@@ -93,10 +95,14 @@ namespace Interaction.Trap
             icon.gameObject.SetActive(true);
         }
         
+        [Client]
         private void OnStateChanged(bool oldValue, bool newValue)
         {
             enabledState.SetActive(newValue);
             disabledState.SetActive(!newValue);
+            
+            if (!newValue)
+                OnVendingMachineUsed?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
