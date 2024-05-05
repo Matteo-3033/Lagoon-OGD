@@ -23,6 +23,8 @@ public class FieldOfVIew : NetworkBehaviour
     private Mesh mesh;
     private Player player;
 
+    public bool IsOpponentInFieldOfView { get; private set; }
+
     private void Awake()
     {
         mesh = new Mesh();
@@ -41,7 +43,7 @@ public class FieldOfVIew : NetworkBehaviour
     {
         if (isClient && !player.isLocalPlayer)
             return;
-        
+
         var vertices = new Vector3[rayCount + 2];   // +2 for the origin and the last vertex
         var uv = new Vector2[vertices.Length];
         var triangles = new int[rayCount * 3];
@@ -50,14 +52,21 @@ public class FieldOfVIew : NetworkBehaviour
 
         var startAngle = Quaternion.AngleAxis(-fieldOfViewDegree / 2, Vector3.up);
         var direction = startAngle * transform.forward;
-        
+
+        IsOpponentInFieldOfView = false;
+
         for (var i = 0; i <= rayCount; i++)
         {
             Vector3 newVertex;
             if (Physics.Raycast(transform.position, direction, out var hit, viewDistance))
+            {
+                IsOpponentInFieldOfView = hit.collider.gameObject.TryGetComponent<Player>(out _);
                 newVertex = transform.worldToLocalMatrix.MultiplyPoint(hit.point);
-            else newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
-
+            }
+            else
+            {
+                newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
+            }
             vertices[i + 1] = newVertex;
 
             if (i > 0)

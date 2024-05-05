@@ -37,8 +37,11 @@ namespace Round
 
         public IEnumerable<Player> Players => NetworkServer.connections.Values.Select(conn => conn.Player());
         [field: SyncVar] public Player Winner { get; private set; }
-        
-        
+
+        //TODO: [Simone] maybe this should be a syncvar
+        public bool PlayersAreInFrontOfEachOther { get; private set; }
+
+
         // Client side events
         public event Action OnNoWinningCondition;
         public event Action<int> TimerUpdate;
@@ -73,8 +76,16 @@ namespace Round
             OnRoundLoaded?.Invoke();
         }
 
+        private void Update()
+        {
+            if (isServer)
+            {
+               PlayersAreInFrontOfEachOther = CheckIfPlayersAreInFrontOfEachOther();
+            }
+        }
+
         #region SERVER
-        
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -138,7 +149,7 @@ namespace Round
         {
             // Wait one frame after round start
             yield return null;
-            
+
             var time = (int)(Round.timeLimitMinutes * 60);
             
             while (time > UPDATE_TIMER_EVERY_SECONDS)
@@ -148,7 +159,7 @@ namespace Round
                 yield return new WaitForSeconds(UPDATE_TIMER_EVERY_SECONDS);
                 time -= UPDATE_TIMER_EVERY_SECONDS;
             }
-            
+
             NotifyRemainingTime(time);
             yield return new WaitForSeconds(time);
 
@@ -283,6 +294,23 @@ namespace Round
             
             State = RoundState.LoadingNext;
             OnLoadNextRound?.Invoke();
+        }
+
+        [Server]
+        private bool CheckIfPlayersAreInFrontOfEachOther()
+        {
+            var players = Players.ToList();
+            var player1 = players[0];
+            var player2 = players[1];
+
+            var player1Fov = player1.GetComponentInChildren<FieldOfVIew>();
+            var player2Fov = player2.GetComponentInChildren<FieldOfVIew>();
+
+            Debug.Log(player1Fov.IsOpponentInFieldOfView &&
+                   player2Fov.IsOpponentInFieldOfView);
+
+            return player1Fov.IsOpponentInFieldOfView &&
+                   player2Fov.IsOpponentInFieldOfView;
         }
 
         #endregion

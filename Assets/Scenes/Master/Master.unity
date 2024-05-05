@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731704, g: 0.13414729, b: 0.121078685, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731704, g: 0.13414727, b: 0.121078536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -641,14 +641,14 @@ MonoBehaviour:
   logLevel: 0
   spawnerLogLevel: 0
   machineIp: 127.0.0.1
-  executableFilePath: /home/simiarch/Lagoon-OGD/Lagoon-OGD/Builds/Linux/Server/Server.x86_64
+  executableFilePath: C:\Users\simi\Desktop\Lagoon-OGD\Builds\Windows\Server\Server.exe
   maxProcesses: 10
   spawnWebSocketServers: 0
   region: International
   killProcessesWhenStop: 1
   autoStartInEditor: 1
   overrideExePathInEditor: 1
-  exePathFromEditor: /home/simiarch/Lagoon-OGD/Lagoon-OGD/Builds/Linux/Server/Server.x86_64
+  exePathFromEditor: C:\Users\simi\Desktop\Lagoon-OGD\Builds\Windows\Server\Server.exe
   OnSpawnerStartedEvent:
     m_PersistentCalls:
       m_Calls: []
