@@ -6,34 +6,26 @@ using System.Linq;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
 
-public class FSMCamera : MonoBehaviour
+public class FSMCamera : EnemyFSM
 {
-    public float reactionTime = 1f;
-    public float patrolRotationSpeed = 10f;
-    public float alarmRotationSpeed = 20f;
+    [Space] public float searchStateTime = 3;
 
-    [Header("Alarm")] public Light alarmLight;
-    public Color alarmColor = Color.red;
-    public Color searchColor = Color.yellow;
+    [Space] public float patrolRotationSpeed = 10f;
+    public float alarmRotationSpeed = 120f;
+    public float searchRotationSpeed = 90f;
 
-    public float[] patrolRotations = null;
-    public float searchStateTime = 2;
-    public LayerMask obstructionMask;
+    [Space] public float[] patrolRotations;
 
-    private FSM _fsm;
     private Color _baseColor;
     private int _currentPatrolRotationIndex;
-    private GameObject[] _targetObjects;
-    private FieldOfVIew _fieldOfView;
     private float _rotationSpeed;
     private float _rotationTarget;
-    private Transform _alarmTarget;
     private float _currentTimeInSearch = 0;
 
     void Start()
     {
         _baseColor = alarmLight.color;
-        _fieldOfView = GetComponentInChildren<FieldOfVIew>();
+        FieldOfView = GetComponentInChildren<FieldOfVIew>();
 
         if (patrolRotations.Length > 0)
         {
@@ -43,14 +35,21 @@ public class FSMCamera : MonoBehaviour
         GameObject localPlayer = Player.LocalPlayer?.gameObject;
         if (!localPlayer)
         {
-            _targetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
+            TargetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
         }
         else
         {
             GameObject opponent = Player.Opponent?.gameObject;
-            _targetObjects = new[] { localPlayer, opponent };
+            TargetObjects = new[] { localPlayer, opponent };
         }
 
+        SetupFSM();
+
+        StartCoroutine(Patrol());
+    }
+
+    private void SetupFSM()
+    {
         FSMState patrolState = new FSMState();
         patrolState.EnterActions.Add(AlarmReset);
 
@@ -65,11 +64,11 @@ public class FSMCamera : MonoBehaviour
         FSMTransition rotationReachedTransition =
             new FSMTransition(RotationReached, new FSMAction[] { NextRotation });
         FSMTransition enemyVisibleTransition =
-            new FSMTransition(IsEnemyVisible);
+            new FSMTransition(IsEnemyVisible, new FSMAction[] { PlayAlarmSound });
         FSMTransition notEnemyVisibleTransition =
-            new FSMTransition(NotIsEnemyVisible);
+            new FSMTransition(NotIsEnemyVisible, new FSMAction[] { PlaySearchingSound });
         FSMTransition enemyLostTransition =
-            new FSMTransition(EnemyLost, new FSMAction[] { LastAngle });
+            new FSMTransition(EnemyLost, new FSMAction[] { PlayEnemyLostSound, LastAngle });
 
         patrolState.AddTransition(enemyVisibleTransition, alarmState);
         patrolState.AddTransition(rotationReachedTransition, patrolState);
@@ -78,18 +77,16 @@ public class FSMCamera : MonoBehaviour
         searchState.AddTransition(enemyLostTransition, patrolState);
         searchState.AddTransition(rotationReachedTransition, searchState);
 
-        _fsm = new FSM(patrolState);
-
-        StartCoroutine(Patrol());
+        FSM = new FSM(patrolState);
     }
 
     private void FixedUpdate()
     {
         float target;
 
-        if (_alarmTarget)
+        if (AlarmTarget)
         {
-            Vector3 dir = (_alarmTarget.position - transform.position).normalized;
+            Vector3 dir = (AlarmTarget.position - transform.position).normalized;
             dir.y = 0;
             Vector3 forward = transform.forward;
             forward.y = 0;
@@ -106,22 +103,13 @@ public class FSMCamera : MonoBehaviour
             Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, target, 0), step);
     }
 
-    private IEnumerator Patrol()
-    {
-        while (true)
-        {
-            _fsm.Update();
-            yield return new WaitForSeconds(reactionTime);
-        }
-    }
-
-    // ACTIONS
+    #region ACTIONS
 
     private void AlarmReset()
     {
         alarmLight.color = _baseColor;
         _rotationSpeed = patrolRotationSpeed;
-        _alarmTarget = null;
+        AlarmTarget = null;
     }
 
     private void AlarmStart()
@@ -133,9 +121,9 @@ public class FSMCamera : MonoBehaviour
     private void AlarmSearch()
     {
         alarmLight.color = searchColor;
-        _rotationSpeed = alarmRotationSpeed;
+        _rotationSpeed = searchRotationSpeed;
         _currentTimeInSearch = 0;
-        _alarmTarget = null;
+        AlarmTarget = null;
     }
 
     private bool RotationReached()
@@ -154,7 +142,9 @@ public class FSMCamera : MonoBehaviour
         _rotationTarget = patrolRotations[_currentPatrolRotationIndex];
     }
 
-    // TRANSITIONS
+    #endregion
+
+    #region TRANSITIONS
 
     private bool IsEnemyVisible()
     {
@@ -162,26 +152,10 @@ public class FSMCamera : MonoBehaviour
         bool isEnemyVisible = potentialTarget && VisibleEnemy(potentialTarget);
         if (isEnemyVisible)
         {
-            _alarmTarget = potentialTarget;
+            AlarmTarget = potentialTarget;
         }
 
         return isEnemyVisible;
-    }
-
-    private void SignalOnTarget()
-    {
-        RippleController rippleController = _alarmTarget.GetComponentInChildren<RippleController>();
-        if (!rippleController) return;
-
-        rippleController.ShowAlarmRipple();
-    }
-
-    private void StopSignalOnTarget()
-    {
-        RippleController rippleController = _alarmTarget.GetComponentInChildren<RippleController>();
-        if (!rippleController) return;
-
-        rippleController.StopAlarmRipple();
     }
 
     private bool NotIsEnemyVisible()
@@ -189,44 +163,11 @@ public class FSMCamera : MonoBehaviour
         return !IsEnemyVisible();
     }
 
-    private Transform ScanField()
-    {
-        Vector3 distance = Vector3.positiveInfinity;
-        GameObject potentialTarget = null;
-
-        foreach (GameObject go in _targetObjects)
-        {
-            Vector3 tempDistance = go.transform.position - transform.position;
-            if (tempDistance.magnitude < distance.magnitude)
-            {
-                distance = tempDistance;
-                potentialTarget = go;
-            }
-        }
-
-        if (potentialTarget &&
-            Vector3.Angle(distance, transform.forward) < _fieldOfView.GetViewAngle() / 2 &&
-            distance.magnitude <= _fieldOfView.GetViewDistance())
-        {
-            return potentialTarget.transform;
-        }
-
-        return null;
-    }
-
-    private bool VisibleEnemy(Transform potentialTarget)
-    {
-        Vector3 toTarget = potentialTarget.position - transform.position;
-
-        return !Physics.Raycast(transform.position,
-            toTarget.normalized,
-            toTarget.magnitude,
-            obstructionMask);
-    }
-
     private bool EnemyLost()
     {
         _currentTimeInSearch += reactionTime;
         return _currentTimeInSearch >= searchStateTime && NotIsEnemyVisible();
     }
+
+    #endregion
 }

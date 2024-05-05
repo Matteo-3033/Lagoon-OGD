@@ -10,29 +10,17 @@ using Round;
 using UnityEditor;
 using UnityEngine.AI;
 
-public class FSMSentinel : NetworkBehaviour
+public class FSMSentinel : EnemyFSM
 {
-    public float reactionTime = 1f;
+    [Space] public Transform[] patrolPositions;
 
-    [Header("Alarm")] public Light alarmLight;
-    public Color alarmColor = Color.red;
-    public Color searchColor = Color.yellow;
-
-    [Header("Patrol Positions")] public Transform[] patrolPositions = null;
-
-    [SerializeField] public LayerMask obstructionMask;
-
-    private FSM _fsm;
     private Color _baseColor;
     private NavMeshAgent _agent;
-    private FieldOfVIew _fieldOfView;
 
     private Transform _positionTarget;
 
-    private Transform _alarmTarget;
     private Vector3 _alarmTargetLastPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
-    private GameObject[] _targetObjects;
     private Vector3 _previousPosition;
     private Animator _animator;
     private static readonly int SpeedParam = Animator.StringToHash("speed");
@@ -42,7 +30,7 @@ public class FSMSentinel : NetworkBehaviour
         _baseColor = alarmLight.color;
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponentInChildren<Animator>();
-        _fieldOfView = GetComponentInChildren<FieldOfVIew>();
+        FieldOfView = GetComponentInChildren<FieldOfVIew>();
 
         if (patrolPositions.Length > 0)
         {
@@ -52,37 +40,26 @@ public class FSMSentinel : NetworkBehaviour
         GameObject localPlayer = Player.LocalPlayer?.gameObject;
         if (!localPlayer)
         {
-            _targetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
+            TargetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
         }
         else
         {
             GameObject opponent = Player.Opponent?.gameObject;
-            _targetObjects = new[] { localPlayer, opponent };
+            TargetObjects = new[] { localPlayer, opponent };
         }
-        //RoundController.Instance.OnRoundStarted += OnRoundStarted;
     }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        
-        Debug.Log("Sentinel OnStartServer");
-        GameObject localPlayer = Player.LocalPlayer?.gameObject;
-        if (!localPlayer)
-        {
-            _targetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
-        }
-        else
-        {
-            GameObject opponent = Player.Opponent?.gameObject;
-            _targetObjects = new[] { localPlayer, opponent };
-        }
 
-        SetUpFSM();
+        Debug.Log("Sentinel OnStartServer");
+
+        SetupFSM();
     }
 
     [Server]
-    private void SetUpFSM()
+    private void SetupFSM()
     {
         //if (!authority) return;
 
@@ -115,10 +92,8 @@ public class FSMSentinel : NetworkBehaviour
         searchState.AddTransition(enemyLostTransition, patrolState);
         searchState.AddTransition(enemyVisibleTransition, alarmState);
 
-        _fsm = new FSM(patrolState);
+        FSM = new FSM(patrolState);
         StartPatrolling();
-
-        //RoundController.Instance.OnRoundStarted -= OnRoundStarted;
     }
 
     private void Update()
@@ -132,16 +107,7 @@ public class FSMSentinel : NetworkBehaviour
         StartCoroutine(Patrol());
     }
 
-    private IEnumerator Patrol()
-    {
-        while (true)
-        {
-            _fsm.Update();
-            yield return new WaitForSeconds(reactionTime);
-        }
-    }
-
-    // ACTIONS
+    #region ACTIONS
 
     [ClientRpc]
     private void AlarmColorReset()
@@ -163,13 +129,13 @@ public class FSMSentinel : NetworkBehaviour
 
     private void AlarmFollowTarget()
     {
-        _agent.SetDestination(_alarmTarget.position);
+        _agent.SetDestination(AlarmTarget.position);
     }
 
     private void PredictNewPosition()
     {
         Vector3 newPosition =
-            _alarmTarget.position + (_alarmTarget.position - _alarmTargetLastPosition) * reactionTime * 2;
+            AlarmTarget.position + (AlarmTarget.position - _alarmTargetLastPosition) * reactionTime * 2;
         _agent.SetDestination(newPosition);
     }
 
@@ -209,23 +175,9 @@ public class FSMSentinel : NetworkBehaviour
         }
     }
 
-    private void SignalOnTarget()
-    {
-        RippleController rippleController = _alarmTarget.GetComponentInChildren<RippleController>();
-        if (!rippleController) return;
+    #endregion
 
-        rippleController.ShowAlarmRipple();
-    }
-
-    private void StopSignalOnTarget()
-    {
-        RippleController rippleController = _alarmTarget.GetComponentInChildren<RippleController>();
-        if (!rippleController) return;
-
-        rippleController.StopAlarmRipple();
-    }
-
-    // TRANSITIONS
+    #region TRANSITIONS
 
     private bool IsEnemyVisible()
     {
@@ -235,7 +187,7 @@ public class FSMSentinel : NetworkBehaviour
         if (!potentialTarget) return isEnemyVisible;
 
         _alarmTargetLastPosition = potentialTarget.position;
-        _alarmTarget = potentialTarget;
+        AlarmTarget = potentialTarget;
 
         return isEnemyVisible;
     }
@@ -249,63 +201,12 @@ public class FSMSentinel : NetworkBehaviour
     private bool EnemyNoMoreVisible()
     {
         Transform potentialTarget = ScanField();
-        var isEnemyVisible = VisibleEnemy(!potentialTarget ? _alarmTarget : potentialTarget);
+        var isEnemyVisible = VisibleEnemy(!potentialTarget ? AlarmTarget : potentialTarget);
 
-        if (potentialTarget) _alarmTarget = potentialTarget;
+        if (potentialTarget) AlarmTarget = potentialTarget;
 
         return !isEnemyVisible;
     }
 
-    private Transform ScanField()
-    {
-        Vector3 distance = Vector3.positiveInfinity;
-        Transform potentialTarget = null;
-
-        foreach (GameObject p in _targetObjects)
-        {
-            Vector3 tempDistance = p.transform.position - transform.position;
-            if (tempDistance.magnitude < distance.magnitude)
-            {
-                distance = tempDistance;
-                potentialTarget = p.transform;
-            }
-        }
-
-        if (potentialTarget &&
-            Vector3.Angle(distance, transform.forward) < _fieldOfView.GetViewAngle() / 2 &&
-            distance.magnitude <= _fieldOfView.GetViewDistance())
-        {
-            return potentialTarget;
-        }
-
-        return null;
-    }
-
-    private bool VisibleEnemy(Transform potentialTarget)
-    {
-        Vector3 toTarget = potentialTarget.position - transform.position;
-
-        return !Physics.Raycast(transform.position,
-            toTarget.normalized,
-            toTarget.magnitude,
-            obstructionMask);
-    }
-
-    [ClientRpc]
-    private void PlayAlarmSound()
-    {
-        SoundManager.Instance?.OnSentinelAlarm(transform.position);
-    }
-
-    [ClientRpc]
-    private void PlayEnemyLostSound()
-    {
-        SoundManager.Instance?.OnSentinelEnemyLost(transform.position);
-    }
-
-    [ClientRpc]
-    private void PlaySearchingSound()
-    {
-        SoundManager.Instance?.OnSentinelSearching(transform.position);
-    }
+    #endregion
 }
