@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b926fb2f89d4e738e47bfbf20ced1cf, type: 3}
   m_Name: TestRoundAI
   m_EditorClassIdentifier: 
-  scene: Assets/Scenes/Client/GuardObject.unity
+  scene: Assets/Scenes/Client/TestAI.unity
   keyFragments: 3
-  timeLimitMinutes: 0
+  timeLimitMinutes: 3

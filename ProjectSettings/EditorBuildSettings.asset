@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Client/GuardObject.unity
     guid: 587964aa03e1ea34e9741f2ae8d7e2c8
+  - enabled: 1
+    path: Assets/Scenes/Client/TestAI.unity
+    guid: 8d086b0a0d6e07546a65531f2e37d345
+  - enabled: 1
+    path: Assets/Scenes/Master/Master.unity
+    guid: f6e364cdcd55f4f4692fdca33c11d678
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 6f2c46e387de818438dd3282fb2f3d60,
       type: 2}

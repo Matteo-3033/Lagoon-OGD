@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scene: Assets/Scenes/Client/TestMinimap.unity
   keyFragments: 3
+  timeLimitMinutes: 3

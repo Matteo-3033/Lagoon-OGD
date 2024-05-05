@@ -29,7 +29,6 @@ public class FSMSentinel : NetworkBehaviour
 
     private Transform _positionTarget;
 
-    //[SyncVar]
     private Transform _alarmTarget;
     private Vector3 _alarmTargetLastPosition = Vector3.zero;
     private int _currentPatrolPositionIndex;
@@ -63,14 +62,29 @@ public class FSMSentinel : NetworkBehaviour
         //RoundController.Instance.OnRoundStarted += OnRoundStarted;
     }
 
-    private void Start()
+    public override void OnStartServer()
     {
+        base.OnStartServer();
+        
+        Debug.Log("Sentinel OnStartServer");
+        GameObject localPlayer = Player.LocalPlayer?.gameObject;
+        if (!localPlayer)
+        {
+            _targetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
+        }
+        else
+        {
+            GameObject opponent = Player.Opponent?.gameObject;
+            _targetObjects = new[] { localPlayer, opponent };
+        }
+
         SetUpFSM();
     }
 
+    [Server]
     private void SetUpFSM()
     {
-        if (!authority) return;
+        //if (!authority) return;
 
         FSMState patrolState = new FSMState();
         patrolState.EnterActions.Add(PositionDestination);
@@ -112,7 +126,7 @@ public class FSMSentinel : NetworkBehaviour
         _animator.SetFloat(SpeedParam, _agent.velocity.magnitude);
     }
 
-    //[Command]
+    [Server]
     private void StartPatrolling()
     {
         StartCoroutine(Patrol());
@@ -129,19 +143,19 @@ public class FSMSentinel : NetworkBehaviour
 
     // ACTIONS
 
-    //[ClientRpc]
+    [ClientRpc]
     private void AlarmColorReset()
     {
         alarmLight.color = _baseColor;
     }
 
-    //[ClientRpc]
+    [ClientRpc]
     private void AlarmColor()
     {
         alarmLight.color = alarmColor;
     }
 
-    //[ClientRpc]
+    [ClientRpc]
     private void SearchColor()
     {
         alarmLight.color = searchColor;
@@ -277,16 +291,19 @@ public class FSMSentinel : NetworkBehaviour
             obstructionMask);
     }
 
+    [ClientRpc]
     private void PlayAlarmSound()
     {
         SoundManager.Instance?.OnSentinelAlarm(transform.position);
     }
 
+    [ClientRpc]
     private void PlayEnemyLostSound()
     {
         SoundManager.Instance?.OnSentinelEnemyLost(transform.position);
     }
-    
+
+    [ClientRpc]
     private void PlaySearchingSound()
     {
         SoundManager.Instance?.OnSentinelSearching(transform.position);
