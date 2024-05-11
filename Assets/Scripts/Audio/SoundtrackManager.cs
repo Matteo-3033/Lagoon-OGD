@@ -38,7 +38,7 @@ namespace Audio
             
             tempoIncreased = true;
             source.pitch = 2F;
-            source.outputAudioMixerGroup.audioMixer.SetFloat(audioMixerGroupPitchParam, 1f / 2F);
+            source.outputAudioMixerGroup.audioMixer.SetFloat(audioMixerGroupPitchParam, 1F / 2F);
         }
 
         private void OnRoundStarted()
