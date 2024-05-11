@@ -8,7 +8,7 @@ namespace Utils
 {
     public class Footsteps : NetworkBehaviour
     {
-        private const float CHECK_DELAY = 0.1F;
+        private const float CHECK_DELAY = 0.025F;
         
         [SerializeField] private float delay = 0.3F;
         [SerializeField] private float volume = 0.1F;
