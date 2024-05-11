@@ -21,6 +21,7 @@ public class Player : NetworkBehaviour
 	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
     public TrapSelector TrapSelector => GetComponent<TrapSelector>();
     public Interactor Interactor => GetComponent<Interactor>();
+    public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
     
 
     [field: SyncVar]

@@ -14,7 +14,7 @@ namespace Editor
         
         private static readonly string[] MatchScenes =
         {
-            Scenes.Menu, Scenes.Lobby, Scenes.TestScene
+            Scenes.Menu, Scenes.Lobby, Scenes.Round1
         };
         
         [MenuItem("Build/Build All")]

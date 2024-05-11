@@ -1,6 +1,7 @@
 using System;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
 public class FieldOfView : NetworkBehaviour
@@ -76,10 +77,20 @@ public class FieldOfView : NetworkBehaviour
         mesh.triangles = triangles;
     }
     
+    public float GetViewDistance()
+    {
+        return viewDistance;
+    }
+    
     [Server]
     public void SetViewDistance(float dist)
     {
         viewDistance = dist;
+    }
+    
+    public float GetAngle()
+    {
+        return fieldOfViewDegree;
     }
     
     [Server]

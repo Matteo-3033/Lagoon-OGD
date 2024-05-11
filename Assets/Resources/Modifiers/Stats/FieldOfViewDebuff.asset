@@ -9,8 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b926fb2f89d4e738e47bfbf20ced1cf, type: 3}
-  m_Name: TestRoundMinimap
+  m_Script: {fileID: 11500000, guid: b6851f3648854db0b9b8f44c63c1505f, type: 3}
+  m_Name: FieldOfViewDebuff
   m_EditorClassIdentifier: 
-  scene: Assets/Scenes/Client/TestMinimap.unity
-  keyFragments: 3
+  modifierName: 
+  isBuff: 0
+  other: {fileID: 0}
+  synergy: {fileID: 0}
+  canBeFoundInGame: 0
+  angleDecrease: 30
+  distanceDecrease: 1.5

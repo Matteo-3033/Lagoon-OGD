@@ -9,9 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b926fb2f89d4e738e47bfbf20ced1cf, type: 3}
-  m_Name: TestRound
+  m_Script: {fileID: 11500000, guid: 171eb296a93141509faac02a3f7156f6, type: 3}
+  m_Name: FieldOfViewBuff
   m_EditorClassIdentifier: 
-  scene: Assets/Scenes/Client/Round1.unity
-  keyFragments: 5
-  timeLimitMinutes: 5
+  modifierName: 
+  isBuff: 0
+  other: {fileID: 0}
+  synergy: {fileID: 0}
+  canBeFoundInGame: 0
+  angleIncrease: 30
+  distanceIncrease: 1.5
