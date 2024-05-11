@@ -1,6 +1,6 @@
 ﻿using Mirror;
 using Network;
-using Utils;
+using Utils.UI;
 
 namespace Interaction.KeyFragments
 {

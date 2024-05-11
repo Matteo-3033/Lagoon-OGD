@@ -1,6 +1,6 @@
 ﻿using Network;
 using UnityEngine;
-using Screen = Utils.Screen;
+using Screen = Utils.UI.Screen;
 
 namespace MainMenu.Connection
 {

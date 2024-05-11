@@ -1,18 +1,16 @@
 using Mirror;
 using UnityEngine;
-using UnityEngine.UI;
+using Utils.UI;
 
 namespace Lobby
 {
-    [RequireComponent(typeof(Button))]
-    public class ExitLobbyButton : MonoBehaviour
+    public class ExitLobbyButton : ChangeFontOnClickButton
     {
         [SerializeField] private GameObject loading;
         
-        private void Awake()
+        protected override void Awake()
         {
-            var button = GetComponent<Button>();
-            button.onClick.AddListener(OnClick);
+            base.Awake();
             
             loading.SetActive(false);
 
@@ -34,7 +32,7 @@ namespace Lobby
             gameObject.SetActive(false);
         }
 
-        private void OnClick()
+        protected override void OnClick()
         {
             if (Player.Opponent != null)
                 return;

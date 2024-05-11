@@ -12,7 +12,7 @@ namespace Round.Obstacles.TrapPressurePlate
         
         private bool activated;
         
-        public event EventHandler<bool> OnStateChanged;
+        public static event EventHandler<bool> OnStateChanged;
 
         private void Awake()
         {
@@ -33,15 +33,15 @@ namespace Round.Obstacles.TrapPressurePlate
             if (!other.CompareTag(Tags.Player))
                 return;
             
+            if (activated) return;
+            activated = true;
+            
             OnStateChanged?.Invoke(this, true);
             
             var player = other.GetComponent<Player>();
             
-            if (!activated && isServer)
-            {
-                activated = true;
+            if (isServer)
                 TargetEnableTrap(player.connectionToClient);
-            }
         }
 
         private void OnTriggerExit(Collider other)

@@ -5,13 +5,13 @@ using Utils;
 [RequireComponent(typeof(Light))]
 public class Torchlight : MonoBehaviour
 {
-    [SerializeField] private FieldOfVIew fieldOfView;
+    [SerializeField] private FieldOfView fieldOfView;
     
     private Light spotLight;
     
     private void Start()
     {
-        if (!GetComponentInParent<Player>().isLocalPlayer || SceneManager.GetActiveScene().name == Scenes.Lobby)
+        if (!GetComponentInParent<Player>().isLocalPlayer)
             gameObject.SetActive(false);
         else
         {
@@ -20,7 +20,7 @@ public class Torchlight : MonoBehaviour
         }
     }
 
-    private void FieldOfView_OnFieldOfViewChanged(object sender, FieldOfVIew.FieldOfViewArgs args)
+    private void FieldOfView_OnFieldOfViewChanged(object sender, FieldOfView.FieldOfViewArgs args)
     {
         spotLight.spotAngle = args.FieldOfViewDegree;
         spotLight.innerSpotAngle = args.FieldOfViewDegree / 2;

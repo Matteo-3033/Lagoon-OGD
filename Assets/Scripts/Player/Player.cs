@@ -4,6 +4,7 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
+using Utils;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
@@ -36,6 +37,8 @@ public class Player : NetworkBehaviour
     
     [field: SyncVar]
     public int Kills { get; private set; }
+    
+    public bool IsSilent { get; private set; }
     
 
     #region SERVER
@@ -73,7 +76,7 @@ public class Player : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
- 
+        
         LocalPlayer = this;
         
         MakeVisible();
@@ -109,17 +112,19 @@ public class Player : NetworkBehaviour
         Interactor.enabled = enable;
     }
     
+    // On client only
     [Client]
     public void MakeInvisible()
     {
-        SetLayerRecursively(gameObject, LayerMask.NameToLayer("Behind-FieldOfView"));
+        Layers.SetLayerRecursively(gameObject, Layers.BehindFieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Hide();
     }
     
+    // On client only
     [Client]
     public void MakeVisible()
     {
-        SetLayerRecursively(gameObject, LayerMask.NameToLayer("FieldOfView"));
+        Layers.SetLayerRecursively(gameObject, Layers.FieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Show();
     }
 
@@ -130,24 +135,11 @@ public class Player : NetworkBehaviour
         base.OnStopClient();
     }
     
-    #endregion
-    
-    #region UTILS
-    
-    private void SetLayerRecursively(GameObject obj, int layer)
+    [Client]
+    public void SetSilent(bool silent)
     {
-        if (obj == null)
-            return;
-       
-        obj.layer = layer;
-       
-        foreach (Transform child in obj.transform)
-        {
-            if (child == null)
-                continue;
-            SetLayerRecursively(child.gameObject, layer);
-        }
+        GetComponentInChildren<Footsteps>().SetSilent(silent);
     }
-
+    
     #endregion
 }

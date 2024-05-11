@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
-using Screen = Utils.Screen;
+using Screen = Utils.UI.Screen;
 
 namespace MainMenu
 {

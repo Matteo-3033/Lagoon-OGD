@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -102,7 +100,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     public Vector3 GetLookDirection()
     {
-        if (!mousePerformed)
+        if (!mousePerformed || _camera == null)
         {
             return lookDirection;
         }
