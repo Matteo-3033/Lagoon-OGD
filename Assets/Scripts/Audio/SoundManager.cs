@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Round;
-using TrapModifiers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,58 +8,27 @@ namespace Audio
     public class SoundManager : MonoBehaviour
     {
         private const string PLAYER_PREFS_SOUND_EFFECTS_VOLUME = "SoundEffectsVolume";
-
-        public static SoundManager Instance { get; private set; }
-
-        [SerializeField] private float maxDistance = 40F;
-        [SerializeField] private AudioClips audioClips;
         
+        [SerializeField] protected float maxDistance = 40F;
+
         private float baseVolume = 1f;
-        
-        private Vector3 Target => Player.LocalPlayer?.transform.position ?? Camera.main.transform.position;
 
-
-        private void Awake()
+        protected virtual void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Debug.LogWarning("SoundManager already exists in the scene. Deleting duplicate.");
-                Destroy(gameObject);
-                return;
-            }
-            
-            Instance = this;
-
             baseVolume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECTS_VOLUME, 1f);
         }
 
-        private void Start()
+        protected void PlayClipAtPoint(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
         {
-            if (RoundController.HasLoaded())
-                RegisterRoundControllerCallbacks();
-            else
-                RoundController.OnRoundLoaded += RegisterRoundControllerCallbacks;
+            if (audioClipArray.Count > 0)
+                PlayClipAtPoint(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier, threeD);
+        }
+
+        protected void PlayClipAtPoint(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1F, bool threeD = false)
+        {
+            if (audioClip == null)
+                return;
             
-            ChancellorEffectsController.OnEffectEnabled += OnEffectEnabled;
-        }
-
-        private void RegisterRoundControllerCallbacks()
-        {
-            
-        }
-
-        private void OnEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
-        {
-            PlayClipAtPoint(audioClips.chancellorAlarm, Target);
-        }
-        
-        private void PlaySound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volumeMultiplier = 1f, bool threeD = false)
-        {
-            PlayClipAtPoint(audioClipArray[Random.Range(0, audioClipArray.Count)], position, volumeMultiplier, threeD);
-        }
-
-        private void PlayClipAtPoint(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1F, bool threeD = false)
-        {
             var obj = new GameObject("One shot audio");
             obj.transform.position = position;
             
@@ -77,17 +44,6 @@ namespace Audio
             audioSource.Play();
             
             Destroy(obj, audioClip.length * (Time.timeScale < 0.009999999776482582 ? 0.01f : Time.timeScale));
-        }
-
-        private void OnDestroy()
-        {
-            RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
-            ChancellorEffectsController.OnEffectEnabled -= OnEffectEnabled;
-        }
-        
-        public void PlayFootstepsSound(Vector3 source, float footstepsVolume = 1F)
-        {
-            PlaySound(audioClips.footsteps, source, footstepsVolume, true);
         }
 
         public void ChangeVolume()

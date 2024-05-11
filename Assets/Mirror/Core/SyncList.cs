@@ -195,12 +195,12 @@ namespace Mirror
                     case Operation.OP_CLEAR:
                         if (apply)
                         {
-                            objects.Clear();
                             // add dirty + changes.
                             // ClientToServer needs to set dirty in server OnDeserialize.
                             // no access check: server OnDeserialize can always
                             // write, even for ClientToServer (for broadcasting).
                             AddOperation(Operation.OP_CLEAR, 0, default, default, false);
+                            objects.Clear();
                         }
                         break;
 

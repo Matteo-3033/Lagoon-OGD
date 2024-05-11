@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,9 @@ namespace Utils.UI
         private Button button;
         private TextMeshProUGUI textField;
         private bool fontChanged;
+        
+        public static event EventHandler<EventArgs> OnBeforeClick;
+        public static event EventHandler<EventArgs> OnAfterClick;
 
         protected virtual void Awake()
         {
@@ -39,8 +43,10 @@ namespace Utils.UI
 
         private IEnumerator OnClickCoroutine()
         {
+            OnBeforeClick?.Invoke(this, EventArgs.Empty);
             yield return new WaitForSeconds(secondsDelay);
             OnClick();
+            OnAfterClick?.Invoke(this, EventArgs.Empty);
         }
 
         protected abstract void OnClick();

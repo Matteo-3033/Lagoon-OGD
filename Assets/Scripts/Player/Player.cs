@@ -4,6 +4,7 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
+using Utils;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
@@ -36,6 +37,8 @@ public class Player : NetworkBehaviour
     
     [field: SyncVar]
     public int Kills { get; private set; }
+    
+    public bool IsSilent { get; private set; }
     
 
     #region SERVER
@@ -113,7 +116,7 @@ public class Player : NetworkBehaviour
     [Client]
     public void MakeInvisible()
     {
-        Utils.Layers.SetLayerRecursively(gameObject, Utils.Layers.BehindFieldOfView);
+        Layers.SetLayerRecursively(gameObject, Layers.BehindFieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Hide();
     }
     
@@ -121,7 +124,7 @@ public class Player : NetworkBehaviour
     [Client]
     public void MakeVisible()
     {
-        Utils.Layers.SetLayerRecursively(gameObject, Utils.Layers.FieldOfView);
+        Layers.SetLayerRecursively(gameObject, Layers.FieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Show();
     }
 
@@ -130,6 +133,12 @@ public class Player : NetworkBehaviour
     {
         OnPlayerDespawned?.Invoke(this);
         base.OnStopClient();
+    }
+    
+    [Client]
+    public void SetSilent(bool silent)
+    {
+        GetComponentInChildren<Footsteps>().SetSilent(silent);
     }
     
     #endregion

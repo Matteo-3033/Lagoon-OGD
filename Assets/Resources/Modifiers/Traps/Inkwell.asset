@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Inkwell
   m_EditorClassIdentifier: 
   modifierName: Inkwell
-  durationSeconds: 20
+  durationSeconds: 15
   respawnAfterSeconds: 60
-  description: Makes the player blind for 20 seconds
+  description: Makes the player blind for 15 seconds
   icon: {fileID: 21300000, guid: 3958ce25db86a6440992f6d08bc4e6f7, type: 3}
   prefab: {fileID: 1968857315731488669, guid: 594d11e44342bf548bf324afec0506d2, type: 3}

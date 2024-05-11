@@ -29,6 +29,13 @@ namespace Round.UI.Main
             }
         }
 
+        private static class Duration
+        {
+            public const float SHORT = 0.05F;
+            public const float MEDIUM = 0.2F;
+            public const float LONG = 0.4F;
+        }
+
         private void Awake()
         {
             if (!RiseNetworkManager.IsClient)
@@ -49,7 +56,7 @@ namespace Round.UI.Main
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
             
-            TrapInteractable.OnTrapNotAdded += LogTrapNotAdded;
+            TrapVendingMachineInteractable.OnTrapNotAdded += LogTrapNotAdded;
 
             ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
         }
@@ -71,46 +78,74 @@ namespace Round.UI.Main
 
         private void LogStatsUpdate(object sender, Inventory.OnStatsUpdatedArgs args)
         {
-            if (args.Enabled)
+            if (args.Player.isLocalPlayer)
+                LogStatsUpdateLocalPlayer(args);
+            else LogStatsUpdateOpponent(args);
+           
+        }
+
+        private void LogStatsUpdateOpponent(Inventory.OnStatsUpdatedArgs args)
+        {
+            switch (args.Op)
             {
-                LogEvent(args.Player.isLocalPlayer
-                    ? $"{args.Modifier.modifierName} activated!"
-                    : $"<color=#FF0000>{Player.Opponent.Username}</color> activated {args.Modifier.modifierName}!");
+                case Inventory.InventoryOp.Acquired when args.Modifier.canBeFoundInGame:
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> found {args.Modifier.modifierName}!", Duration.LONG);
+                    break;
+                case Inventory.InventoryOp.Acquired:
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> activated a super effect!");
+                    break;
+                case Inventory.InventoryOp.Removed:
+                    LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> lost {args.Modifier.modifierName}!");
+                    break;
             }
-            else
+        }
+
+        private void LogStatsUpdateLocalPlayer(Inventory.OnStatsUpdatedArgs args)
+        {
+            switch (args.Op)
             {
-                LogEvent(args.Player.isLocalPlayer
-                    ? $"{args.Modifier.modifierName} disabled!"
-                    : $"<color=#FF0000>{Player.Opponent.Username}</color> disabled {args.Modifier.modifierName}!");
+                case Inventory.InventoryOp.Acquired when args.Modifier.canBeFoundInGame:
+                    LogEvent($"{args.Modifier.modifierName} activated!", Duration.LONG);
+                    break;
+                case Inventory.InventoryOp.Acquired:
+                    LogEvent($"Super effect activated!", Duration.SHORT);
+                    LogEvent($"<color=red>{args.Modifier.modifierName}</color>", Duration.LONG);
+                    break;
+                case Inventory.InventoryOp.Removed:
+                    LogEvent($"{args.Modifier.modifierName} deactivated...");
+                    break;
             }
         }
 
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
-            if (args.Op == Inventory.TrapOP.Acquired)
-            {
-                LogEvent($"{args.Trap.modifierName} acquired!", 0.1F);
-                LogEvent($"{args.Trap.description}");
-            }
-            else if (args.Op == Inventory.TrapOP.Placed)
-            {
+            if (args.Op == Inventory.InventoryOp.Acquired)
+                LogEvent($"{args.Trap.modifierName} acquired!", Duration.SHORT);
+            else if (args.Op == Inventory.InventoryOp.Removed)
                 LogEvent($"{args.Trap.modifierName} placed");
-            }
         }
         
         private void LogChancellorEffect(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
         {
-            LogEvent("The <color=#FF0000>Chancellor</color> is awake!", 0.1F);
-            LogEvent(args.Effect.description);
+            LogEvent("The <color=#FF0000>Chancellor</color> is awake!", Duration.SHORT);
+            LogEvent($"<color=#FF0000>{args.Effect.modifierName}</color>", Duration.LONG);
         }
 
         private void LogKeyFragmentUpdate(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
         {
-            if (args.NewValue < args.OldValue) return;
+            if (args.NewValue > args.OldValue)
+            {
+                LogEvent(args.Player.isLocalPlayer
+                    ? $"Key fragment acquired!"
+                    : $"<color=#FF0000>{Player.Opponent.Username}</color> acquired a badge fragment!");
 
-            LogEvent(args.Player.isLocalPlayer
-                ? $"Key fragment acquired!"
-                : $"<color=#FF0000>{Player.Opponent.Username}</color> found a badge fragment!");
+                if (args.NewValue == RoundController.Round.keyFragments)
+                    LogEvent(args.Player.isLocalPlayer
+                        ? "Next round teleport enabled"
+                        : $"<color=#FF0000>{args.Player.Username}</color> has all badge fragments!"
+                    );
+            } else if (args.Player.isLocalPlayer && args.OldValue == RoundController.Round.keyFragments)
+                LogEvent("Next round teleport disabled");
         }
 
         private void LogNoWinningCondition()
@@ -118,10 +153,10 @@ namespace Round.UI.Main
             var totalFragments = RoundController.Round.keyFragments;
             var missingFragments = totalFragments - Player.LocalPlayer.Inventory.KeyFragments;
 
-            LogEvent($"Next round teleport disabled", 0.1F);
-            LogEvent("Find other <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color>");
+            LogEvent($"Next round teleport disabled", Duration.SHORT);
+            LogEvent($"Find other <color=#FF0000>{missingFragments}/{totalFragments} badge fragments</color>", Duration.SHORT);
         }
-        
+         
         private void LogTimerUpdate(int remainingTime)
         {
             if (remainingTime > 1)
@@ -129,7 +164,7 @@ namespace Round.UI.Main
             
             if (Player.LocalPlayer.Inventory.KeyFragments == Player.Opponent.Inventory.KeyFragments)
             {
-                LogEvent("Time limit reached!", 0.1F);
+                LogEvent("Time limit reached!", Duration.SHORT);
                 LogEvent("Find a badge fragment to win the round");
             }
         }
@@ -139,15 +174,9 @@ namespace Round.UI.Main
             LogEvent($"{trap.modifierName} already in your inventory!");
         }
 
-        [ContextMenu("Test event")]
-        public void LogEvent()
+        private void LogEvent(string msg, float duration = Duration.MEDIUM)
         {
-            LogEvent("Test event");
-        }
-
-        private void LogEvent(string msg, float fadeOutAfter = 1F)
-        {
-            var logMsg = new EventLoggerText.LogMessage(msg, fadeOutAfter);
+            var logMsg = new EventLoggerText.LogMessage(msg, duration);
             
             if (!CanSpawnNext)
                 eventQueue.Enqueue(logMsg);
@@ -180,7 +209,25 @@ namespace Round.UI.Main
         {
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
             Player.OnPlayerSpawned -= OnPlayerSpawned;
-            TrapInteractable.OnTrapNotAdded -= LogTrapNotAdded;
+            TrapVendingMachineInteractable.OnTrapNotAdded -= LogTrapNotAdded;
+        }
+        
+        [ContextMenu("Short test event")]
+        public void ShortLogEvent()
+        {
+            LogEvent("Short test event", Duration.SHORT);
+        }
+        
+        [ContextMenu("Medium test event")]
+        public void MediumLogEvent()
+        {
+            LogEvent("Medium test event");
+        }
+        
+        [ContextMenu("Long test event")]
+        public void LongLogEvent()
+        {
+            LogEvent("Long test event", Duration.LONG);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using UnityEngine;
 
@@ -6,13 +7,14 @@ namespace Interaction
     [RequireComponent(typeof(Animator)), RequireComponent(typeof(NetworkIdentity))]
     public class DoorInteractable : NetworkBehaviour, IInteractable
     {
+        public static event EventHandler<bool> OnStateChanged;
+        
         [SerializeField] private bool defaultOpen;
         [SerializeField] private GameObject invisibleWall;
         
         public string InteractionPrompt => "Door";
 
-        [SyncVar(hook = nameof(OnStateChanged))]
-        private bool open;
+        [SyncVar(hook = nameof(OpenHook))] private bool open;
 
         private Animator animator;
         private static readonly int Open = Animator.StringToHash("Open");
@@ -42,10 +44,11 @@ namespace Interaction
             open = !open;
         }
 
-        private void OnStateChanged(bool oldValue, bool newValue)
+        private void OpenHook(bool oldValue, bool newValue)
         {
             invisibleWall.SetActive(!newValue);
             animator.SetBool(Open, newValue);
+            OnStateChanged?.Invoke(this, newValue);
         }
     }
 }

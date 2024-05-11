@@ -9,6 +9,7 @@ namespace Modifiers
         public bool isBuff;
         public StatsModifier other;
         public StatsModifier synergy;
+        public bool canBeFoundInGame;
     }
     
     public static class StatsModifierSerializer 

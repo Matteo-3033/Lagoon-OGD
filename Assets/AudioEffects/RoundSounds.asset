@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 287d87927f774cd6b463f17560fcb980, type: 3}
+  m_Name: RoundSounds
+  m_EditorClassIdentifier: 
+  chancellorAlarm: {fileID: 8300000, guid: f5621c9eaf28f094199b3f837d80582b, type: 3}
+  footsteps:
+  - {fileID: 8300000, guid: 7eaa75f5aa7a5284d8ae3c7bf35c26db, type: 3}
+  - {fileID: 8300000, guid: cea523d483539364ebc9ee416e64bfc6, type: 3}
+  - {fileID: 8300000, guid: 4e196caa41b0c374188c00887fd6e617, type: 3}
+  - {fileID: 8300000, guid: 18e3a6af7f0df61418d4074d9561d6fe, type: 3}
+  trapVendingMachine:
+  - {fileID: 8300000, guid: ef469d07f9120cf499dac3df87a6b0c5, type: 3}
+  - {fileID: 8300000, guid: 6137d1e14901ce146893748a54618f55, type: 3}
+  - {fileID: 8300000, guid: 5bd806ad999cbe9459da9318e6a42307, type: 3}
+  countdown: {fileID: 8300000, guid: 4c5adeca2b424f84ea83c87ecfdf0fa9, type: 3}
+  error:
+  - {fileID: 8300000, guid: 9a56cb0514ae7d448972fff2f9d1fcad, type: 3}
+  - {fileID: 8300000, guid: 8c5a448e94f81cc428fe7ef88bc9c00d, type: 3}
+  buffActivation: {fileID: 8300000, guid: b249ecd0474ba7a4a878678939d49358, type: 3}
+  superBuffActivation: {fileID: 8300000, guid: 9a3e195585d7f89418e99e164c6056ab, type: 3}
+  superBuffActivationOnOpponent: {fileID: 8300000, guid: 17bf1cd826eee9a439692d1a33a88a32,
+    type: 3}
+  debuffActivation: {fileID: 8300000, guid: b0356d90bc3966444a134d8dae0877c4, type: 3}
+  keyFragmentAcquisition:
+  - {fileID: 8300000, guid: 4b279b4e34285ce42b230aa7b310cc79, type: 3}
+  trapActivation:
+  - {fileID: 8300000, guid: 096ebe0fa37eabc4b9d5dd243808c28c, type: 3}
+  - {fileID: 8300000, guid: 5e37ad3d17f342643ace29a220a42945, type: 3}
+  trapPlacement: {fileID: 8300000, guid: 57faeebc94e2f1f4d8c0fb3669bb7193, type: 3}
+  kill:
+  - {fileID: 8300000, guid: e362af1b065d0f6419d3c5a1b8959114, type: 3}
+  - {fileID: 8300000, guid: bd5885344ffa0a2458b7f0168aecfb6d, type: 3}
+  roundEnd:
+  - {fileID: 8300000, guid: 622eccf8778574b4888ce74169bcbb3d, type: 3}
+  - {fileID: 8300000, guid: ce73d3447e099c5438a984804e1f7b2c, type: 3}
+  - {fileID: 8300000, guid: 4eb79cb5fa7fcb544bcb5eb4028447fe, type: 3}
+  roundStart:
+  - {fileID: 8300000, guid: 622eccf8778574b4888ce74169bcbb3d, type: 3}
+  - {fileID: 8300000, guid: ce73d3447e099c5438a984804e1f7b2c, type: 3}
+  - {fileID: 8300000, guid: 4eb79cb5fa7fcb544bcb5eb4028447fe, type: 3}
+  fightBegin: {fileID: 8300000, guid: bdbf05b3a5d57c9468f732c45fb6750b, type: 3}
+  guardDetection: {fileID: 8300000, guid: cd0bd28fc6254014e91e49458fbc8684, type: 3}
+  cameraDetection: {fileID: 8300000, guid: 63593607ec58108468187f3e752fd015, type: 3}
+  doorOpen: {fileID: 8300000, guid: 58fd39d5ae004144a9407abc0bc70eaa, type: 3}
+  doorClose: {fileID: 8300000, guid: 1116a3a79134fd24ab709c3ac5aa2513, type: 3}
