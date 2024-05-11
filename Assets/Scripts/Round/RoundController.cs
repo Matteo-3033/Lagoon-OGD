@@ -16,7 +16,6 @@ namespace Round
 
         public static RoundController Instance { get; private set; }
         public static RoundConfiguration Round => MatchController.Instance.CurrentRound;
-
         
         public enum RoundState
         {
@@ -112,7 +111,7 @@ namespace Round
             playersReady.Add(username);
 
             if (AllPlayersReady())
-                StartCountdown();
+                StartCountdown();    
         }
         
         [Server]
@@ -303,20 +302,49 @@ namespace Round
             var player1 = players[0];
             var player2 = players[1];
 
-            var player1Fov = player1.GetComponentInChildren<FieldOfVIew>();
-            var player2Fov = player2.GetComponentInChildren<FieldOfVIew>();
+            var player1Fov = player1.GetComponentInChildren<FieldOfView>();
+            var player2Fov = player2.GetComponentInChildren<FieldOfView>();
 
-            Debug.Log(player1Fov.IsOpponentInFieldOfView &&
-                   player2Fov.IsOpponentInFieldOfView);
 
             return player1Fov.IsOpponentInFieldOfView &&
                    player2Fov.IsOpponentInFieldOfView;
         }
 
+        [Command(requiresAuthority = false)]
+        internal void KillPlayer(Player killed, Player killer)
+        {
+            if (PlayersAreInFrontOfEachOther)
+            {
+                Debug.Log("Players are in front of each other. Cannot kill player " + killed.name);
+                return;
+            }
+
+            Debug.Log($"Player {killed.Username} killed by {killer.Username}");
+
+            StartCoroutine(RespawnPlayer(killed));
+
+            if (killed.Inventory.StealKeyFragment())
+            {
+                killer.Inventory.AddKeyFragment();
+            }
+
+            killed.Deaths++;
+            killer.Kills++;
+        }
+
+        private IEnumerator RespawnPlayer(Player player)
+        {
+            player.TargetEnableMovement(false);
+            player.RPCSetActive(false);
+            player.TargetGoTo(player.RespawnPosition);
+            yield return new WaitForSeconds(3F);
+            player.RPCSetActive(true);
+            player.TargetEnableMovement(true);
+        }
         #endregion
-        
+
         #region CLIENT
-        
+
         public void CheckWinningCondition()
         {
             CmdCheckWinningCondition();

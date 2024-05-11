@@ -4,7 +4,7 @@ public class CameraMovement : MonoBehaviour
 {
     [SerializeField] private Player testPlayer;
     
-    private Player player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
+    private Player player => Player.LocalPlayer == null ? testPlayer : Player.LocalPlayer.gameObject.activeSelf ? Player.LocalPlayer : Player.Opponent;
     
     private float rotationTime = .5f;
 

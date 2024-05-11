@@ -64,6 +64,18 @@ namespace Audio
             player.Inventory.OnTrapsUpdated += OnTrapsUpdated;
             player.Inventory.OnStatsUpdate += OnStatsUpdated;
             player.Inventory.OnKeyFragmentUpdated += OnKeyFragmentUpdated;
+            player.InputHandler.OnKill += OnKill; ;
+            player.OnPlayerKilled += OnKilled;
+        }
+
+        private void OnKill(object sender, EventArgs e)
+        {
+            PlayClipAtPoint(audioClips.kill, Target);
+        }
+
+        private void OnKilled(Player obj)
+        {
+            PlayClipAtPoint(audioClips.playerKilled, Target);
         }
 
         private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs args)

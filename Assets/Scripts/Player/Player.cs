@@ -3,6 +3,7 @@ using Interaction;
 using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
+using Round;
 using UnityEngine;
 using Utils;
 
@@ -11,6 +12,8 @@ public class Player : NetworkBehaviour
 {
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
+    public event Action<Player> OnPlayerRespawned;
+    public event Action<Player> OnPlayerKilled;
     public event EventHandler<Vector3> OnPositionChanged;
     
     public static Player LocalPlayer { get; private set;  }
@@ -21,8 +24,8 @@ public class Player : NetworkBehaviour
 	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
     public TrapSelector TrapSelector => GetComponent<TrapSelector>();
     public Interactor Interactor => GetComponent<Interactor>();
+    public InputHandler InputHandler => GetComponent<InputHandler>();
     
-
     [field: SyncVar]
     public string Username { get; private set; }
 
@@ -33,16 +36,19 @@ public class Player : NetworkBehaviour
     public int Score { get; private set; }
     
     [field: SyncVar]
-    public int Deaths { get; private set; }
+    public int Deaths { get; set; }
     
     [field: SyncVar]
-    public int Kills { get; private set; }
+    public int Kills { get; set; }
     
     public bool IsSilent { get; private set; }
-    
+    public Vector3 LastInteractDir { get; private set; }
+
+    public Vector3 RespawnPosition { get; set; }
+
 
     #region SERVER
-    
+
     [Server]
     public void Init(RoomPlayer profile, bool isMangiagalli)
     {
@@ -58,11 +64,16 @@ public class Player : NetworkBehaviour
     {
         OnPositionChanged?.Invoke(this, position);
     }
-    
+
+    public override void OnStartServer()
+    {
+        RespawnPosition = transform.position;
+    }
+
     #endregion
 
     #region CLIENT
-    
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -71,6 +82,8 @@ public class Player : NetworkBehaviour
 
         if (!identity.isLocalPlayer)
             OnStartOpponent();
+
+        RespawnPosition = transform.position;
     }
     
     public override void OnStartLocalPlayer()
@@ -81,8 +94,9 @@ public class Player : NetworkBehaviour
         
         MakeVisible();
         OnPlayerSpawned?.Invoke(LocalPlayer);
+        InputHandler.OnKill += InputHandler_OnKill;
     }
-    
+
     [Client]
     private void OnStartOpponent()
     {
@@ -103,6 +117,21 @@ public class Player : NetworkBehaviour
     {
         transform.position = position;
         CmdPositionChanged(position);
+    }
+
+    [ClientRpc]
+    public void RPCSetActive(bool isActive)
+    {
+        if (isActive)
+        {
+            OnPlayerRespawned?.Invoke(this);
+            Opponent.MakeInvisible();
+        } else
+        {
+            OnPlayerKilled?.Invoke(this);
+            Opponent.MakeVisible();
+        }
+        gameObject.SetActive(isActive);
     }
 
     [Client]
@@ -140,6 +169,23 @@ public class Player : NetworkBehaviour
     {
         GetComponentInChildren<Footsteps>().SetSilent(silent);
     }
-    
+
+    private void InputHandler_OnKill(object sender, EventArgs e)
+    {
+        Debug.Log("Kill command received");
+        Vector3 moveDir = InputHandler.GetMovementDirection();
+
+        float interactionDistance = 2f;
+
+        if(Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, interactionDistance))
+        {
+            if (hit.collider.gameObject.TryGetComponent<Player>(out Player player))
+            {
+                Debug.Log("Player hit");
+                RoundController.Instance.KillPlayer(player, this);
+            }
+        }
+    }
+
     #endregion
 }

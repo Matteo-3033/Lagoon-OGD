@@ -29,6 +29,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
+    public event EventHandler<EventArgs> OnKill;
     
 
     private void Awake()
@@ -51,6 +52,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         
         input.Player.PlaceTrap.performed += PlaceTrap_performed;
         input.Player.SelectTrap.performed += SelectTrap_performed;
+
+        input.Player.Kill.performed += Kill_performed;
     }
 
     private void OnDisable()
@@ -133,5 +136,10 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private void SelectTrap_performed(InputAction.CallbackContext ctx)
     {
         OnSelectTrap?.Invoke(this, (int) ctx.ReadValue<float>());
+    }
+
+    private void Kill_performed(InputAction.CallbackContext ctx)
+    {
+        OnKill?.Invoke(this, EventArgs.Empty);
     }
 }

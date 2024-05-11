@@ -74,6 +74,30 @@ namespace Round.UI.Main
             
             if (player.isLocalPlayer)
                 player.Inventory.OnTrapsUpdated += LogTrapsUpdate;
+
+            player.OnPlayerKilled += OnPlayerKilled;
+            player.OnPlayerRespawned += OnPlayerRespawned;
+        }
+
+        private void OnPlayerKilled(Player player)
+        {
+            if (player.isLocalPlayer)
+            {
+                LogEvent("You have been killed!", Duration.LONG);
+                LogEvent("Respawning in 5 seconds...");
+            }
+            else
+            {
+                LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> has been killed!", Duration.LONG);
+            }
+        }
+
+        public void OnPlayerRespawned(Player player)
+        {
+            if(!player.isLocalPlayer)
+            {
+                LogEvent($"<color=#FF0000>{Player.Opponent.Username}</color> has respawned!");
+            }
         }
 
         private void LogStatsUpdate(object sender, Inventory.OnStatsUpdatedArgs args)
