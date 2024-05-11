@@ -82,10 +82,11 @@ public class FieldOfView : NetworkBehaviour
         return viewDistance;
     }
     
-    [Server]
     public void SetViewDistance(float dist)
     {
+        Debug.Log("Setting distance");
         viewDistance = dist;
+        OnFoVUpdated();
     }
     
     public float GetAngle()
@@ -93,22 +94,24 @@ public class FieldOfView : NetworkBehaviour
         return fieldOfViewDegree;
     }
     
-    [Server]
     public void SetAngle(float angle)
     {
+        Debug.Log("Setting angle");
         fieldOfViewDegree = angle;
+        OnFoVUpdated();
     }
     
     [ClientCallback]
     private void OnFoVDegreeChanged(float oldValue, float newValue)
     {
-        
+        Debug.Log("Field of view degree changed");
         OnFoVUpdated();
     }
     
     [ClientCallback]
     private void OnViewDistanceChanged(float oldValue, float newValue)
     {
+        Debug.Log("Field distance changed");
         OnFoVUpdated();
     }
 

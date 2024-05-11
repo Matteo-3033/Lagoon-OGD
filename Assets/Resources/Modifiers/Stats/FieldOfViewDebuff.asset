@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6851f3648854db0b9b8f44c63c1505f, type: 3}
   m_Name: FieldOfViewDebuff
   m_EditorClassIdentifier: 
-  modifierName: 
-  isBuff: 0
+  modifierName: Blind as a bat
+  isBuff: 1
   other: {fileID: 0}
   synergy: {fileID: 0}
-  canBeFoundInGame: 0
+  canBeFoundInGame: 1
   angleDecrease: 30
   distanceDecrease: 1.5

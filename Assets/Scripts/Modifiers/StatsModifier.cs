@@ -6,10 +6,10 @@ namespace Modifiers
 {
     public abstract  class StatsModifier: Modifier
     {
-        public bool isBuff;
+        public bool isBuff = true;
         public StatsModifier other;
         public StatsModifier synergy;
-        public bool canBeFoundInGame;
+        public bool canBeFoundInGame = true;
     }
     
     public static class StatsModifierSerializer 

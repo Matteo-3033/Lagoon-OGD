@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 171eb296a93141509faac02a3f7156f6, type: 3}
   m_Name: FieldOfViewBuff
   m_EditorClassIdentifier: 
-  modifierName: 
-  isBuff: 0
+  modifierName: ' Like a cat in the dark'
+  isBuff: 1
   other: {fileID: 0}
   synergy: {fileID: 0}
-  canBeFoundInGame: 0
+  canBeFoundInGame: 1
   angleIncrease: 30
   distanceIncrease: 1.5
