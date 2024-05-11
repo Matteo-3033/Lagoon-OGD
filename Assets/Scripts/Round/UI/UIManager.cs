@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Network;
 using UnityEngine;
-using Screen = Utils.Screen;
+using Screen = Utils.UI.Screen;
 
 namespace Round.UI
 {

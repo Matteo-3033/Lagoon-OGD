@@ -20,9 +20,16 @@ namespace Editor
         [MenuItem("Build/Build All")]
         public static void BuildAll()
         {
+            BuildLinux();
+            BuildWindows();
+        }
+        
+        [MenuItem("Build/Linux/Build All")]
+        public static void BuildLinux()
+        {
             BuildLinuxMasterServer();
             BuildLinuxServer();
-            BuildWindows();
+            BuildLinuxClient();
         }
         
         [MenuItem("Build/Windows/Build All")]
@@ -106,6 +113,27 @@ namespace Editor
             Debug.Log("Building Server (Linux)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
             Debug.Log("Built Server (Linux).");
+        }
+        
+        [MenuItem("Build/Linux/Client")]
+        public static void BuildLinuxClient()
+        {
+
+            var method = typeof(BuildPlayerWindow.DefaultBuildMethods).GetMethod("GetBuildPlayerOptionsInternal", BindingFlags.NonPublic | BindingFlags.Static);
+
+            var buildPlayerOptions = (BuildPlayerOptions) method!.Invoke(
+                null, 
+                new object[] { false, new BuildPlayerOptions() }
+            );
+            buildPlayerOptions.scenes = MatchScenes;
+            buildPlayerOptions.locationPathName = "Builds/Linux/Client/Client.x86_64";
+            buildPlayerOptions.target = BuildTarget.StandaloneLinux64;
+            buildPlayerOptions.subtarget = (int)StandaloneBuildSubtarget.Player;
+            buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
+            
+            Debug.Log("Building Client (Linux)...");
+            BuildPipeline.BuildPlayer(buildPlayerOptions);
+            Debug.Log("Built Client (Linux).");
         }
 
 

@@ -225,6 +225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee2659e00cba2049aae57d4c163a6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &50845915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -519,6 +521,7 @@ MonoBehaviour:
   playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 5117271594775079409, guid: 18909ae2074168e4ab0591b4b9e6b20e, type: 3}
+  - {fileID: 6185937851196024409, guid: ea51da4cf1acfea49802848e749a5a13, type: 3}
   - {fileID: 1968857315731488669, guid: 6d9cce7097205e54298f311c01c15c21, type: 3}
   - {fileID: 1968857315731488669, guid: 594d11e44342bf548bf324afec0506d2, type: 3}
   - {fileID: 4851495186559573822, guid: c6f019eca13601146bcee654ca265c8f, type: 3}
@@ -806,6 +809,52 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1931824848}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &465560942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 465560944}
+  - component: {fileID: 465560943}
+  m_Layer: 0
+  m_Name: UISoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &465560943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465560942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee460765991d4f2c8530032376cb84d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 1000000
+  audioClips: {fileID: 11400000, guid: 426532c50d642534d8a59cfe58128f7e, type: 2}
+--- !u!4 &465560944
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465560942}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &472954851
 GameObject:
   m_ObjectHideFlags: 0
@@ -3056,6 +3105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b911cac8902a4afe8dc5023aaddf5740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &999850097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3860,6 +3911,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7801b3a3fa81f47b39c2275eaf82e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &1388637554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4299,6 +4352,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640c81f469a244e083f83040de0d49dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
   connector: {fileID: 914781029}
 --- !u!114 &1728556432
 MonoBehaviour:
@@ -4690,8 +4745,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8884ec0c39e031e4cbae88eba93920cc, type: 2}
-  m_sharedMaterial: {fileID: -7884225980981589507, guid: 8884ec0c39e031e4cbae88eba93920cc,
+  m_fontAsset: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  m_sharedMaterial: {fileID: -6249716115816544840, guid: d2a299e442074b5459da4d2d41516af3,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -4942,7 +4997,7 @@ GameObject:
   - component: {fileID: 1952963324}
   - component: {fileID: 1952963325}
   m_Layer: 0
-  m_Name: TabletUICinemachine
+  m_Name: TabletCinemachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5311,6 +5366,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee2659e00cba2049aae57d4c163a6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: d2a299e442074b5459da4d2d41516af3, type: 2}
+  secondsDelay: 0.5
 --- !u!114 &2000587821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5919,3 +5976,4 @@ SceneRoots:
   - {fileID: 72015020}
   - {fileID: 744863611}
   - {fileID: 914781030}
+  - {fileID: 465560944}

@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Utils;
 
 [RequireComponent(typeof(Light))]
 public class Torchlight : MonoBehaviour
 {
-    [SerializeField] private FieldOfVIew fieldOfView;
+    [SerializeField] private FieldOfView fieldOfView;
     
     private Light spotLight;
     
@@ -18,7 +20,7 @@ public class Torchlight : MonoBehaviour
         }
     }
 
-    private void FieldOfView_OnFieldOfViewChanged(object sender, FieldOfVIew.FieldOfViewArgs args)
+    private void FieldOfView_OnFieldOfViewChanged(object sender, FieldOfView.FieldOfViewArgs args)
     {
         spotLight.spotAngle = args.FieldOfViewDegree;
         spotLight.innerSpotAngle = args.FieldOfViewDegree / 2;

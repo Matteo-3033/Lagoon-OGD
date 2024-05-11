@@ -2,30 +2,29 @@ using Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils.UI;
 
 namespace Round.UI.Winner
 {
     [RequireComponent(typeof(Button))]
-    public class LoadNextRoundButton : MonoBehaviour
+    public class LoadNextRoundButton : ChangeFontOnClickButton
     {
         [SerializeField] private GameObject loading;
         
-        private Button button;
-        
-        private void Awake()
+        protected override void Awake()
         {
-            button = gameObject.GetComponent<Button>();
-            button.onClick.AddListener(OnClick);
+            base.Awake();
+            loading.SetActive(false);
             
-            var textField = button.GetComponentInChildren<TextMeshProUGUI>();
-            
+            var textField = GetComponentInChildren<TextMeshProUGUI>();
+
             if (MatchController.Instance.HasWinner())
                 textField.text = "Continue";
             else
                 textField.text = "Next round";
         }
 
-        private void OnClick()
+        protected override void OnClick()
         {
             RoundController.Instance.AskForNextRound();
             loading.SetActive(true);

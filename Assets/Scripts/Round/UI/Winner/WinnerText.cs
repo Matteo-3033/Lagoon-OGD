@@ -14,11 +14,6 @@ namespace Round.UI.Winner
             var winner = RoundController.Instance.Winner;
 
             textField.text = $"<color=red>{winner.Username}</color>\n";
-            
-            if (MatchController.Instance.HasWinner())
-                textField.text += "wins the match!";
-            else
-                textField.text += "wins the round!";
         }
     }
 }

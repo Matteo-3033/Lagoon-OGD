@@ -1,21 +1,16 @@
 ﻿using Network;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
+using Utils.UI;
 
 namespace MainMenu.Connection
 {
-    [RequireComponent(typeof(Button))]
-    public class ConnectButton: MonoBehaviour
+    public class ConnectButton: ChangeFontOnClickButton
     {
         [SerializeField] private ClientConnector connector;
-        
-        private void Start()
-        {
-            var button = gameObject.GetComponent<Button>();
-            button.onClick.AddListener(OnClick);
-        }
-        
-        private void OnClick()
+
+        protected override void OnClick()
         {
             connector.InitClient();
         }
