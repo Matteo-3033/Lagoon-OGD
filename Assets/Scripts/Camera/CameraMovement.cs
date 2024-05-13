@@ -1,13 +1,14 @@
+using Round;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private Transform testTarget;
+    [SerializeField] private Transform testTarget = null;
 
     private Transform Target => Player.LocalPlayer ? Player.LocalPlayer.transform : testTarget?.transform;
 
-    private float rotationTime = .5f;
+    public float rotationTime = .5f;
 
     private int _targetRotation;
     private int _startRotation;
@@ -20,6 +21,12 @@ public class CameraMovement : MonoBehaviour
         _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
+
+        IInputHanlder inputHandler = Target.GetComponent<IInputHanlder>();
+        if (inputHandler != null)
+        {
+            inputHandler.OnCameraRotation += OnOnCameraRotation;
+        }
     }
 
     private void OnOnCameraRotation(object sender, int direction)
@@ -42,7 +49,7 @@ public class CameraMovement : MonoBehaviour
         if (1 - t > .001f)
         {
             _currentTime += Time.deltaTime;
-            //t = Slope(_currentTime / _durationTime);
+            t = Slope(_currentTime / _durationTime);
 
             _currentRotation = Mathf.Lerp(_startRotation, _targetRotation, t);
             transform.rotation = Quaternion.Euler(0,
