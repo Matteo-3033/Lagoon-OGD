@@ -65,7 +65,7 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected void SignalOnTarget()
     {
-        RippleController rippleController = AlarmTarget.GetComponentInChildren<RippleController>();
+        RippleController rippleController = AlarmTarget?.GetComponentInChildren<RippleController>();
         if (!rippleController) return;
 
         rippleController.ShowAlarmRipple();
@@ -73,7 +73,7 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected void StopSignalOnTarget()
     {
-        RippleController rippleController = AlarmTarget.GetComponentInChildren<RippleController>();
+        RippleController rippleController = AlarmTarget?.GetComponentInChildren<RippleController>();
         if (!rippleController) return;
 
         rippleController.StopAlarmRipple();
