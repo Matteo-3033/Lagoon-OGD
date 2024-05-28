@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 8457062289738500850}
   - component: {fileID: 4777347082147277943}
   m_Layer: 10
-  m_Name: KeyFragment
+  m_Name: BadgeFragment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

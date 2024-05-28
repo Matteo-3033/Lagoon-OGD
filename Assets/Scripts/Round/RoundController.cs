@@ -11,12 +11,11 @@ namespace Round
     [RequireComponent(typeof(NetworkIdentity))]
     public class RoundController: NetworkBehaviour
     {
-        private const int UPDATE_TIMER_EVERY_SECONDS = 10;
+        private const int UPDATE_TIMER_EVERY_SECONDS = 5;
         private const float LOAD_NEXT_ROUND_AFTER_SECONDS = 10F;
 
         public static RoundController Instance { get; private set; }
         public static RoundConfiguration Round => MatchController.Instance.CurrentRound;
-
         
         public enum RoundState
         {
@@ -134,23 +133,25 @@ namespace Round
             StartCoroutine(Timer());
         }
 
+        private int timer;
+
         private IEnumerator Timer()
         {
             // Wait one frame after round start
             yield return null;
             
-            var time = (int)(Round.timeLimitMinutes * 60);
+            timer = (int)(Round.timeLimitMinutes * 60);
             
-            while (time > UPDATE_TIMER_EVERY_SECONDS)
+            while (timer > UPDATE_TIMER_EVERY_SECONDS)
             {
-                Debug.Log($"Remaining time: {time}");
-                NotifyRemainingTime(time);
+                Debug.Log($"Remaining time: {timer}");
+                NotifyRemainingTime(timer);
                 yield return new WaitForSeconds(UPDATE_TIMER_EVERY_SECONDS);
-                time -= UPDATE_TIMER_EVERY_SECONDS;
+                timer -= UPDATE_TIMER_EVERY_SECONDS;
             }
             
-            NotifyRemainingTime(time);
-            yield return new WaitForSeconds(time);
+            NotifyRemainingTime(timer);
+            yield return new WaitForSeconds(timer);
 
             NotifyRemainingTime(0);
 
@@ -176,6 +177,12 @@ namespace Round
                 foreach (var player in Players)
                     player.Inventory.OnKeyFragmentUpdated += CheckPlayerAdvantage;
             }
+        }
+        
+        [Server]
+        public void AddTime(int bonusTime)
+        {
+            timer += bonusTime;
         }
 
         [Server]

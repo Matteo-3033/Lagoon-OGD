@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MinimapDarkArea : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
+    
+    public bool IsVisible => spriteRenderer.enabled;
 
     private void Awake()
     {

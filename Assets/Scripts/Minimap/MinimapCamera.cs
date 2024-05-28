@@ -1,6 +1,7 @@
+using Mirror;
 using UnityEngine;
 
-public class MinimapCamera : MonoBehaviour
+public class MinimapCamera : NetworkBehaviour
 {
     [SerializeField] private Player testPlayer;
     
@@ -57,5 +58,16 @@ public class MinimapCamera : MonoBehaviour
         transform.position = newPosition;
 
         transform.rotation = Quaternion.Euler(90, _camera.transform.rotation.eulerAngles.y, 0);
+    }
+    
+    [ClientRpc]
+    public void ShowAllMinimapDarkAreas()
+    {
+        var minimapDarkAreas = FindObjectsOfType<MinimapDarkArea>(true);
+        foreach (var minimapDarkArea in minimapDarkAreas)
+        {
+            minimapDarkArea.gameObject.SetActive(true);
+            minimapDarkArea.Show();
+        }
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Modifiers.Buffs
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/Buffs/TrapBag", fileName = "TrapBagDebuff")]
+    [CreateAssetMenu(menuName = "ScriptableObjects/Debuffs/TrapBag", fileName = "TrapBagDebuff")]
     public class TrapBagDebuff : StatsModifier
     {
         public int slots = 1;

@@ -1,7 +1,4 @@
-﻿using Mirror;
-using Network;
-using UnityEngine;
-using Utils;
+﻿using UnityEngine;
 
 namespace Modifiers.Buffs.SuperBuffs
 {
@@ -10,24 +7,12 @@ namespace Modifiers.Buffs.SuperBuffs
     {
         public override void Enable()
         {
-            SetTrasparent();
+            Player.LocalPlayer.CmdSetTransparent(true);
         }
 
         public override void Disable()
         {
-            SetOpaque();
-        }
-        
-        [Command(requiresAuthority = false)]
-        private void SetTrasparent(NetworkConnectionToClient sender = null)
-        {
-            sender.Player().RpcSetTransparent(true);
-        }
-        
-        [Command(requiresAuthority = false)]
-        private void SetOpaque(NetworkConnectionToClient sender = null)
-        {
-            sender.Player().RpcSetTransparent(false);
+            Player.LocalPlayer.CmdSetTransparent(false);
         }
     }
 }

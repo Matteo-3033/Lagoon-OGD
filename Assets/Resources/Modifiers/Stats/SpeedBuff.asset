@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f99b77561154c6585481bce5006ba2b, type: 3}
+  m_Name: SpeedBuff
+  m_EditorClassIdentifier: 
+  modifierName: Swift as the wind
+  isBuff: 1
+  other: {fileID: 11400000, guid: 4f3af702bd9402048a6405e873b530f1, type: 2}
+  synergy: {fileID: 11400000, guid: c8f345691071b3949b0810b44e1e1f9d, type: 2}
+  canBeFoundInGame: 1
+  multiplicationFactor: 1.5

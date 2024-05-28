@@ -67,10 +67,15 @@ public class Inventory : NetworkBehaviour
     #region SERVER
 
     [Server]
-    public void Clear()
+    public void ClearTraps()
+    {
+        traps.Clear();
+    }
+    
+    [Server]
+    public void ClearStats()
     {
         stats.Clear();
-        traps.Clear();
     }
 
     [Server]
@@ -273,4 +278,14 @@ public class Inventory : NetworkBehaviour
     }
     
     public bool IsTrapBagFull() => traps.Count >= trapsCapacity;
+
+    public void UpdateKeyFragments(int roundKeyFragments)
+    {
+        OnKeyFragmentUpdated?.Invoke(this, new OnKeyFragmentUpdatedArgs
+        {
+            OldValue = KeyFragments,
+            NewValue = KeyFragments,
+            Player = player
+        });
+    }
 }

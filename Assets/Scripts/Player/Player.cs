@@ -26,6 +26,8 @@ public class Player : NetworkBehaviour
     public Interactor Interactor => GetComponent<Interactor>();
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
     
+    private Vector3 spawnPoint;
+    
 
     [field: SyncVar]
     public string Username { get; private set; }
@@ -74,6 +76,7 @@ public class Player : NetworkBehaviour
             OnStartOpponent();
         
         defaultMaterial = GetComponent<MeshRenderer>().material;
+        spawnPoint = transform.position;
     }
     
     public override void OnStartLocalPlayer()
@@ -131,11 +134,16 @@ public class Player : NetworkBehaviour
         gameObject.GetComponentInChildren<MinimapIcon>().Show();
     }
     
-    [ClientRpc]
-    public void RpcSetTransparent(bool transparent)
+    [Command(requiresAuthority = false)]
+    public void CmdSetTransparent(bool transparent)
     {
-        var rend = GetComponent<MeshRenderer>();
-        rend.material = transparent ? transparentMaterial : defaultMaterial;
+        RpcSetTransparent(transparent);
+    }
+    
+    [ClientRpc]
+    private void RpcSetTransparent(bool transparent)
+    {
+        GetComponent<MeshRenderer>().material = transparent ? transparentMaterial : defaultMaterial;
     }
 
     [Client]
@@ -149,6 +157,13 @@ public class Player : NetworkBehaviour
     public void SetSilent(bool silent)
     {
         GetComponentInChildren<Footsteps>().SetSilent(silent);
+    }
+    
+    [Client]
+    public void ReturnToSpawn()
+    {
+        transform.position = spawnPoint;
+        CmdPositionChanged(spawnPoint);
     }
     
     #endregion

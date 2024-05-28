@@ -3,7 +3,7 @@ using Utils.UI;
 
 namespace Modifiers.Buffs
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/Buffs/Hold", fileName = "HoldDebuff")]
+    [CreateAssetMenu(menuName = "ScriptableObjects/Debuffs/Hold", fileName = "HoldDebuff")]
     public class HoldDebuff : StatsModifier
     {
         public float reductionFactor = 3;

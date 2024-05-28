@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e2f3afb8404ab78b443bcea0db92b9, type: 3}
   m_Name: SwapPlayers
   m_EditorClassIdentifier: 
-  modifierName: Where are you?
-  description: Your position will be swapped with that of the opponent
+  modifierName: Trading places
   playersReady: 0

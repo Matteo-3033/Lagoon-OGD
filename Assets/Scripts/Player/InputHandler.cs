@@ -10,6 +10,7 @@ public interface IInputHanlder
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
+    public bool Inverted { get; set; }
 }
 
 public class InputHandler : MonoBehaviour, IInputHanlder
@@ -30,6 +31,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
     
+    public bool Inverted { get; set; }
 
     private void Awake()
     {
@@ -72,7 +74,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private void Movement_performed(InputAction.CallbackContext callbackContext)
     {
         Vector2 temp = callbackContext.ReadValue<Vector2>();
-        inputMovementDirection = new Vector3(temp.x, 0, temp.y);
+        inputMovementDirection = !Inverted ? new Vector3(temp.x, 0F, temp.y) : new Vector3(temp.y, 0F, temp.x);
     }
 
     private void Movement_canceled(InputAction.CallbackContext callbackContext)

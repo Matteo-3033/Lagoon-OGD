@@ -11,12 +11,12 @@ namespace Round
     {
         [SerializeField] private ChancellorModifier[] effects;
         [SerializeField] private float alarmDuration;
-        [SerializeField] private float activateEverySeconds = 60F;
-        
+
         private int minutesPassed;
         
-        private const float BASE_PROBABILITY = 1;
+        private const float BASE_PROBABILITY = 0.1F;
         private const float PROBABILITY_INCREASE = 0.2F;
+        private const float ACTIVATE_EVERY_SECONDS = 60F;
         
         
         public class OnEffectEnabledArgs : EventArgs
@@ -56,7 +56,7 @@ namespace Round
             var timePassed = totalSecs - timeLeftSecs;
             
             Debug.Log($"Time passed: {timePassed}");
-            if (timePassed <= 0 || timePassed % activateEverySeconds != 0)
+            if (timePassed <= 0 || timePassed % ACTIVATE_EVERY_SECONDS != 0)
                 return;
             
             minutesPassed++;
@@ -75,6 +75,9 @@ namespace Round
         [Server]
         private void ApplyRandomEffect()
         {
+            if (effects.Length == 0)
+                return;
+            
             var effect = effects[Random.Range(0, effects.Length)];
             
             effects = effects.Where(val => val != effect).ToArray();

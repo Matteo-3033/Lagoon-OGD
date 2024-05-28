@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f99b77561154c6585481bce5006ba2b, type: 3}
-  m_Name: BuffSpeed
+  m_Script: {fileID: 11500000, guid: 93e96f228eac44f0b36c7cc5723a4634, type: 3}
+  m_Name: RotationBuff
   m_EditorClassIdentifier: 
-  modifierName: Speed+
+  modifierName: Spider senses
   isBuff: 1
-  other: {fileID: 11400000, guid: 820b0f48bde29a04b98a28f17adcdf0a, type: 2}
-  synergy: {fileID: 11400000, guid: bb9fdcc20ea1ace4197e9f1cb8bde258, type: 2}
+  other: {fileID: 11400000, guid: 25d81da5ea5b3404195d55f6466cb731, type: 2}
+  synergy: {fileID: 11400000, guid: 879d4033e3487724eb08e50a1a9b44b2, type: 2}
   canBeFoundInGame: 1
-  multiplicationFactor: 1.5
+  percentIncrease: 25

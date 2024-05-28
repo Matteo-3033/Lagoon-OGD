@@ -11,8 +11,7 @@ namespace TrapModifiers
     {
         public float durationSeconds;
         public float respawnAfterSeconds;
-        public string description;
-        
+
         [Header("Placement")]
         public Sprite icon;
         public GameObject prefab;

@@ -2,15 +2,11 @@
 using Mirror;
 using Modifiers;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Utils;
 
 namespace TrapModifiers
 {
     public abstract class ChancellorModifier: Modifier
     {
-        public string description;
-
         public override void Disable()
         {
         }

@@ -6,8 +6,8 @@ using Utils;
 
 namespace Modifiers.Chancellor
 {
-    [CreateAssetMenu(menuName = "ScriptableObjects/ChancellorEffects/ClearInventory", fileName = "ClearInventory")]
-    public class ClearInventoryEffect: ChancellorModifier
+    [CreateAssetMenu(menuName = "ScriptableObjects/ChancellorEffects/ClearStats", fileName = "ClearStats")]
+    public class ClearStatsEffect: ChancellorModifier
     {
         public override void Enable()
         {
@@ -18,8 +18,8 @@ namespace Modifiers.Chancellor
 
             FunctionTimer.Create(() =>
             {
-                player1.Inventory.Clear();
-                player2.Inventory.Clear();
+                player1.Inventory.ClearStats();
+                player2.Inventory.ClearStats();
             }, 2F);
         }
     }
