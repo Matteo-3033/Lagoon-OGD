@@ -191,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25f64ac9dbd4bb042abd92eb1a1253f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 800
+  baseRotationSpeed: 800
 --- !u!114 &1402961541625812647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,6 +207,7 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
+  transparentMaterial: {fileID: 2100000, guid: 758834bc935c1b24e9be371ee2534e0d, type: 2}
 --- !u!114 &2244306455931626205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +226,7 @@ MonoBehaviour:
   obstaclesMask:
     serializedVersion: 2
     m_Bits: 1527
+  trapsCapacity: 3
 --- !u!114 &4660722701455473856
 MonoBehaviour:
   m_ObjectHideFlags: 0

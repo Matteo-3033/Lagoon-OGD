@@ -9,7 +9,11 @@ namespace Utils.UI
     {
         [SerializeField] private string interactionPrompt;
         [SerializeField] private Image fillImage;
-        [SerializeField] private float requiredHoldTime;
+        [SerializeField] private float baseRequiredHoldTime = 5F;
+
+        public static float HoldFactorModifier = 0F;
+        
+        private float RequiredHoldTime => Math.Max(0.1F, baseRequiredHoldTime + HoldFactorModifier);
         
         private bool isInteracting;
         private float interactionTimer;
@@ -37,13 +41,13 @@ namespace Utils.UI
             if (isInteracting)
             {
                 interactionTimer += Time.deltaTime;
-                if (interactionTimer >= requiredHoldTime)
+                if (interactionTimer >= RequiredHoldTime)
                 {
                     OnInteractionCompleted?.Invoke(this, EventArgs.Empty);
                     Reset();
                 }
 
-                interactionTimer = Mathf.Min(interactionTimer, requiredHoldTime);
+                interactionTimer = Mathf.Min(interactionTimer, RequiredHoldTime);
             }
             else if (interactionTimer > 0)
             {
@@ -52,17 +56,17 @@ namespace Utils.UI
                 if (interactionTimer <= 0)
                     OnImageEmptied?.Invoke(this, EventArgs.Empty);
 
-                interactionTimer = Mathf.Max(interactionTimer, 0);
+                interactionTimer = Mathf.Max(0F, interactionTimer);
             }
             
-            fillImage.fillAmount = interactionTimer / requiredHoldTime;
+            fillImage.fillAmount = interactionTimer / RequiredHoldTime;
         }
 
         private void Reset()
         {
             isInteracting = false;
             interactionTimer = 0;
-            fillImage.fillAmount = interactionTimer / requiredHoldTime;
+            fillImage.fillAmount = interactionTimer / RequiredHoldTime;
         }
     }
 }

@@ -4,6 +4,7 @@ namespace Utils
 {
     public static class Layers
     {
+        public static int Default => LayerMask.NameToLayer("Default");
         public static int FieldOfView => LayerMask.NameToLayer("FieldOfView");
         public static int BehindFieldOfView => LayerMask.NameToLayer("Behind-FieldOfView");
         public static int Minimap => LayerMask.NameToLayer("Minimap");

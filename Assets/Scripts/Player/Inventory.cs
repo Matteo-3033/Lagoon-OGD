@@ -5,10 +5,13 @@ using Mirror;
 using Modifiers;
 using TrapModifiers;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 public class Inventory : NetworkBehaviour
 {
     [SerializeField] private LayerMask obstaclesMask;
+    [SerializeField] private int trapsCapacity = 3;
     
     [field: SyncVar(hook = nameof(OnKeyFragmentsUpdated))]
     public int KeyFragments { get; private set; } = 1;
@@ -107,7 +110,7 @@ public class Inventory : NetworkBehaviour
     {
         Debug.Log($"Adding trap {trap} to {player.Username}");
         
-        if (traps.Contains(trap))
+        if (traps.Count >= trapsCapacity || traps.Contains(trap))
             return false;
         
         traps.Add(trap);
@@ -250,4 +253,24 @@ public class Inventory : NetworkBehaviour
     }
 
     #endregion
+    
+    public void IncreaseTrapCapacity(int slots)
+    {
+        trapsCapacity += slots;
+    }
+    
+    public void DecreaseTrapCapacity(int slots)
+    {
+        if (trapsCapacity == 0)
+            return;
+        
+        trapsCapacity -= slots;
+        if (trapsCapacity < 0)
+            trapsCapacity = 0;
+        
+        if (traps.Count > trapsCapacity)
+            traps.TryRemoveElementsInRange(trapsCapacity, traps.Count - trapsCapacity, out _);
+    }
+    
+    public bool IsTrapBagFull() => traps.Count >= trapsCapacity;
 }

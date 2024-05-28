@@ -750,8 +750,8 @@ GameObject:
   - component: {fileID: 1215746029592996889}
   - component: {fileID: 6048803725133474238}
   m_Layer: 10
-  m_Name: TrapVendingMachine
-  m_TagString: Untagged
+  m_Name: TrapDispenser
+  m_TagString: TrapDispenser
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

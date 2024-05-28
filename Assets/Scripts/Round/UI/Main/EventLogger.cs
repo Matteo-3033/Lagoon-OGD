@@ -171,7 +171,10 @@ namespace Round.UI.Main
         
         private void LogTrapNotAdded(object sender, TrapModifier trap)
         {
-            LogEvent($"{trap.modifierName} already in your inventory!");
+            if (Player.LocalPlayer.Inventory.IsTrapBagFull())
+                LogEvent("Trap bag is full!");
+            else
+                LogEvent($"{trap.modifierName} already in your inventory!");
         }
 
         private void LogEvent(string msg, float duration = Duration.MEDIUM)

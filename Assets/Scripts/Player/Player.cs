@@ -6,9 +6,12 @@ using Network.Master;
 using UnityEngine;
 using Utils;
 
-[RequireComponent(typeof(NetworkIdentity))]
+[RequireComponent(typeof(NetworkIdentity)), RequireComponent(typeof(MeshRenderer))]
 public class Player : NetworkBehaviour
 {
+    [SerializeField] private Material transparentMaterial;
+    private Material defaultMaterial;
+    
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
     public event EventHandler<Vector3> OnPositionChanged;
@@ -38,9 +41,6 @@ public class Player : NetworkBehaviour
     
     [field: SyncVar]
     public int Kills { get; private set; }
-    
-    public bool IsSilent { get; private set; }
-    
 
     #region SERVER
     
@@ -72,6 +72,8 @@ public class Player : NetworkBehaviour
 
         if (!identity.isLocalPlayer)
             OnStartOpponent();
+        
+        defaultMaterial = GetComponent<MeshRenderer>().material;
     }
     
     public override void OnStartLocalPlayer()
@@ -127,6 +129,13 @@ public class Player : NetworkBehaviour
     {
         Layers.SetLayerRecursively(gameObject, Layers.FieldOfView);
         gameObject.GetComponentInChildren<MinimapIcon>().Show();
+    }
+    
+    [ClientRpc]
+    public void RpcSetTransparent(bool transparent)
+    {
+        var rend = GetComponent<MeshRenderer>();
+        rend.material = transparent ? transparentMaterial : defaultMaterial;
     }
 
     [Client]

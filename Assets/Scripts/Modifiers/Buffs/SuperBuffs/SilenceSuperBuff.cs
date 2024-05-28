@@ -3,7 +3,7 @@
 namespace Modifiers.Buffs.SuperBuffs
 {
     [CreateAssetMenu(menuName = "ScriptableObjects/Buffs/Silence", fileName = "SilenceSuperBuff")]
-    public class SilenceBuff : StatsModifier
+    public class SilenceSuperBuff : StatsModifier
     {
         public override void Enable()
         {
