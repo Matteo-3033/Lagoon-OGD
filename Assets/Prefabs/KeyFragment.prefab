@@ -403,7 +403,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionPrompt: Badge fragment
   fillImage: {fileID: 735483897951488754}
-  requiredHoldTime: 3
+  requiredHoldTime: 5
 --- !u!1 &7282479184160236337
 GameObject:
   m_ObjectHideFlags: 0
