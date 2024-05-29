@@ -2,13 +2,13 @@
 {
     public class TrapSelectionHighlight: SelectionHighlight
     {
-        private TrapVendingMachineInteractable trapInteractable;
+        private TrapDispenserInteractable trapInteractable;
         
         protected override void Awake()
         {
             base.Awake();
             
-            trapInteractable = GetComponent<TrapVendingMachineInteractable>();
+            trapInteractable = GetComponent<TrapDispenserInteractable>();
         }
 
         public override void OnSelected()

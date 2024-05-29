@@ -27,7 +27,7 @@ PrefabInstance:
         type: 3}
       propertyPath: trap
       value: 
-      objectReference: {fileID: 11400000, guid: e58fb0d5a970b724d91006254ff907fc,
+      objectReference: {fileID: 11400000, guid: 92cfee4d4b6b19942b1e5ded41202d58,
         type: 2}
     - target: {fileID: 4238079903800304875, guid: 18909ae2074168e4ab0591b4b9e6b20e,
         type: 3}
@@ -82,12 +82,12 @@ PrefabInstance:
     - target: {fileID: 5117271594775079409, guid: 18909ae2074168e4ab0591b4b9e6b20e,
         type: 3}
       propertyPath: m_Name
-      value: InkwellTrapPressurePlate
+      value: SquidTrapPressurePlate
       objectReference: {fileID: 0}
     - target: {fileID: 9098714839954178000, guid: 18909ae2074168e4ab0591b4b9e6b20e,
         type: 3}
       propertyPath: _assetId
-      value: 2604377281
+      value: 584384654
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4414842584359129544, guid: 18909ae2074168e4ab0591b4b9e6b20e, type: 3}

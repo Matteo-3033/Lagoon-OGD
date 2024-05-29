@@ -19,7 +19,7 @@ namespace Round.Obstacles.TrapPressurePlate
 
         private void Awake()
         {
-            animator = gameObject.GetComponent<Animator>();
+            //animator = gameObject.GetComponent<Animator>();
             particles = gameObject.GetComponentInChildren<ParticleSystem>(); 
 
             TrapPressurePlate.OnStateChanged += OnStateChanged;
@@ -27,11 +27,11 @@ namespace Round.Obstacles.TrapPressurePlate
 
         private void OnStateChanged(object sender, bool pressed)
         {
-            var trapPressurePlate = gameObject.GetComponent<TrapPressurePlate>();
+            var trapPressurePlate = GetComponent<TrapPressurePlate>();
             if ((TrapPressurePlate) sender != trapPressurePlate)
                 return;
             
-            animator.SetBool(PressedParameter, pressed);
+            //animator.SetBool(PressedParameter, pressed);
             
             if (pressed && !disappearing)
                 StartCoroutine(Disappear());
@@ -64,6 +64,11 @@ namespace Round.Obstacles.TrapPressurePlate
             
             yield return new WaitForSeconds(halfDuration);
             OnDisappearAnimationDone?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnDestroy()
+        {
+            TrapPressurePlate.OnStateChanged -= OnStateChanged;
         }
     }
 }

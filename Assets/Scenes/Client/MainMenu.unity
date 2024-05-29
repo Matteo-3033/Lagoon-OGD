@@ -521,12 +521,19 @@ MonoBehaviour:
   playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 5117271594775079409, guid: 18909ae2074168e4ab0591b4b9e6b20e, type: 3}
+  - {fileID: 4851495186559573822, guid: c6f019eca13601146bcee654ca265c8f, type: 3}
   - {fileID: 6185937851196024409, guid: ea51da4cf1acfea49802848e749a5a13, type: 3}
+  - {fileID: 6569720500796494578, guid: d86d724d0168616418c62038e1975896, type: 3}
   - {fileID: 1968857315731488669, guid: 6d9cce7097205e54298f311c01c15c21, type: 3}
   - {fileID: 1968857315731488669, guid: 594d11e44342bf548bf324afec0506d2, type: 3}
-  - {fileID: 4851495186559573822, guid: c6f019eca13601146bcee654ca265c8f, type: 3}
   - {fileID: 2201293472120167176, guid: d04acfb1c4ee4204bb84778f7eb05d0f, type: 3}
-  - {fileID: 5350905696168783278, guid: c6ed814d99e6cf94cacf8a407eb9d3d4, type: 3}
+  - {fileID: 3120294152772504817, guid: 76e675e5a9e82cf47bda8e5fc4379ad5, type: 3}
+  - {fileID: 6569720500796494578, guid: 56d98e7923e60084aabf9b87fe3f9e2a, type: 3}
+  - {fileID: 6569720500796494578, guid: c8258d500a2243546b26d2abc9b85c34, type: 3}
+  - {fileID: 1968857315731488669, guid: f3be55607062fab42a672c5756e8b620, type: 3}
+  - {fileID: 1968857315731488669, guid: 7ca7581f655bfb24799ab91ab3a7efbf, type: 3}
+  - {fileID: 5350905696168783278, guid: c2e55dc443caa1e48a1ac4d07a4cfbbb, type: 3}
+  - {fileID: 1968857315731488669, guid: 7552e26bd2aaa454dbfd650f4b7824c4, type: 3}
   - {fileID: 5350905696168783278, guid: b2118c1edd2cdc144b5df9d3eb388103, type: 3}
   exceptionsDisconnect: 0
   snapshotSettings:

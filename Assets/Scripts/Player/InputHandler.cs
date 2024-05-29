@@ -74,7 +74,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private void Movement_performed(InputAction.CallbackContext callbackContext)
     {
         Vector2 temp = callbackContext.ReadValue<Vector2>();
-        inputMovementDirection = !Inverted ? new Vector3(temp.x, 0F, temp.y) : new Vector3(temp.y, 0F, temp.x);
+        inputMovementDirection = !Inverted ? new Vector3(temp.x, 0F, temp.y) : new Vector3(-temp.x, 0F, -temp.y);
     }
 
     private void Movement_canceled(InputAction.CallbackContext callbackContext)

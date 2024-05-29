@@ -15,5 +15,5 @@ MonoBehaviour:
   modifierName: Spinner
   durationSeconds: 10
   respawnAfterSeconds: 60
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 21300000, guid: de79e89f0f45e4343bc7dfaabdb58a12, type: 3}
+  prefab: {fileID: 1968857315731488669, guid: f3be55607062fab42a672c5756e8b620, type: 3}

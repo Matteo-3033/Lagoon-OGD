@@ -15,5 +15,5 @@ MonoBehaviour:
   modifierName: Teleport
   durationSeconds: 0
   respawnAfterSeconds: 60
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 21300000, guid: 491ca72f999e7ce4198d1e6b1a152a35, type: 3}
+  prefab: {fileID: 1968857315731488669, guid: 7552e26bd2aaa454dbfd650f4b7824c4, type: 3}

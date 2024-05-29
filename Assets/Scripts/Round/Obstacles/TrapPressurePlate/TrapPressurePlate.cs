@@ -14,12 +14,6 @@ namespace Round.Obstacles.TrapPressurePlate
         
         public static event EventHandler<bool> OnStateChanged;
 
-        private void Awake()
-        {
-            var spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            spriteRenderer.sprite = trap.icon;
-        }
-
         public override void OnStartServer()
         {
             base.OnStartServer();

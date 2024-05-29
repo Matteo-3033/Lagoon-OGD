@@ -56,7 +56,7 @@ namespace Round.UI.Main
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
             
-            TrapVendingMachineInteractable.OnTrapNotAdded += LogTrapNotAdded;
+            TrapDispenserInteractable.OnTrapNotAdded += LogTrapNotAdded;
 
             ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
         }
@@ -120,9 +120,9 @@ namespace Round.UI.Main
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
             if (args.Op == Inventory.InventoryOp.Acquired)
-                LogEvent($"{args.Trap.modifierName} acquired!", Duration.SHORT);
+                LogEvent($"{args.Trap.modifierName} trap acquired!", Duration.SHORT);
             else if (args.Op == Inventory.InventoryOp.Removed)
-                LogEvent($"{args.Trap.modifierName} placed");
+                LogEvent($"{args.Trap.modifierName} trap placed");
         }
         
         private void LogChancellorEffect(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
@@ -212,7 +212,7 @@ namespace Round.UI.Main
         {
             RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
             Player.OnPlayerSpawned -= OnPlayerSpawned;
-            TrapVendingMachineInteractable.OnTrapNotAdded -= LogTrapNotAdded;
+            TrapDispenserInteractable.OnTrapNotAdded -= LogTrapNotAdded;
         }
         
         [ContextMenu("Short test event")]

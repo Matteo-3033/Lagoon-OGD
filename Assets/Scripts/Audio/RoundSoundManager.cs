@@ -46,7 +46,7 @@ namespace Audio
             ChancellorEffectsController.OnEffectEnabled += OnChancellorEffectEnabled;
             TrapPressurePlate.OnStateChanged += OnTrapPressurePlateStateChanged;
             DoorInteractable.OnStateChanged += OnDoorStateChanged;
-            TrapVendingMachineInteractable.OnVendingMachineUsed += OnVendingMachineUsed;
+            TrapDispenserInteractable.OnVendingMachineUsed += OnVendingMachineUsed;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -162,7 +162,7 @@ namespace Audio
             Player.OnPlayerSpawned -= RegisterPlayerCallbacks;
             TrapPressurePlate.OnStateChanged -= OnTrapPressurePlateStateChanged;
             DoorInteractable.OnStateChanged -= OnDoorStateChanged;
-            TrapVendingMachineInteractable.OnVendingMachineUsed -= OnVendingMachineUsed;
+            TrapDispenserInteractable.OnVendingMachineUsed -= OnVendingMachineUsed;
         }
     }
 }

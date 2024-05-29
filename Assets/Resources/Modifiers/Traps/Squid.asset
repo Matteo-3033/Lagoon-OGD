@@ -15,5 +15,5 @@ MonoBehaviour:
   modifierName: Squid
   durationSeconds: 0
   respawnAfterSeconds: 60
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 21300000, guid: 36be0169b54284a44b9b5ea073d958db, type: 3}
+  prefab: {fileID: 1968857315731488669, guid: 7ca7581f655bfb24799ab91ab3a7efbf, type: 3}

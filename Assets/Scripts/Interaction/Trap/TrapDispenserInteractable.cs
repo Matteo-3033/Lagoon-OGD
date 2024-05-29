@@ -7,7 +7,7 @@ using Utils;
 
 namespace Interaction.Trap
 {
-    public class TrapVendingMachineInteractable: NetworkBehaviour, IInteractable
+    public class TrapDispenserInteractable: NetworkBehaviour, IInteractable
     {
         [SerializeField] private TrapModifier trap;
         [SerializeField] private GameObject enabledState;
