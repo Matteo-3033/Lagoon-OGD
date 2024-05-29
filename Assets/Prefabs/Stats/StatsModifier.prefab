@@ -257,7 +257,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: c0c8fd6a6ffbf354fb2f3b0e58fce270,
         type: 3}
       propertyPath: m_Name
-      value: Horse-Puwerup (1)
+      value: Model
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c0c8fd6a6ffbf354fb2f3b0e58fce270,
         type: 3}
@@ -336,7 +336,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: c0c8fd6a6ffbf354fb2f3b0e58fce270,
         type: 3}
       propertyPath: m_Name
-      value: Horse-Puwerup
+      value: Model
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c0c8fd6a6ffbf354fb2f3b0e58fce270,
         type: 3}
