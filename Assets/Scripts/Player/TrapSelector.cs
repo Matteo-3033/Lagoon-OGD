@@ -22,7 +22,7 @@ public class TrapSelector: MonoBehaviour
     
     private void Awake()
     {
-        var inputHandler = gameObject.GetComponent<IInputHanlder>();
+        var inputHandler = gameObject.GetComponent<IInputHandler>();
         inputHandler.OnPlaceTrap += PlaceTrap;
         inputHandler.OnSelectTrap += OnChangeSelection;
         selectedIndex = -1;

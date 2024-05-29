@@ -166,5 +166,11 @@ public class Player : NetworkBehaviour
         CmdPositionChanged(spawnPoint);
     }
     
+    [Client]
+    public void InvertControls(bool invert)
+    {
+        GetComponent<IInputHandler>().Inverted = invert;
+    }
+    
     #endregion
 }

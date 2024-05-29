@@ -8,14 +8,14 @@ namespace Modifiers.Traps
     {
         public override void Enable()
         {
-            Player.LocalPlayer.GetComponent<IInputHanlder>().Inverted = true;
+            Player.LocalPlayer.InvertControls(true);
             base.Enable();
         }
 
         public override void Disable()
         {
             if (Disabled) return;
-            Player.LocalPlayer.GetComponent<IInputHanlder>().Inverted = false;
+            Player.LocalPlayer.InvertControls(false);
             base.Disable();
         }
     }

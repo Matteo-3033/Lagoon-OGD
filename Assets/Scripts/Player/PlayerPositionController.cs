@@ -14,7 +14,7 @@ public class PlayerPositionController : MonoBehaviour
 
     private float MaxSpeed => baseMaxSpeed * factor;
     
-    private IInputHanlder inputHandler;
+    private IInputHandler inputHandler;
     private Rigidbody rb;
 
     private Vector3 currentSpeed;
@@ -23,7 +23,7 @@ public class PlayerPositionController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        inputHandler = GetComponentInParent<IInputHanlder>();
+        inputHandler = GetComponentInParent<IInputHandler>();
     }
 
     private void FixedUpdate()

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public interface IInputHanlder
+public interface IInputHandler
 {
     Vector3 GetMovementDirection();
     Vector3 GetLookDirection();
@@ -13,7 +13,7 @@ public interface IInputHanlder
     public bool Inverted { get; set; }
 }
 
-public class InputHandler : MonoBehaviour, IInputHanlder
+public class InputHandler : MonoBehaviour, IInputHandler
 {
     public LayerMask groundLayerMask;
 

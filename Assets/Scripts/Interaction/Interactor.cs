@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Interaction
 {
-    [RequireComponent(typeof(IInputHanlder))]
+    [RequireComponent(typeof(IInputHandler))]
     public class Interactor : MonoBehaviour
     {
         [SerializeField] private Transform _interactionPoint;
@@ -12,13 +12,13 @@ namespace Interaction
         private readonly Collider[] _colliders = new Collider[3];
         private int _numFound;
 
-        private IInputHanlder _inputHandler;
+        private IInputHandler _inputHandler;
         private GameObject selectedObj;
         private bool interacting = false;
         
         private void Awake()
         {
-            _inputHandler = GetComponent<IInputHanlder>();
+            _inputHandler = GetComponent<IInputHandler>();
             _inputHandler.OnInteract += CheckInteraction;
         }
 

@@ -6,12 +6,12 @@ public class PlayerRotationController : MonoBehaviour
     private float RotationSpeed { get; set; }
 
     private Rigidbody rb;
-    private IInputHanlder inputHandler;
+    private IInputHandler inputHandler;
     
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        inputHandler = GetComponentInParent<IInputHanlder>();
+        inputHandler = GetComponentInParent<IInputHandler>();
         RotationSpeed = baseRotationSpeed;
     }
 
