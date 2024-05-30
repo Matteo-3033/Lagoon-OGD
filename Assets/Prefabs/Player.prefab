@@ -163,6 +163,7 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 8
+  cameraMovementIgnoreTime: 0.8
 --- !u!114 &8966992613993173721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,12 +634,9 @@ MonoBehaviour:
   syncInterval: 0
   minimapCamera: {fileID: 0}
   startHidden: 1
+  hideAfterBorder: 0
   clampToBorder: 1
   circleClamp: 0
-  ripplePrefab: {fileID: 4363934167238568914, guid: 6bf4c72bafe535e44acdc941706bc7e5,
-    type: 3}
-  defaultRippleConfiguration: {fileID: 11400000, guid: 2b0890d8116656945aeca65e62610431,
-    type: 2}
 --- !u!1 &5021750893386539450
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,7 +820,7 @@ MonoBehaviour:
   keyRippleSignal: {fileID: 4302258893285431201}
   alarmRippleConfig: {fileID: 11400000, guid: 2b0890d8116656945aeca65e62610431, type: 2}
   keyRippleConfig: {fileID: 11400000, guid: 4634568aade30c14586ea272ed215b21, type: 2}
-  minimumKeyNumber: 0
+  minimumKeyNumber: 2
 --- !u!1 &8509009666978686829
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class RippleController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class RippleController : MonoBehaviour
     [Header("Alarm signal Configuration")] public RippleConfiguration alarmRippleConfig;
 
     [Header("Key signal Configuration")] public RippleConfiguration keyRippleConfig;
-    public int minimumKeyNumber = 0;
+    [FormerlySerializedAs("minimumKeyNumber")] public int minimumBadgeNumber = 0;
 
     private MinimapIcon _minimapIcon;
     private int _keyFragments;
@@ -57,7 +58,7 @@ public class RippleController : MonoBehaviour
 
     private void PlayKeyRipple()
     {
-        if (_keyFragments <= minimumKeyNumber) return;
+        if (_keyFragments <= minimumBadgeNumber) return;
 
         _currentRippleCoroutine = StartCoroutine(RippleLoop(keyRippleSignal));
     }
@@ -83,7 +84,7 @@ public class RippleController : MonoBehaviour
     private void UpdateKeyRippleEffect(int keys)
     {
         _keyFragments = keys;
-        if (!_isAlarmState && _keyFragments <= minimumKeyNumber)
+        if (!_isAlarmState && _keyFragments <= minimumBadgeNumber)
         {
             StopCurrentRipple();
             _minimapIcon.Hide();

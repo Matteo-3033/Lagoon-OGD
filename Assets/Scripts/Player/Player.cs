@@ -25,6 +25,7 @@ public class Player : NetworkBehaviour
     public TrapSelector TrapSelector => GetComponent<TrapSelector>();
     public Interactor Interactor => GetComponent<Interactor>();
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
+    public RippleController RippleController => GetComponentInChildren<RippleController>();
     
     private Vector3 spawnPoint;
     
