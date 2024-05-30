@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Audio
 {
@@ -26,5 +25,9 @@ namespace Audio
         public AudioClip cameraDetection;
         public AudioClip doorOpen;
         public AudioClip doorClose;
+        [Header("Sentinel")] public AudioClip[] sentinelSteps;
+        public AudioClip sentinelAlarm;
+        public AudioClip sentinelEnemyLost;
+        public AudioClip sentinelSearchingSound;
     }
 }

@@ -6,29 +6,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "ScriptableObjects/RippleEffectConfiguration", fileName = "RippleConfiguration")]
 public class RippleConfiguration : ScriptableObject
 {
-    public float totalDuration;
-    public float singleRippleDuration;
-    public int repetitions;
+    [Range(.1f, 20)] public float singleRippleDuration;
+    [Range(.1f, 20)] public float interval;
     [Space] public float scale;
     public Color rippleColor = Color.white;
 
-    private float _prevTotalDuration;
-    private float _prevSingleRippleDuration;
-    private int _prevRepetitions;
-
     private void OnValidate()
     {
-        if (_prevTotalDuration != totalDuration)
-        {
-            _prevSingleRippleDuration = totalDuration / repetitions;
-            singleRippleDuration = _prevSingleRippleDuration;
-        }
-        else if (_prevSingleRippleDuration != singleRippleDuration || _prevRepetitions != repetitions)
-        {
-            _prevTotalDuration = singleRippleDuration * repetitions;
-            totalDuration = _prevTotalDuration;
-        }
-
         if (scale <= 0)
         {
             scale = 1;

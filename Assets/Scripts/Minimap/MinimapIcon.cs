@@ -3,31 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
+using Mirror.SimpleWeb;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class MinimapIcon : NetworkBehaviour
 {
-    [SerializeField] private Camera minimapCamera;
+    [SerializeField] private MinimapCamera minimapCamera;
     [SerializeField] private bool startHidden;
     [Header("Clamp to border")] public bool clampToBorder = true;
-    public float offset;
+    public bool circleClamp = false;
     [Header("Ripple effect")] public GameObject ripplePrefab;
     public RippleConfiguration defaultRippleConfiguration;
 
-    private List<SpriteRenderer> _spriteRenderers;
+    private SimpleIcon[] _simpleIcons;
     private bool _isShown;
+    private GameObject _currentRippleObject;
+    private Coroutine _currentClampIntermittentCoroutine;
+
+    private Vector3 MinimapCameraPosition => minimapCamera.transform.position;
+    private float MinimapCameraOrthographicSize => minimapCamera.Camera.orthographicSize;
+    private float ClampOffset => minimapCamera.clampOffset;
+
 
     public event EventHandler<bool> OnIconShown;
     public event EventHandler<bool> OnIconClamped;
-    public event EventHandler OnRippleStarted;
-    public event EventHandler OnRippleEnded;
 
     private void Awake()
     {
-        _spriteRenderers = GetComponentsInChildren<SpriteRenderer>().ToList();
-        if (minimapCamera == null) minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<Camera>();
+        _simpleIcons = GetComponentsInChildren<SimpleIcon>();
+        if (minimapCamera == null)
+            minimapCamera = GameObject.FindWithTag("MinimapCamera")?.GetComponent<MinimapCamera>();
+    }
 
+    private void Start()
+    {
         if (startHidden)
         {
             Hide();
@@ -51,15 +62,52 @@ public class MinimapIcon : NetworkBehaviour
             return;
         }
 
+        if (circleClamp)
+        {
+            CircleClamp();
+        }
+        else
+        {
+            SquareClamp();
+        }
+    }
+
+    private void SquareClamp()
+    {
         transform.position = new Vector3(
             Mathf.Clamp(transform.parent.position.x,
-                minimapCamera.transform.position.x - minimapCamera.orthographicSize + offset,
-                minimapCamera.transform.position.x + minimapCamera.orthographicSize - offset),
+                MinimapCameraPosition.x - MinimapCameraOrthographicSize + ClampOffset,
+                MinimapCameraPosition.x + MinimapCameraOrthographicSize - ClampOffset),
             transform.position.y,
             Mathf.Clamp(transform.parent.position.z,
-                minimapCamera.transform.position.z - minimapCamera.orthographicSize + offset,
-                minimapCamera.transform.position.z + minimapCamera.orthographicSize - offset)
+                MinimapCameraPosition.z - MinimapCameraOrthographicSize + ClampOffset,
+                MinimapCameraPosition.z + MinimapCameraOrthographicSize - ClampOffset)
         );
+    }
+
+    private void CircleClamp()
+    {
+        Vector3 centerPosition = MinimapCameraPosition;
+        centerPosition.y = transform.parent.position.y;
+
+        Vector3 toParent = transform.parent.position - centerPosition;
+
+        if (toParent.magnitude < MinimapCameraOrthographicSize - ClampOffset)
+        {
+            transform.position = new Vector3(transform.parent.position.x,
+                transform.position.y,
+                transform.parent.position.z
+            );
+            return;
+        }
+
+        Vector3 newPosition = minimapCamera.transform.position +
+                              toParent.normalized * (MinimapCameraOrthographicSize - ClampOffset);
+        transform.position = new Vector3(newPosition.x,
+            transform.position.y,
+            newPosition.z);
+        Debug.DrawRay(minimapCamera.transform.position, toParent.normalized * MinimapCameraOrthographicSize,
+            Color.cyan);
     }
 
     public void Show()
@@ -69,14 +117,20 @@ public class MinimapIcon : NetworkBehaviour
 
     public void Hide()
     {
+        if (Player.LocalPlayer?.transform == transform.root) return;
+
         SetIconShown(false);
     }
 
     private void SetIconShown(bool active)
     {
-        if (_spriteRenderers.Count == 0) return;
+        if (_simpleIcons.Length == 0) return;
 
-        _spriteRenderers.ForEach(x => x.enabled = active);
+        foreach (SimpleIcon icon in _simpleIcons)
+        {
+            icon.SetVisible(active);
+        }
+
         _isShown = active;
         OnIconShown?.Invoke(this, active);
     }
@@ -87,74 +141,18 @@ public class MinimapIcon : NetworkBehaviour
         OnIconClamped?.Invoke(this, active);
     }
 
-    public void ClampForSeconds(float seconds)
+    public void PlayIconFade(float fadeDuration)
     {
-        StartCoroutine(EnableClampForSeconds(seconds));
-    }
+        if (Player.LocalPlayer?.transform == transform.root) return;
 
-    private IEnumerator EnableClampForSeconds(float seconds)
-    {
-        bool wasShown = _isShown;
-        bool wasClamped = clampToBorder;
-        Show();
-        ClampToMinimapBorder(true);
+        if (fadeDuration <= 0)
+        {
+            Hide();
+        }
 
-        yield return new WaitForSeconds(seconds);
-
-        if (!wasShown) Hide();
-        ClampToMinimapBorder(wasClamped);
-    }
-
-    [ContextMenu("Show ripple effect")]
-    public void ShowRipple()
-    {
-        ShowRipple(defaultRippleConfiguration);
-    }
-
-    public void ShowRipple(RippleConfiguration rippleConfiguration)
-    {
-        ShowRipple(rippleConfiguration.totalDuration,
-            rippleConfiguration.repetitions,
-            rippleConfiguration.scale,
-            rippleConfiguration.rippleColor);
-    }
-
-    public void ShowRipple(float totalDuration, float singleRippleDuration, float scale, Color color)
-    {
-        ShowRipple(totalDuration,
-            (int)(totalDuration / singleRippleDuration),
-            scale,
-            color);
-    }
-
-#if !UNITY_EDITOR
-    [ClientRpc]
-#endif
-    public void ShowRipple(float totalDuration, int repetitions, float scale, Color color)
-    {
-        GameObject rippleObject = Instantiate(ripplePrefab, transform);
-        rippleObject.layer = gameObject.layer;
-        rippleObject.transform.localScale = Vector3.one * scale;
-        ParticleSystem rippleEffect = rippleObject.GetComponent<ParticleSystem>();
-
-        ParticleSystem.MainModule rippleEffectMain = rippleEffect.main;
-        rippleEffectMain.duration = totalDuration;
-        float rippleLifetime = totalDuration / repetitions;
-        rippleEffectMain.startLifetime = rippleLifetime;
-        rippleEffectMain.startColor = color;
-
-        rippleEffect.emission.SetBursts(new[] { new ParticleSystem.Burst(0, 1, repetitions, rippleLifetime) });
-
-        ClampForSeconds(totalDuration);
-        rippleEffect.Play();
-
-        StartCoroutine(RippleEventCoroutine(totalDuration));
-    }
-
-    private IEnumerator RippleEventCoroutine(float totalDuration)
-    {
-        OnRippleStarted?.Invoke(this, EventArgs.Empty);
-        yield return new WaitForSeconds(totalDuration);
-        OnRippleEnded?.Invoke(this, EventArgs.Empty);
+        foreach (SimpleIcon icon in _simpleIcons)
+        {
+            icon.FadeOutIcon(fadeDuration);
+        }
     }
 }

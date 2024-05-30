@@ -10,12 +10,15 @@ public interface IInputHanlder
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
+    public event EventHandler<int> OnCameraRotation;
     public bool Inverted { get; set; }
 }
 
 public class InputHandler : MonoBehaviour, IInputHanlder
 {
     public LayerMask groundLayerMask;
+
+    [Range(0, 1)] public float cameraMovementIgnoreTime = .8f;
 
     private CustomInput input = null;
 
@@ -24,13 +27,14 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private Vector3 mousePosition;
     private bool mousePerformed;
     private Camera _camera;
+    private float _timeSinceLastCameraRotation;
 
     public delegate void Move(Vector3 inputDirection);
     
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
-    
+    public event EventHandler<int> OnCameraRotation;
     public bool Inverted { get; set; }
 
     private void Awake()
@@ -53,6 +57,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         
         input.Player.PlaceTrap.performed += PlaceTrap_performed;
         input.Player.SelectTrap.performed += SelectTrap_performed;
+
+        input.Player.CameraRotation.performed += CameraRotation_performed;
     }
 
     private void OnDisable()
@@ -69,6 +75,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         
         input.Player.PlaceTrap.performed -= PlaceTrap_performed;
         input.Player.SelectTrap.performed -= SelectTrap_performed;
+
+        input.Player.CameraRotation.performed += CameraRotation_performed;
     }
 
     private void Movement_performed(InputAction.CallbackContext callbackContext)
@@ -97,12 +105,12 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     public Vector3 GetMovementDirection()
     {
-        return inputMovementDirection;
+        return inputMovementDirection.x * _camera.transform.parent.right + inputMovementDirection.z * _camera.transform.parent.forward;
     }
 
     public Vector3 GetLookDirection()
     {
-        if (!mousePerformed || _camera == null)
+        if (!mousePerformed || !_camera)
         {
             return lookDirection;
         }
@@ -135,5 +143,20 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     private void SelectTrap_performed(InputAction.CallbackContext ctx)
     {
         OnSelectTrap?.Invoke(this, (int) ctx.ReadValue<float>());
+    }
+
+    private void CameraRotation_performed(InputAction.CallbackContext callbackContext)
+    {
+        if (!CanPerformCameraRotation()) return;
+
+        OnCameraRotation?.Invoke(this, callbackContext.ReadValueAsButton() ? 1 : -1);
+    }
+
+    private bool CanPerformCameraRotation()
+    {
+        bool canPerform = Time.time - _timeSinceLastCameraRotation >= cameraMovementIgnoreTime;
+        if (canPerform) _timeSinceLastCameraRotation = Time.time;
+
+        return canPerform;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Mirror;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -40,7 +41,7 @@ public class FieldOfView : NetworkBehaviour
     
     private void Update()
     {
-        if (isClient && !player.isLocalPlayer)
+        if (isClient && player && Player.Opponent?.transform == transform.root)
             return;
         
         var vertices = new Vector3[rayCount + 2];   // +2 for the origin and the last vertex
@@ -100,7 +101,12 @@ public class FieldOfView : NetworkBehaviour
         fieldOfViewDegree = angle;
         OnFoVUpdated();
     }
-    
+
+    public float GetViewAngle()
+    {
+        return fieldOfViewDegree;
+    }
+
     [ClientCallback]
     private void OnFoVDegreeChanged(float oldValue, float newValue)
     {
@@ -121,3 +127,35 @@ public class FieldOfView : NetworkBehaviour
         OnFieldOfViewChanged?.Invoke(this, new FieldOfViewArgs {FieldOfViewDegree = fieldOfViewDegree, ViewDistance = viewDistance});
     }
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(FieldOfView))]
+public class FieldOfViewEditor : Editor
+{
+    public void OnSceneGUI()
+    {
+        var fov = target as FieldOfView;
+        if (!fov) return;
+
+        var transform = fov.transform;
+        var pos = transform.position;
+
+        float angle = fov.GetViewAngle();
+        float radius = fov.GetViewDistance();
+
+        float startAngle = transform.eulerAngles.y - angle / 2;
+        float endAngle = transform.eulerAngles.y + angle / 2;
+        Vector3 startDir = new Vector3(Mathf.Sin(startAngle * Mathf.Deg2Rad), 0, Mathf.Cos(startAngle * Mathf.Deg2Rad));
+        Vector3 endDir = new Vector3(Mathf.Sin(endAngle * Mathf.Deg2Rad), 0, Mathf.Cos(endAngle * Mathf.Deg2Rad));
+
+        Handles.color = Color.white;
+        Handles.DrawWireArc(pos,
+            transform.up,
+            startDir,
+            angle,
+            radius);
+        Handles.DrawLine(transform.position, transform.position + startDir * radius);
+        Handles.DrawLine(transform.position, transform.position + endDir * radius);
+    }
+}
+#endif

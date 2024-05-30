@@ -1,12 +1,14 @@
+using Round;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private Player testPlayer;
-    
-    private Player player => Player.LocalPlayer ? Player.LocalPlayer : testPlayer;
-    
-    private float rotationTime = .5f;
+    [SerializeField] private Transform testTarget = null;
+
+    private Transform Target => Player.LocalPlayer ? Player.LocalPlayer.transform : testTarget?.transform;
+
+    public float rotationTime = .5f;
 
     private int _targetRotation;
     private int _startRotation;
@@ -19,20 +21,25 @@ public class CameraMovement : MonoBehaviour
         _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
+
+        IInputHanlder inputHandler = Target.GetComponent<IInputHanlder>();
+        if (inputHandler != null)
+        {
+            inputHandler.OnCameraRotation += OnOnCameraRotation;
+        }
     }
 
     private void OnOnCameraRotation(object sender, int direction)
     {
         _targetRotation += direction * 90;
         _durationTime += rotationTime;
-        Debug.Log("----- Target rotation: " + _targetRotation);
     }
 
     void LateUpdate()
     {
-        if (player != null)
+        if (Target)
         {
-            Vector3 newPosition = player.transform.position;
+            Vector3 newPosition = Target.position;
             newPosition.y = transform.position.y;
 
             transform.position = newPosition;
@@ -42,7 +49,7 @@ public class CameraMovement : MonoBehaviour
         if (1 - t > .001f)
         {
             _currentTime += Time.deltaTime;
-            //t = Slope(_currentTime / _durationTime);
+            t = Slope(_currentTime / _durationTime);
 
             _currentRotation = Mathf.Lerp(_startRotation, _targetRotation, t);
             transform.rotation = Quaternion.Euler(0,

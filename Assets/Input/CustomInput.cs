@@ -80,6 +80,15 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraRotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""6b7ab0e0-4cd5-48d3-83c7-b78aa5e8e8e5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -291,6 +300,28 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""action"": ""SelectTrap"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a2a032a-da96-43eb-b74f-b5005802b2a6"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3ce12f34-a34c-483f-8f1d-1bea19a36f98"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": ""Invert"",
+                    ""groups"": """",
+                    ""action"": ""CameraRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -305,6 +336,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         m_Player_Interaction = m_Player.FindAction("Interaction", throwIfNotFound: true);
         m_Player_PlaceTrap = m_Player.FindAction("PlaceTrap", throwIfNotFound: true);
         m_Player_SelectTrap = m_Player.FindAction("SelectTrap", throwIfNotFound: true);
+        m_Player_CameraRotation = m_Player.FindAction("CameraRotation", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -372,6 +404,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interaction;
     private readonly InputAction m_Player_PlaceTrap;
     private readonly InputAction m_Player_SelectTrap;
+    private readonly InputAction m_Player_CameraRotation;
     public struct PlayerActions
     {
         private @CustomInput m_Wrapper;
@@ -382,6 +415,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         public InputAction @Interaction => m_Wrapper.m_Player_Interaction;
         public InputAction @PlaceTrap => m_Wrapper.m_Player_PlaceTrap;
         public InputAction @SelectTrap => m_Wrapper.m_Player_SelectTrap;
+        public InputAction @CameraRotation => m_Wrapper.m_Player_CameraRotation;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -409,6 +443,9 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @SelectTrap.started += instance.OnSelectTrap;
             @SelectTrap.performed += instance.OnSelectTrap;
             @SelectTrap.canceled += instance.OnSelectTrap;
+            @CameraRotation.started += instance.OnCameraRotation;
+            @CameraRotation.performed += instance.OnCameraRotation;
+            @CameraRotation.canceled += instance.OnCameraRotation;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -431,6 +468,9 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @SelectTrap.started -= instance.OnSelectTrap;
             @SelectTrap.performed -= instance.OnSelectTrap;
             @SelectTrap.canceled -= instance.OnSelectTrap;
+            @CameraRotation.started -= instance.OnCameraRotation;
+            @CameraRotation.performed -= instance.OnCameraRotation;
+            @CameraRotation.canceled -= instance.OnCameraRotation;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -456,5 +496,6 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         void OnInteraction(InputAction.CallbackContext context);
         void OnPlaceTrap(InputAction.CallbackContext context);
         void OnSelectTrap(InputAction.CallbackContext context);
+        void OnCameraRotation(InputAction.CallbackContext context);
     }
 }

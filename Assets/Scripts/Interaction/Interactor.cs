@@ -15,7 +15,7 @@ namespace Interaction
         private IInputHanlder _inputHandler;
         private GameObject selectedObj;
         private bool interacting = false;
-        
+
         private void Awake()
         {
             _inputHandler = GetComponent<IInputHanlder>();
@@ -26,7 +26,7 @@ namespace Interaction
         {
             _numFound = Physics.OverlapSphereNonAlloc(_interactionPoint.position, _interactionPointRadius, _colliders,
                 _interactableMask);
-            
+
             if (_numFound > 0)
             {
                 var obj = _colliders[0].gameObject;
@@ -34,10 +34,19 @@ namespace Interaction
                 {
                     Deselect();
                     Select(obj);
+                    ActivateMinimapIcon(obj);
                 }
             }
             else
                 Deselect();
+        }
+
+        private void ActivateMinimapIcon(GameObject obj)
+        {
+            if (!obj || obj == Player.Opponent?.gameObject || obj == Player.LocalPlayer?.gameObject) return;
+            
+            MinimapIcon icon = obj.GetComponentInChildren<MinimapIcon>();
+            icon?.Show();
         }
 
         private void CheckInteraction(object sender, bool pressed)
@@ -61,16 +70,17 @@ namespace Interaction
                 selectable.OnSelected();
             selectedObj = obj;
         }
-        
+
         private void Deselect()
         {
-            if (selectedObj != null)
+            if (selectedObj)
             {
                 if (interacting && selectedObj.TryGetComponent<IInteractable>(out var interactable))
                     interactable.StopInteraction(this);
-                if (selectedObj.TryGetComponent<ISelectable>(out var selectable)) 
+                if (selectedObj.TryGetComponent<ISelectable>(out var selectable))
                     selectable.OnDeselected();
-            } 
+            }
+
             interacting = false;
             selectedObj = null;
         }
