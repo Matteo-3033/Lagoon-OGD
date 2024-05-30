@@ -147,6 +147,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     private void CameraRotation_performed(InputAction.CallbackContext callbackContext)
     {
+        Debug.Log("Can rotation");
         if (!CanPerformCameraRotation()) return;
 
         OnCameraRotation?.Invoke(this, callbackContext.ReadValueAsButton() ? 1 : -1);
@@ -157,6 +158,7 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         bool canPerform = Time.time - _timeSinceLastCameraRotation >= cameraMovementIgnoreTime;
         if (canPerform) _timeSinceLastCameraRotation = Time.time;
 
+        Debug.Log("Can perform rotation: " + canPerform);
         return canPerform;
     }
 }

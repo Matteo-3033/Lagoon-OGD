@@ -463,7 +463,7 @@ GameObject:
   - component: {fileID: 2829214877469762149}
   - component: {fileID: 9221915182598736812}
   - component: {fileID: 3231521966911806513}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -480,7 +480,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 20, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5318616780885145169}
@@ -2618,9 +2618,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: [{targetCorrespondingSourceObject: {fileID: -8679921383154817045,
-          guid: 19abc178813ed1a418529ced9c540436, type: 3}, insertIndex: -1, addedObject: {
-          fileID: 6832448817219268225}}]
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 19abc178813ed1a418529ced9c540436,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6832448817219268225}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 19abc178813ed1a418529ced9c540436,
         type: 3}

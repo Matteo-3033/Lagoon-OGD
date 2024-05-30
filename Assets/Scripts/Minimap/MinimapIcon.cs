@@ -12,10 +12,9 @@ public class MinimapIcon : NetworkBehaviour
 {
     [SerializeField] private MinimapCamera minimapCamera;
     [SerializeField] private bool startHidden;
+    [SerializeField] private bool hideAfterBorder;
     [Header("Clamp to border")] public bool clampToBorder = true;
     public bool circleClamp = false;
-    [Header("Ripple effect")] public GameObject ripplePrefab;
-    public RippleConfiguration defaultRippleConfiguration;
 
     private SimpleIcon[] _simpleIcons;
     private bool _isShown;
@@ -52,6 +51,16 @@ public class MinimapIcon : NetworkBehaviour
     private void LateUpdate()
     {
         if (!_isShown || !minimapCamera) return;
+
+        if (hideAfterBorder)
+        {
+            Vector3 iconPosition = transform.position;
+            iconPosition.y = 0;
+            Vector3 cameraPosition = MinimapCameraPosition;
+            cameraPosition.y = 0;
+            float orthographicSize = MinimapCameraOrthographicSize;
+            if((iconPosition - cameraPosition).magnitude > orthographicSize + 3) Hide();
+        }
 
         if (!clampToBorder)
         {

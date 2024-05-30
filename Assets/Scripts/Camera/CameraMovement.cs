@@ -1,3 +1,4 @@
+using System;
 using Round;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -22,11 +23,20 @@ public class CameraMovement : MonoBehaviour
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
 
-        IInputHanlder inputHandler = Target.GetComponent<IInputHanlder>();
+        IInputHanlder inputHandler = Target?.GetComponent<IInputHanlder>();
         if (inputHandler != null)
         {
             inputHandler.OnCameraRotation += OnOnCameraRotation;
         }
+    }
+
+    private void OnValidate()
+    {
+        IInputHanlder inputHandler = Target?.GetComponent<IInputHanlder>();
+        if (inputHandler == null) return;
+
+        inputHandler.OnCameraRotation -= OnOnCameraRotation;
+        inputHandler.OnCameraRotation += OnOnCameraRotation;
     }
 
     private void OnOnCameraRotation(object sender, int direction)
