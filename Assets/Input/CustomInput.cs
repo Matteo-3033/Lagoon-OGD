@@ -89,6 +89,15 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Stab"",
+                    ""type"": ""Button"",
+                    ""id"": ""ef873c85-377a-4f23-99b1-292ab887b44b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -322,6 +331,17 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""action"": ""CameraRotation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68df328a-599b-4fb3-834c-c0cf09b1167b"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Stab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -337,6 +357,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         m_Player_PlaceTrap = m_Player.FindAction("PlaceTrap", throwIfNotFound: true);
         m_Player_SelectTrap = m_Player.FindAction("SelectTrap", throwIfNotFound: true);
         m_Player_CameraRotation = m_Player.FindAction("CameraRotation", throwIfNotFound: true);
+        m_Player_Stab = m_Player.FindAction("Stab", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -405,6 +426,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_PlaceTrap;
     private readonly InputAction m_Player_SelectTrap;
     private readonly InputAction m_Player_CameraRotation;
+    private readonly InputAction m_Player_Stab;
     public struct PlayerActions
     {
         private @CustomInput m_Wrapper;
@@ -416,6 +438,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         public InputAction @PlaceTrap => m_Wrapper.m_Player_PlaceTrap;
         public InputAction @SelectTrap => m_Wrapper.m_Player_SelectTrap;
         public InputAction @CameraRotation => m_Wrapper.m_Player_CameraRotation;
+        public InputAction @Stab => m_Wrapper.m_Player_Stab;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -446,6 +469,9 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @CameraRotation.started += instance.OnCameraRotation;
             @CameraRotation.performed += instance.OnCameraRotation;
             @CameraRotation.canceled += instance.OnCameraRotation;
+            @Stab.started += instance.OnStab;
+            @Stab.performed += instance.OnStab;
+            @Stab.canceled += instance.OnStab;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -471,6 +497,9 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @CameraRotation.started -= instance.OnCameraRotation;
             @CameraRotation.performed -= instance.OnCameraRotation;
             @CameraRotation.canceled -= instance.OnCameraRotation;
+            @Stab.started -= instance.OnStab;
+            @Stab.performed -= instance.OnStab;
+            @Stab.canceled -= instance.OnStab;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -497,5 +526,6 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         void OnPlaceTrap(InputAction.CallbackContext context);
         void OnSelectTrap(InputAction.CallbackContext context);
         void OnCameraRotation(InputAction.CallbackContext context);
+        void OnStab(InputAction.CallbackContext context);
     }
 }

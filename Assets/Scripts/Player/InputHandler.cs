@@ -12,6 +12,7 @@ public interface IInputHandler
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
     public event EventHandler<EventArgs> OnStab;
+    public event EventHandler<int> OnCameraRotation;
     
     public bool Inverted { get; set; }
 }

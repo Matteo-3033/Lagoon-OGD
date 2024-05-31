@@ -58,9 +58,11 @@ public class CameraMovement : NetworkBehaviour
         if (Player.LocalPlayer == player)
             followOpponent = false;
     }
-    
-    private void OnValidate()
+
+    protected override void OnValidate()
     {
+        base.OnValidate();
+        
         var inputHandler = Target()?.GetComponent<IInputHandler>();
         if (inputHandler == null) return;
 
