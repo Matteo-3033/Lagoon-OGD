@@ -20,7 +20,7 @@ public class PlayerPositionController : MonoBehaviour
     private Vector3 currentSpeed;
     private List<Vector3> additionalVectors = new();
 
-    private void Awake()
+    private void Start()
     {
         var player = GetComponent<Player>();
         if (!player.isLocalPlayer)

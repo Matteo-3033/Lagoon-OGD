@@ -19,7 +19,7 @@ public class StabManager : NetworkBehaviour
         var player = GetComponent<Player>();
         if (!player.isLocalPlayer)
             return;
-        
+
         player.InputHandler.OnStab += OnStabInteraction;
     }
 
@@ -28,7 +28,7 @@ public class StabManager : NetworkBehaviour
         if (!CanStab()) return;
         
         lastStabTime = Time.time;
-        OnStab?.Invoke(this, EventArgs.Empty);
+        OnStab?.Invoke(gameObject, EventArgs.Empty);
         CmdStab();
     }
 
@@ -47,7 +47,7 @@ public class StabManager : NetworkBehaviour
     [TargetRpc]
     private void TargetOnStab(NetworkConnectionToClient opponent)
     {
-        OnStab?.Invoke(this, EventArgs.Empty);
+        OnStab?.Invoke(gameObject, EventArgs.Empty);
     }
 
     private bool CanStab()

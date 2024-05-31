@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,7 +18,7 @@ public interface IInputHandler
 
 public class InputHandler : MonoBehaviour, IInputHandler
 {
-    public LayerMask groundLayerMask;
+    [SerializeField] private LayerMask groundLayerMask;
 
     private CustomInput input = null;
 
@@ -45,8 +46,16 @@ public class InputHandler : MonoBehaviour, IInputHandler
 
     private void OnEnable()
     {
+        if (isActiveAndEnabled) 
+            StartCoroutine(Enable());
+    }
+
+    private IEnumerator Enable()
+    {
+        yield return null;
+        
         if (!GetComponent<Player>().isLocalPlayer)
-            return;
+            yield break;
         
         input.Enable();
         input.Player.Movement.performed += Movement_performed;
@@ -66,8 +75,16 @@ public class InputHandler : MonoBehaviour, IInputHandler
 
     private void OnDisable()
     {
+        if (isActiveAndEnabled)
+            StartCoroutine(Disable());
+    }
+
+    private IEnumerator Disable()
+    {
+        yield return null;
+        
         if (!GetComponent<Player>().isLocalPlayer)
-            return;
+            yield break;
         
         input.Disable();
         input.Player.Movement.performed -= Movement_performed;

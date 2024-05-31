@@ -138,6 +138,7 @@ public class Player : NetworkBehaviour
     public void EnableMovement(bool enable)
     {
         PositionController.enabled = enable;
+        GetComponentInChildren<Interactor>().enabled = enable;
     }
     
     // On client only

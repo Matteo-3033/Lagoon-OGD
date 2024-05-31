@@ -20,7 +20,7 @@ public class TrapSelector: MonoBehaviour
     
     public event EventHandler<OnSelectedTrapIndexChangedArgs> OnSelectedTrapIndexChanged;
     
-    private void Awake()
+    private void Start()
     {
         var player = GetComponent<Player>();
         if (!player.isLocalPlayer)

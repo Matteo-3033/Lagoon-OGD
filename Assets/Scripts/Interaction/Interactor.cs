@@ -14,7 +14,7 @@ namespace Interaction
         private GameObject selectedObj;
         private bool interacting = false;
         
-        private void Awake()
+        private void Start()
         {
             var player = GetComponentInParent<Player>();
             if (!player.isLocalPlayer)

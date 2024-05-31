@@ -8,7 +8,7 @@ public class PlayerRotationController : MonoBehaviour
     private Rigidbody rb;
     private IInputHandler inputHandler;
     
-    private void Awake()
+    private void Start()
     {
         var player = GetComponent<Player>();
         if (!player.isLocalPlayer)
