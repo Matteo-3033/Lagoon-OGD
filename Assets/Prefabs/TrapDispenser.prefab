@@ -464,7 +464,7 @@ GameObject:
   - component: {fileID: 9221915182598736812}
   - component: {fileID: 3231521966911806513}
   m_Layer: 11
-  m_Name: Icon
+  m_Name: Minimap Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -480,7 +480,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 20, z: 0}
-  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5318616780885145169}
@@ -502,10 +502,9 @@ MonoBehaviour:
   syncInterval: 0
   minimapCamera: {fileID: 0}
   startHidden: 1
+  hideAfterBorder: 0
   clampToBorder: 0
   circleClamp: 0
-  ripplePrefab: {fileID: 0}
-  defaultRippleConfiguration: {fileID: 0}
 --- !u!212 &9221915182598736812
 SpriteRenderer:
   m_ObjectHideFlags: 0
