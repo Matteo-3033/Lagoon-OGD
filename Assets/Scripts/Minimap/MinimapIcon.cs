@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class MinimapIcon : NetworkBehaviour
+public class MinimapIcon : MonoBehaviour
 {
     [SerializeField] private MinimapCamera minimapCamera;
     [SerializeField] private bool startHidden;
@@ -128,22 +128,6 @@ public class MinimapIcon : NetworkBehaviour
     {
         if (Player.LocalPlayer?.transform == transform.root) return;
 
-        SetIconShown(false);
-    }
-
-    [ClientRpc]
-    public void ClientRpcShow()
-    {
-        Debug.Log("TargetShow");
-        SetIconShown(true);
-    }
-
-    [ClientRpc]
-    public void ClientRpcHide()
-    {
-        if (Player.LocalPlayer?.transform == transform.root) return;
-
-        Debug.Log("TargetHide");
         SetIconShown(false);
     }
 
