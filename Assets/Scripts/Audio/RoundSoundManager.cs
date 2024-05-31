@@ -54,6 +54,7 @@ namespace Audio
             RoundController.Instance.OnCountdown += OnCountdown;
             RoundController.Instance.OnRoundStarted += OnRoundStart;
             RoundController.Instance.OnNoWinningCondition += OnError;
+            RoundController.Instance.OnPlayerKilled += OnPlayerKilled;
         }
 
         private void RegisterPlayerCallbacks(Player player)
@@ -113,6 +114,11 @@ namespace Audio
         private void OnRoundStart()
         {
             PlayClipAtPoint(audioClips.roundStart, Target);
+        }
+        
+        private void OnPlayerKilled(Player player)
+        {
+            PlayClipAtPoint(audioClips.kill, Target);
         }
         
         private void OnChancellorEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
