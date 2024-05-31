@@ -20,11 +20,15 @@ public class TrapSelector: MonoBehaviour
     
     public event EventHandler<OnSelectedTrapIndexChangedArgs> OnSelectedTrapIndexChanged;
     
-    private void Awake()
+    private void Start()
     {
-        var inputHandler = gameObject.GetComponent<IInputHanlder>();
-        inputHandler.OnPlaceTrap += PlaceTrap;
-        inputHandler.OnSelectTrap += OnChangeSelection;
+        var player = GetComponent<Player>();
+        if (!player.isLocalPlayer)
+            return;
+        
+        player.InputHandler.OnPlaceTrap += PlaceTrap;
+        player.InputHandler.OnSelectTrap += OnChangeSelection;
+        
         selectedIndex = -1;
     }
 

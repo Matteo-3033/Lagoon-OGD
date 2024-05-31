@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public interface IInputHanlder
+public interface IInputHandler
 {
     Vector3 GetMovementDirection();
     Vector3 GetLookDirection();
@@ -10,13 +11,14 @@ public interface IInputHanlder
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
-    public event EventHandler<int> OnCameraRotation;
+    public event EventHandler<EventArgs> OnStab;
+    
     public bool Inverted { get; set; }
 }
 
-public class InputHandler : MonoBehaviour, IInputHanlder
+public class InputHandler : MonoBehaviour, IInputHandler
 {
-    public LayerMask groundLayerMask;
+    [SerializeField] private LayerMask groundLayerMask;
 
     [Range(0, 1)] public float cameraMovementIgnoreTime = .8f;
 
@@ -34,7 +36,9 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
+    public event EventHandler<EventArgs> OnStab;
     public event EventHandler<int> OnCameraRotation;
+    
     public bool Inverted { get; set; }
 
     private void Awake()
@@ -45,6 +49,17 @@ public class InputHandler : MonoBehaviour, IInputHanlder
 
     private void OnEnable()
     {
+        if (isActiveAndEnabled) 
+            StartCoroutine(Enable());
+    }
+
+    private IEnumerator Enable()
+    {
+        yield return null;
+        
+        if (!GetComponent<Player>().isLocalPlayer)
+            yield break;
+        
         input.Enable();
         input.Player.Movement.performed += Movement_performed;
         input.Player.Movement.canceled += Movement_canceled;
@@ -57,12 +72,25 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         
         input.Player.PlaceTrap.performed += PlaceTrap_performed;
         input.Player.SelectTrap.performed += SelectTrap_performed;
+        
+        input.Player.Stab.performed += Stab_performed;
 
         input.Player.CameraRotation.performed += CameraRotation_performed;
     }
 
     private void OnDisable()
     {
+        if (isActiveAndEnabled)
+            StartCoroutine(Disable());
+    }
+
+    private IEnumerator Disable()
+    {
+        yield return null;
+        
+        if (!GetComponent<Player>().isLocalPlayer)
+            yield break;
+        
         input.Disable();
         input.Player.Movement.performed -= Movement_performed;
         input.Player.Movement.canceled -= Movement_canceled;
@@ -75,6 +103,8 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         
         input.Player.PlaceTrap.performed -= PlaceTrap_performed;
         input.Player.SelectTrap.performed -= SelectTrap_performed;
+        
+        input.Player.Stab.performed -= Stab_performed;
 
         input.Player.CameraRotation.performed += CameraRotation_performed;
     }
@@ -144,10 +174,14 @@ public class InputHandler : MonoBehaviour, IInputHanlder
     {
         OnSelectTrap?.Invoke(this, (int) ctx.ReadValue<float>());
     }
+    
+    private void Stab_performed(InputAction.CallbackContext obj)
+    {
+        OnStab?.Invoke(this, EventArgs.Empty);
+    }
 
     private void CameraRotation_performed(InputAction.CallbackContext callbackContext)
     {
-        Debug.Log("Can rotation");
         if (!CanPerformCameraRotation()) return;
 
         OnCameraRotation?.Invoke(this, callbackContext.ReadValueAsButton() ? 1 : -1);
@@ -158,7 +192,6 @@ public class InputHandler : MonoBehaviour, IInputHanlder
         bool canPerform = Time.time - _timeSinceLastCameraRotation >= cameraMovementIgnoreTime;
         if (canPerform) _timeSinceLastCameraRotation = Time.time;
 
-        Debug.Log("Can perform rotation: " + canPerform);
         return canPerform;
     }
 }

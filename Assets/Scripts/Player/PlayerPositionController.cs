@@ -14,20 +14,27 @@ public class PlayerPositionController : MonoBehaviour
 
     private float MaxSpeed => baseMaxSpeed * factor;
     
-    private IInputHanlder inputHandler;
+    private IInputHandler inputHandler;
     private Rigidbody rb;
 
     private Vector3 currentSpeed;
     private List<Vector3> additionalVectors = new();
 
-    private void Awake()
+    private void Start()
     {
+        var player = GetComponent<Player>();
+        if (!player.isLocalPlayer)
+            return;
+        
         rb = GetComponent<Rigidbody>();
-        inputHandler = GetComponentInParent<IInputHanlder>();
+        inputHandler = player.InputHandler;
     }
 
     private void FixedUpdate()
     {
+        if (inputHandler == null)
+            return;
+        
         Vector3 inputDirection = inputHandler.GetMovementDirection();
 
         if (acceleratedMovement)

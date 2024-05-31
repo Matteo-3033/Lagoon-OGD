@@ -6,18 +6,25 @@ public class PlayerRotationController : MonoBehaviour
     private float RotationSpeed { get; set; }
 
     private Rigidbody rb;
-    private IInputHanlder inputHandler;
+    private IInputHandler inputHandler;
     
-    private void Awake()
+    private void Start()
     {
+        var player = GetComponent<Player>();
+        if (!player.isLocalPlayer)
+            return;
+        
         rb = GetComponent<Rigidbody>();
-        inputHandler = GetComponentInParent<IInputHanlder>();
+        inputHandler = player.InputHandler;
         RotationSpeed = baseRotationSpeed;
     }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
+        if (inputHandler == null)
+            return;
+        
         var lookDirection = inputHandler.GetLookDirection();
         LookRotation(lookDirection);
     }

@@ -1,15 +1,23 @@
-using System;
+using Mirror;
 using Round;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class CameraMovement : MonoBehaviour
+public class CameraMovement : NetworkBehaviour
 {
-    [SerializeField] private Transform testTarget = null;
-
-    private Transform Target => Player.LocalPlayer ? Player.LocalPlayer.transform : testTarget?.transform;
-
-    public float rotationTime = .5f;
+    [SerializeField] private Player testTarget = null;
+    
+    private bool followOpponent = false;
+    
+    private Transform Target()
+    {
+        if (followOpponent)
+            return Player.Opponent.transform;
+        if (Player.LocalPlayer != null)
+            return Player.LocalPlayer.transform;
+        return testTarget?.transform;
+    }
+    
+    private float rotationTime = .5f;
 
     private int _targetRotation;
     private int _startRotation;
@@ -17,22 +25,43 @@ public class CameraMovement : MonoBehaviour
     private float _currentTime = 0f;
     private float _currentRotation;
 
-    void Start()
+    public override void OnStartClient()
     {
         _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
-
-        IInputHanlder inputHandler = Target?.GetComponent<IInputHanlder>();
+        
+        if (RoundController.HasLoaded())
+            OnRoundLoaded();
+        else
+            RoundController.OnRoundLoaded += OnRoundLoaded;
+        
+        var inputHandler = Target()?.GetComponent<IInputHandler>();
         if (inputHandler != null)
-        {
             inputHandler.OnCameraRotation += OnOnCameraRotation;
-        }
     }
 
+    private void OnRoundLoaded()
+    {
+        RoundController.Instance.OnPlayerKilled += OnPlayerKilled;
+        RoundController.Instance.OnPlayerRespawned += OnPlayerRespawned;
+    }
+
+    private void OnPlayerKilled(Player player)
+    {
+        if (Player.LocalPlayer == player)
+            followOpponent = true;
+    }
+    
+    private void OnPlayerRespawned(Player player)
+    {
+        if (Player.LocalPlayer == player)
+            followOpponent = false;
+    }
+    
     private void OnValidate()
     {
-        IInputHanlder inputHandler = Target?.GetComponent<IInputHanlder>();
+        var inputHandler = Target()?.GetComponent<IInputHandler>();
         if (inputHandler == null) return;
 
         inputHandler.OnCameraRotation -= OnOnCameraRotation;
@@ -45,11 +74,14 @@ public class CameraMovement : MonoBehaviour
         _durationTime += rotationTime;
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
-        if (Target)
+        if (isServer) return;
+        
+        var target = Target();
+        if (target)
         {
-            Vector3 newPosition = Target.position;
+            Vector3 newPosition = Target().position;
             newPosition.y = transform.position.y;
 
             transform.position = newPosition;
@@ -76,8 +108,7 @@ public class CameraMovement : MonoBehaviour
             _currentTime = 0;
         }
     }
-
-
+    
     private static float Slope(float x)
     {
         return (1 + Mathf.Cos(Mathf.PI * (x - 1))) / 2;
@@ -86,5 +117,10 @@ public class CameraMovement : MonoBehaviour
     private static float InverseSlope(float y)
     {
         return Mathf.Acos(2 * y - 1) / Mathf.PI;
+    }
+    
+    private void OnDestroy()
+    {
+        RoundController.OnRoundLoaded -= OnRoundLoaded;
     }
 }

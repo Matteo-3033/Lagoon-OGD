@@ -1,9 +1,7 @@
-using System;
 using UnityEngine;
 
 namespace Interaction
 {
-    [RequireComponent(typeof(IInputHanlder))]
     public class Interactor : MonoBehaviour
     {
         [SerializeField] private Transform _interactionPoint;
@@ -12,18 +10,25 @@ namespace Interaction
         private readonly Collider[] _colliders = new Collider[3];
         private int _numFound;
 
-        private IInputHanlder _inputHandler;
+        private IInputHandler _inputHandler;
         private GameObject selectedObj;
         private bool interacting = false;
-
-        private void Awake()
+        
+        private void Start()
         {
-            _inputHandler = GetComponent<IInputHanlder>();
+            var player = GetComponentInParent<Player>();
+            if (!player.isLocalPlayer)
+                return;
+            
+            _inputHandler = player.InputHandler;
             _inputHandler.OnInteract += CheckInteraction;
         }
 
         private void Update()
         {
+            if (_inputHandler == null)
+                return;
+            
             _numFound = Physics.OverlapSphereNonAlloc(_interactionPoint.position, _interactionPointRadius, _colliders,
                 _interactableMask);
 

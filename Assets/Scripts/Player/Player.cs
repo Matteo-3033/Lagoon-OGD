@@ -6,7 +6,7 @@ using Network.Master;
 using UnityEngine;
 using Utils;
 
-[RequireComponent(typeof(NetworkIdentity)), RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
     [SerializeField] private Material transparentMaterial;
@@ -19,39 +19,16 @@ public class Player : NetworkBehaviour
     public static Player LocalPlayer { get; private set; }
     public static Player Opponent { get; private set; }
 
-
-    private Inventory _inventory;
-    public Inventory Inventory => _inventory ? _inventory : _inventory = GetComponent<Inventory>();
-
-    private PlayerPositionController _positionController;
-
-    public PlayerPositionController PositionController => _positionController
-        ? _positionController
-        : _positionController = GetComponent<PlayerPositionController>();
-
-    private PlayerRotationController _rotationController;
-
-    public PlayerRotationController RotationController => _rotationController
-        ? _rotationController
-        : _rotationController = GetComponent<PlayerRotationController>();
-
-    private TrapSelector _trapSelector;
-    public TrapSelector TrapSelector => _trapSelector ? _trapSelector : _trapSelector = GetComponent<TrapSelector>();
-
-    private Interactor _interactor;
-    public Interactor Interactor => _interactor ? _interactor : _interactor = GetComponent<Interactor>();
-
-    private FieldOfView _fieldOfView;
-
-    public FieldOfView FieldOfView =>
-        _fieldOfView ? _fieldOfView : _fieldOfView = GetComponentInChildren<FieldOfView>();
-
-    private RippleController _rippleController;
-
-    public RippleController RippleController => _rippleController
-        ? _rippleController
-        : _rippleController = GetComponentInChildren<RippleController>();
-
+    public Inventory Inventory => GetComponent<Inventory>();
+    public PlayerPositionController PositionController => GetComponent<PlayerPositionController>();
+	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
+    public InputHandler InputHandler => GetComponent<InputHandler>();
+    public Interactor Interactor => GetComponentInChildren<Interactor>();
+    public TrapSelector TrapSelector => GetComponentInChildren<TrapSelector>();
+    public StabManager StabManager => GetComponentInChildren<StabManager>();
+    public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
+    public RippleController RippleController => GetComponentInChildren<RippleController>();
+    
     private Vector3 spawnPoint;
 
 
@@ -96,8 +73,30 @@ public class Player : NetworkBehaviour
         if (!identity.isLocalPlayer)
             OnStartOpponent();
 
-        defaultMaterial = GetComponent<MeshRenderer>().material;
+        defaultMaterial = GetComponentInChildren<MeshRenderer>().material;
         spawnPoint = transform.position;
+    }
+    
+    [ClientRpc]
+    public void RpcOnKilled()
+    {
+        InputHandler.enabled = false;
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Collider>().enabled = false;
+        
+        for (var i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(false);
+    }
+    
+    [ClientRpc]
+    public void RpcOnRespawned()
+    {
+        for (var i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(true);
+        
+        InputHandler.enabled = true;
+        GetComponent<Collider>().enabled = true;
+        GetComponent<Rigidbody>().useGravity = true;
     }
 
     public override void OnStartLocalPlayer()
@@ -164,7 +163,7 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     private void RpcSetTransparent(bool transparent)
     {
-        GetComponent<MeshRenderer>().material = transparent ? transparentMaterial : defaultMaterial;
+        GetComponentInChildren<MeshRenderer>().material = transparent ? transparentMaterial : defaultMaterial;
     }
 
     [Client]
@@ -186,6 +185,12 @@ public class Player : NetworkBehaviour
         transform.position = spawnPoint;
         CmdPositionChanged(spawnPoint);
     }
-
+    
+    [Client]
+    public void InvertControls(bool invert)
+    {
+        InputHandler.Inverted = invert;
+    }
+    
     #endregion
 }
