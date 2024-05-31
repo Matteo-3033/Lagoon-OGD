@@ -12,20 +12,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Client/Lobby.unity
     guid: e2f70609920e5df4b93b1ca8483c57e2
   - enabled: 1
-    path: Assets/Scenes/Test/TestMinimap/TestMinimap.unity
-    guid: 492b9e697073deb4a951d2d0a89f9b7b
-  - enabled: 1
     path: Assets/Scenes/Client/Round1.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
-    path: Assets/Scenes/Client/TestMovement.unity
-    guid: 6bba9d3423d88bc47a43095adffccd43
-  - enabled: 1
-    path: Assets/Scenes/Client/GuardObject.unity
-    guid: 587964aa03e1ea34e9741f2ae8d7e2c8
-  - enabled: 1
-    path: Assets/Scenes/Test/TestAI/TestAI.unity
-    guid: 8d086b0a0d6e07546a65531f2e37d345
   - enabled: 1
     path: Assets/Scenes/Master/Master.unity
     guid: f6e364cdcd55f4f4692fdca33c11d678

@@ -9,7 +9,7 @@ public class SimpleIcon : MonoBehaviour
     private float _startAlpha = 1;
 
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _startAlpha = _spriteRenderer.color.a;
