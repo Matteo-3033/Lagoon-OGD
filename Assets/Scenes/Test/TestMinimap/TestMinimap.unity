@@ -934,6 +934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e35f70e25279d9e47803fb857825bbbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxDistance: 40
   audioClips: {fileID: 11400000, guid: cb8e778b58c330d4ca981198aaa53ed8, type: 2}
 --- !u!1 &666380298
 GameObject:
@@ -2213,6 +2214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1328963477}
   - component: {fileID: 1328963476}
+  - component: {fileID: 1328963478}
   m_Layer: 0
   m_Name: CameraHolder
   m_TagString: Untagged
@@ -2232,6 +2234,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2220506e2399e9f40ad74db3bd1d64c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   testTarget: {fileID: 0}
 --- !u!4 &1328963477
 Transform:
@@ -2249,6 +2254,23 @@ Transform:
   - {fileID: 206430922}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1328963478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328963475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 2553161272
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &1329901222
 GameObject:
   m_ObjectHideFlags: 0
@@ -4410,11 +4432,9 @@ MonoBehaviour:
   syncInterval: 0
   minimapCamera: {fileID: 1310962263}
   startHidden: 0
+  hideAfterBorder: 0
   clampToBorder: 1
   circleClamp: 1
-  ripplePrefab: {fileID: 4363934167238568914, guid: 6bf4c72bafe535e44acdc941706bc7e5,
-    type: 3}
-  defaultRippleConfiguration: {fileID: 0}
 --- !u!212 &1846546700
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4847,6 +4867,11 @@ PrefabInstance:
         type: 3}
       propertyPath: testPlayer
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6722693864621889113, guid: 76e675e5a9e82cf47bda8e5fc4379ad5,
+        type: 3}
+      propertyPath: sceneId
+      value: 2334325594
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
