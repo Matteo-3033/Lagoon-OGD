@@ -22,12 +22,19 @@ public class PlayerPositionController : MonoBehaviour
 
     private void Awake()
     {
+        var player = GetComponent<Player>();
+        if (!player.isLocalPlayer)
+            return;
+        
         rb = GetComponent<Rigidbody>();
-        inputHandler = GetComponentInParent<IInputHandler>();
+        inputHandler = player.InputHandler;
     }
 
     private void FixedUpdate()
     {
+        if (inputHandler == null)
+            return;
+        
         Vector3 inputDirection = inputHandler.GetMovementDirection();
 
         if (acceleratedMovement)

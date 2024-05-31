@@ -11,8 +11,9 @@ namespace Round
     [RequireComponent(typeof(NetworkIdentity))]
     public class RoundController: NetworkBehaviour
     {
-        private const int UPDATE_TIMER_EVERY_SECONDS = 5;
-        private const float LOAD_NEXT_ROUND_AFTER_SECONDS = 10F;
+        private const int UPDATE_TIMER = 5;
+        private const float LOAD_NEXT_ROUND_TIME = 10F;
+        private const int RESPAWN_TIME = 10;
 
         public static RoundController Instance { get; private set; }
         public static RoundConfiguration Round => MatchController.Instance.CurrentRound;
@@ -51,6 +52,8 @@ namespace Round
         public event Action<int> OnCountdown;
         public event Action OnRoundStarted;
         public event Action<Player> OnRoundEnded;
+        public event Action<Player> OnPlayerKilled;
+        public event Action<Player> OnPlayerRespawned;
         
         
         private void Awake()
@@ -142,12 +145,12 @@ namespace Round
             
             timer = (int)(Round.timeLimitMinutes * 60);
             
-            while (timer > UPDATE_TIMER_EVERY_SECONDS)
+            while (timer > UPDATE_TIMER)
             {
                 Debug.Log($"Remaining time: {timer}");
                 NotifyRemainingTime(timer);
-                yield return new WaitForSeconds(UPDATE_TIMER_EVERY_SECONDS);
-                timer -= UPDATE_TIMER_EVERY_SECONDS;
+                yield return new WaitForSeconds(UPDATE_TIMER);
+                timer -= UPDATE_TIMER;
             }
             
             NotifyRemainingTime(timer);
@@ -273,7 +276,7 @@ namespace Round
             
             if (AllPlayersReady())
                 LoadNextRound();
-            else Invoke(nameof(LoadNextRound), LOAD_NEXT_ROUND_AFTER_SECONDS);
+            else Invoke(nameof(LoadNextRound), LOAD_NEXT_ROUND_TIME);
         }
 
         [Server]
@@ -290,6 +293,29 @@ namespace Round
             
             State = RoundState.LoadingNext;
             OnLoadNextRound?.Invoke();
+        }
+        
+        [Server]
+        public void KillPlayer(Player killed, Player by)
+        {
+            if (killed.Inventory.StealKeyFragment())
+                by.Inventory.AddKeyFragment();
+            
+            killed.RpcOnKilled();
+            OnPlayerKilled?.Invoke(killed);
+            RpcPlayerKilled(killed);
+            
+            StartCoroutine(RespawnPlayer(killed));
+        }
+
+        [Server]
+        private IEnumerator RespawnPlayer(Player player)
+        {
+            yield return new WaitForSeconds(RESPAWN_TIME);
+            
+            player.RpcOnRespawned();
+            OnPlayerRespawned?.Invoke(player);
+            RpcPlayerRespawned(player);
         }
 
         #endregion
@@ -341,6 +367,18 @@ namespace Round
         private void TargetNotifyNoWinningCondition(NetworkConnectionToClient target)
         {
             OnNoWinningCondition?.Invoke();
+        }
+        
+        [ClientRpc]
+        private void RpcPlayerKilled(Player player)
+        {
+            OnPlayerKilled?.Invoke(player);
+        }
+        
+        [ClientRpc]
+        private void RpcPlayerRespawned(Player player)
+        {
+            OnPlayerRespawned?.Invoke(player);
         }
         
         #endregion

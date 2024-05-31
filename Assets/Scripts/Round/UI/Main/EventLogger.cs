@@ -136,7 +136,7 @@ namespace Round.UI.Main
             if (args.NewValue > args.OldValue)
             {
                 LogEvent(args.Player.isLocalPlayer
-                    ? $"Key fragment acquired!"
+                    ? $"Badge fragment acquired!"
                     : $"<color=#FF0000>{Player.Opponent.Username}</color> acquired a badge fragment!");
 
                 if (args.NewValue == RoundController.Round.keyFragments)

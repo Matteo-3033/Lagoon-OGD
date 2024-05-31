@@ -1,9 +1,7 @@
-using System;
 using UnityEngine;
 
 namespace Interaction
 {
-    [RequireComponent(typeof(IInputHandler))]
     public class Interactor : MonoBehaviour
     {
         [SerializeField] private Transform _interactionPoint;
@@ -18,12 +16,19 @@ namespace Interaction
         
         private void Awake()
         {
-            _inputHandler = GetComponent<IInputHandler>();
+            var player = GetComponentInParent<Player>();
+            if (!player.isLocalPlayer)
+                return;
+            
+            _inputHandler = player.InputHandler;
             _inputHandler.OnInteract += CheckInteraction;
         }
 
         private void Update()
         {
+            if (_inputHandler == null)
+                return;
+            
             _numFound = Physics.OverlapSphereNonAlloc(_interactionPoint.position, _interactionPointRadius, _colliders,
                 _interactableMask);
             

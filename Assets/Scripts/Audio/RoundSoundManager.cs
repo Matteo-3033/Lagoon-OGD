@@ -64,12 +64,19 @@ namespace Audio
             player.Inventory.OnTrapsUpdated += OnTrapsUpdated;
             player.Inventory.OnStatsUpdate += OnStatsUpdated;
             player.Inventory.OnKeyFragmentUpdated += OnKeyFragmentUpdated;
+            
+            player.StabManager.OnStab += OnStab;
         }
 
         private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
         {
             if (args.NewValue > args.OldValue)
                 PlayClipAtPoint(audioClips.keyFragmentAcquisition, Target);
+        }
+        
+        private void OnStab(object sender, EventArgs e)
+        {
+            PlayClipAtPoint(audioClips.stab, ((GameObject)sender).transform.position, 1F, true);
         }
 
         private void OnStatsUpdated(object sender, Inventory.OnStatsUpdatedArgs args)

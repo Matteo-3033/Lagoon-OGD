@@ -10,6 +10,8 @@ public interface IInputHandler
     public event EventHandler<bool> OnInteract;
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
+    public event EventHandler<EventArgs> OnStab;
+    
     public bool Inverted { get; set; }
 }
 
@@ -31,6 +33,8 @@ public class InputHandler : MonoBehaviour, IInputHandler
     public event EventHandler<EventArgs> OnPlaceTrap;
     public event EventHandler<int> OnSelectTrap;
     
+    public event EventHandler<EventArgs> OnStab; 
+    
     public bool Inverted { get; set; }
 
     private void Awake()
@@ -41,6 +45,9 @@ public class InputHandler : MonoBehaviour, IInputHandler
 
     private void OnEnable()
     {
+        if (!GetComponent<Player>().isLocalPlayer)
+            return;
+        
         input.Enable();
         input.Player.Movement.performed += Movement_performed;
         input.Player.Movement.canceled += Movement_canceled;
@@ -53,10 +60,15 @@ public class InputHandler : MonoBehaviour, IInputHandler
         
         input.Player.PlaceTrap.performed += PlaceTrap_performed;
         input.Player.SelectTrap.performed += SelectTrap_performed;
+        
+        input.Player.Stab.performed += Stab_performed;
     }
 
     private void OnDisable()
     {
+        if (!GetComponent<Player>().isLocalPlayer)
+            return;
+        
         input.Disable();
         input.Player.Movement.performed -= Movement_performed;
         input.Player.Movement.canceled -= Movement_canceled;
@@ -69,6 +81,8 @@ public class InputHandler : MonoBehaviour, IInputHandler
         
         input.Player.PlaceTrap.performed -= PlaceTrap_performed;
         input.Player.SelectTrap.performed -= SelectTrap_performed;
+        
+        input.Player.Stab.performed -= Stab_performed;
     }
 
     private void Movement_performed(InputAction.CallbackContext callbackContext)
@@ -135,5 +149,10 @@ public class InputHandler : MonoBehaviour, IInputHandler
     private void SelectTrap_performed(InputAction.CallbackContext ctx)
     {
         OnSelectTrap?.Invoke(this, (int) ctx.ReadValue<float>());
+    }
+    
+    private void Stab_performed(InputAction.CallbackContext obj)
+    {
+        OnStab?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -6,7 +6,7 @@ using Network.Master;
 using UnityEngine;
 using Utils;
 
-[RequireComponent(typeof(NetworkIdentity)), RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
     [SerializeField] private Material transparentMaterial;
@@ -22,8 +22,9 @@ public class Player : NetworkBehaviour
     public Inventory Inventory => GetComponent<Inventory>();
     public PlayerPositionController PositionController => GetComponent<PlayerPositionController>();
 	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
-    public TrapSelector TrapSelector => GetComponent<TrapSelector>();
-    public Interactor Interactor => GetComponent<Interactor>();
+    public InputHandler InputHandler => GetComponent<InputHandler>();
+    public TrapSelector TrapSelector => GetComponentInChildren<TrapSelector>();
+    public StabManager StabManager => GetComponentInChildren<StabManager>();
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
     
     private Vector3 spawnPoint;
@@ -75,10 +76,32 @@ public class Player : NetworkBehaviour
         if (!identity.isLocalPlayer)
             OnStartOpponent();
         
-        defaultMaterial = GetComponent<MeshRenderer>().material;
+        defaultMaterial = GetComponentInChildren<MeshRenderer>().material;
         spawnPoint = transform.position;
     }
+
+    [ClientRpc]
+    public void RpcOnKilled()
+    {
+        InputHandler.enabled = false;
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Collider>().enabled = false;
+        
+        for (var i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(false);
+    }
     
+    [ClientRpc]
+    public void RpcOnRespawned()
+    {
+        for (var i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(true);
+        
+        InputHandler.enabled = true;
+        GetComponent<Collider>().enabled = true;
+        GetComponent<Rigidbody>().useGravity = true;
+    }
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
@@ -115,7 +138,6 @@ public class Player : NetworkBehaviour
     public void EnableMovement(bool enable)
     {
         PositionController.enabled = enable;
-        Interactor.enabled = enable;
     }
     
     // On client only
@@ -143,7 +165,7 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     private void RpcSetTransparent(bool transparent)
     {
-        GetComponent<MeshRenderer>().material = transparent ? transparentMaterial : defaultMaterial;
+        GetComponentInChildren<MeshRenderer>().material = transparent ? transparentMaterial : defaultMaterial;
     }
 
     [Client]
@@ -169,7 +191,7 @@ public class Player : NetworkBehaviour
     [Client]
     public void InvertControls(bool invert)
     {
-        GetComponent<IInputHandler>().Inverted = invert;
+        InputHandler.Inverted = invert;
     }
     
     #endregion

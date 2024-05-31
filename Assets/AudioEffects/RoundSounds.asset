@@ -37,9 +37,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 096ebe0fa37eabc4b9d5dd243808c28c, type: 3}
   - {fileID: 8300000, guid: 5e37ad3d17f342643ace29a220a42945, type: 3}
   trapPlacement: {fileID: 8300000, guid: 57faeebc94e2f1f4d8c0fb3669bb7193, type: 3}
-  kill:
-  - {fileID: 8300000, guid: e362af1b065d0f6419d3c5a1b8959114, type: 3}
-  - {fileID: 8300000, guid: bd5885344ffa0a2458b7f0168aecfb6d, type: 3}
+  kill: {fileID: 8300000, guid: e362af1b065d0f6419d3c5a1b8959114, type: 3}
+  stab: {fileID: 8300000, guid: bd5885344ffa0a2458b7f0168aecfb6d, type: 3}
   roundEnd:
   - {fileID: 8300000, guid: 622eccf8778574b4888ce74169bcbb3d, type: 3}
   - {fileID: 8300000, guid: ce73d3447e099c5438a984804e1f7b2c, type: 3}

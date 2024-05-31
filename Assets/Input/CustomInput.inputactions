@@ -60,7 +60,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Kill",
+                    "name": "Stab",
                     "type": "Button",
                     "id": "5ed00fa1-107f-4db5-ad49-2271d5b9f424",
                     "expectedControlType": "Button",
@@ -286,7 +286,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Kill",
+                    "action": "Stab",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

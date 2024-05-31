@@ -18,7 +18,8 @@ namespace Audio
         public AudioClip[] keyFragmentAcquisition;
         public AudioClip[] trapActivation;
         public AudioClip trapPlacement;
-        public AudioClip[] kill;
+        public AudioClip kill;
+        public AudioClip stab;
         public AudioClip[] roundEnd;
         public AudioClip[] roundStart;
         public AudioClip fightBegin;

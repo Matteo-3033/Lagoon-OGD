@@ -82,7 +82,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Kill"",
+                    ""name"": ""Stab"",
                     ""type"": ""Button"",
                     ""id"": ""5ed00fa1-107f-4db5-ad49-2271d5b9f424"",
                     ""expectedControlType"": ""Button"",
@@ -308,7 +308,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Kill"",
+                    ""action"": ""Stab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -325,7 +325,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         m_Player_Interaction = m_Player.FindAction("Interaction", throwIfNotFound: true);
         m_Player_PlaceTrap = m_Player.FindAction("PlaceTrap", throwIfNotFound: true);
         m_Player_SelectTrap = m_Player.FindAction("SelectTrap", throwIfNotFound: true);
-        m_Player_Kill = m_Player.FindAction("Kill", throwIfNotFound: true);
+        m_Player_Stab = m_Player.FindAction("Stab", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -393,7 +393,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interaction;
     private readonly InputAction m_Player_PlaceTrap;
     private readonly InputAction m_Player_SelectTrap;
-    private readonly InputAction m_Player_Kill;
+    private readonly InputAction m_Player_Stab;
     public struct PlayerActions
     {
         private @CustomInput m_Wrapper;
@@ -404,7 +404,7 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         public InputAction @Interaction => m_Wrapper.m_Player_Interaction;
         public InputAction @PlaceTrap => m_Wrapper.m_Player_PlaceTrap;
         public InputAction @SelectTrap => m_Wrapper.m_Player_SelectTrap;
-        public InputAction @Kill => m_Wrapper.m_Player_Kill;
+        public InputAction @Stab => m_Wrapper.m_Player_Stab;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -432,9 +432,9 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @SelectTrap.started += instance.OnSelectTrap;
             @SelectTrap.performed += instance.OnSelectTrap;
             @SelectTrap.canceled += instance.OnSelectTrap;
-            @Kill.started += instance.OnKill;
-            @Kill.performed += instance.OnKill;
-            @Kill.canceled += instance.OnKill;
+            @Stab.started += instance.OnStab;
+            @Stab.performed += instance.OnStab;
+            @Stab.canceled += instance.OnStab;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -457,9 +457,9 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
             @SelectTrap.started -= instance.OnSelectTrap;
             @SelectTrap.performed -= instance.OnSelectTrap;
             @SelectTrap.canceled -= instance.OnSelectTrap;
-            @Kill.started -= instance.OnKill;
-            @Kill.performed -= instance.OnKill;
-            @Kill.canceled -= instance.OnKill;
+            @Stab.started -= instance.OnStab;
+            @Stab.performed -= instance.OnStab;
+            @Stab.canceled -= instance.OnStab;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -485,6 +485,6 @@ public partial class @CustomInput: IInputActionCollection2, IDisposable
         void OnInteraction(InputAction.CallbackContext context);
         void OnPlaceTrap(InputAction.CallbackContext context);
         void OnSelectTrap(InputAction.CallbackContext context);
-        void OnKill(InputAction.CallbackContext context);
+        void OnStab(InputAction.CallbackContext context);
     }
 }
