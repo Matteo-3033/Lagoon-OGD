@@ -131,6 +131,22 @@ public class MinimapIcon : NetworkBehaviour
         SetIconShown(false);
     }
 
+    [ClientRpc]
+    public void ClientRpcShow()
+    {
+        Debug.Log("TargetShow");
+        SetIconShown(true);
+    }
+
+    [ClientRpc]
+    public void ClientRpcHide()
+    {
+        if (Player.LocalPlayer?.transform == transform.root) return;
+
+        Debug.Log("TargetHide");
+        SetIconShown(false);
+    }
+
     private void SetIconShown(bool active)
     {
         if (_simpleIcons.Length == 0) return;
