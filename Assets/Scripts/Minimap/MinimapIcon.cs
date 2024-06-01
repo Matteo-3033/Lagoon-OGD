@@ -113,7 +113,7 @@ public class MinimapIcon : NetworkBehaviour
     public void Show()
     {
         SetIconShown(true);
-        Layers.SetLayerRecursively(gameObject, Layers.Default);
+        Layers.SetLayerRecursively(gameObject, Layers.FieldOfView);
     }
 
     public void Hide()
