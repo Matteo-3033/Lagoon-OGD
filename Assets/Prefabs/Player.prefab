@@ -304,6 +304,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ef4b5c0c1329a4188529f37ec9c6e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   minimapCamera: {fileID: 0}
   startHidden: 1
   hideAfterBorder: 0
@@ -624,7 +627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 542036826384175972}
   - component: {fileID: 1079462336788929778}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: RippleController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -665,7 +668,7 @@ MonoBehaviour:
   keyRippleSignal: {fileID: 8282261943060380606}
   alarmRippleConfig: {fileID: 11400000, guid: 2b0890d8116656945aeca65e62610431, type: 2}
   keyRippleConfig: {fileID: 11400000, guid: 4634568aade30c14586ea272ed215b21, type: 2}
-  minimumBadgeNumber: 2
+  minimumBadgeNumber: 1
 --- !u!1 &5021750893386539450
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,6 +1043,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: KeyRipple
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
+        type: 3}
+      propertyPath: looping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
+        type: 3}
+      propertyPath: SizeModule.enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}

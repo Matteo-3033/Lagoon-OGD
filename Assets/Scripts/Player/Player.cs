@@ -141,18 +141,22 @@ public class Player : NetworkBehaviour
 
     // On client only
     [Client]
-    public void MakeInvisible()
+    public void MakeInvisible(bool hideIcon = true)
     {
         Layers.SetLayerRecursively(gameObject, Layers.BehindFieldOfView);
-        gameObject.GetComponentInChildren<MinimapIcon>().Hide();
+        Layers.SetLayerRecursively(RippleController.gameObject, Layers.Minimap);
+        if (hideIcon)
+            gameObject.GetComponentInChildren<MinimapIcon>().Hide();
     }
 
     // On client only
     [Client]
-    public void MakeVisible()
+    public void MakeVisible(bool showIcon = true)
     {
         Layers.SetLayerRecursively(gameObject, Layers.FieldOfView);
-        gameObject.GetComponentInChildren<MinimapIcon>().Show();
+        Layers.SetLayerRecursively(RippleController.gameObject, Layers.Minimap);
+        if (showIcon)
+            gameObject.GetComponentInChildren<MinimapIcon>().Show();
     }
 
     [Command(requiresAuthority = false)]

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -30,8 +29,7 @@ public class RippleController : MonoBehaviour
 
     void Start()
     {
-        Inventory inventory =
-            Player.LocalPlayer ? Player.LocalPlayer.Inventory : transform.root.GetComponent<Inventory>();
+        var inventory = GetComponentInParent<Player>().Inventory;
         inventory.OnKeyFragmentUpdated += OnKeyFragmentUpdated;
 
         alarmRippleSignal.ConfigureRipple(alarmRippleConfig);
@@ -58,8 +56,10 @@ public class RippleController : MonoBehaviour
 
     private void PlayKeyRipple()
     {
+        Debug.Log("Play key ripple");
         if (_keyFragments <= minimumBadgeNumber) return;
 
+        Debug.Log("Play key ripple");
         _currentRippleCoroutine = StartCoroutine(RippleLoop(keyRippleSignal));
     }
 
@@ -76,21 +76,26 @@ public class RippleController : MonoBehaviour
         _currentRippleCoroutine = null;
     }
 
-    private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs e)
+    private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
     {
-        UpdateKeyRippleEffect(e.NewValue);
+        Debug.Log("Key fragment updated");
+        Debug.Log("New value: " + args.NewValue);
+        UpdateKeyRippleEffect(args.NewValue);
     }
 
     private void UpdateKeyRippleEffect(int keys)
     {
         _keyFragments = keys;
+        Debug.Log("Key fragments: " + _keyFragments);
         if (!_isAlarmState && _keyFragments <= minimumBadgeNumber)
         {
+            Debug.Log("Stop current ripple");
             StopCurrentRipple();
             _minimapIcon.Hide();
             return;
         }
 
+        Debug.Log("Update key ripple effect");
         keyRippleSignal.ConfigureRipple(keyRippleConfig.singleRippleDuration,
             keyRippleConfig.interval / _keyFragments,
             keyRippleConfig.scale,
@@ -103,6 +108,7 @@ public class RippleController : MonoBehaviour
     {
         while (true)
         {
+            Debug.Log("Play ripple");
             rippleSignal.PlayRipple();
             _minimapIcon.PlayIconFade(rippleSignal.RippleLifetime / 2);
             yield return new WaitForSeconds(rippleSignal.Interval);

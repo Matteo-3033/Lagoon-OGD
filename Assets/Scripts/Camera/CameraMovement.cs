@@ -49,14 +49,20 @@ public class CameraMovement : NetworkBehaviour
 
     private void OnPlayerKilled(Player player)
     {
-        if (Player.LocalPlayer == player)
-            followOpponent = true;
+        if (Player.LocalPlayer != player)
+            return;
+        
+        followOpponent = true;
+        Player.Opponent.MakeVisible(false);
     }
     
     private void OnPlayerRespawned(Player player)
     {
-        if (Player.LocalPlayer == player)
-            followOpponent = false;
+        if (Player.LocalPlayer != player)
+            return;
+        
+        followOpponent = false;
+        Player.Opponent.MakeInvisible(false);
     }
 
     protected override void OnValidate()
