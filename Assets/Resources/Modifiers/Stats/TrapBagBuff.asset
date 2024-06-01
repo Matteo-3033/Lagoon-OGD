@@ -15,6 +15,6 @@ MonoBehaviour:
   modifierName: Squirrel something away
   isBuff: 1
   other: {fileID: 11400000, guid: 8f83d9222d045c54e984f1302a03a4c3, type: 2}
-  synergy: {fileID: 0}
+  synergy: {fileID: 11400000, guid: 20ffc33bf44c63b48851ac524baf7a89, type: 2}
   canBeFoundInGame: 1
   slots: 1

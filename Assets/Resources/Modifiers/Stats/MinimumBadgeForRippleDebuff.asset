@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MinimumBadgeForRippleDebuff
   m_EditorClassIdentifier: 
   modifierName: Dumb as an ox
-  isBuff: 1
+  isBuff: 0
   other: {fileID: 11400000, guid: 7683db4e2e32b404bb000e83abbd037e, type: 2}
-  synergy: {fileID: 0}
+  synergy: {fileID: 11400000, guid: 20ffc33bf44c63b48851ac524baf7a89, type: 2}
   canBeFoundInGame: 1
   subtractiveFragments: 1

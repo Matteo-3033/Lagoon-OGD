@@ -6,6 +6,7 @@ using Modifiers;
 using TrapModifiers;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Random = UnityEngine.Random;
 
 public class Inventory : NetworkBehaviour
 {
@@ -134,6 +135,20 @@ public class Inventory : NetworkBehaviour
             NewValue = KeyFragments,
             Player = player
         });
+        
+        return true;
+    }
+    
+    [Server]
+    public bool StealTrap(out TrapModifier trap)
+    {
+        trap = null;
+        if (traps.Count == 0)
+            return false;
+        
+        var index = Random.Range(0, traps.Count);
+        trap = traps[index];
+        traps.RemoveAt(index);
         
         return true;
     }

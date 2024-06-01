@@ -13,6 +13,8 @@ public class StabManager : NetworkBehaviour
     public event EventHandler<EventArgs> OnStab;
     
     private float lastStabTime;
+    
+    [SyncVar] private bool canStealTraps = false;
 
     public override void OnStartClient()
     {
@@ -40,7 +42,7 @@ public class StabManager : NetworkBehaviour
         if (Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE))
         {
             if (hit.collider.TryGetComponent(out Player opponent))
-                RoundController.Instance.KillPlayer(opponent, sender.Player());
+                RoundController.Instance.KillPlayer(opponent, sender.Player(), canStealTraps);
         }
     }
 
@@ -53,5 +55,11 @@ public class StabManager : NetworkBehaviour
     private bool CanStab()
     {
         return Time.time - lastStabTime >= delay;
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdSetCanStealTraps(bool canSteal)
+    {
+        canStealTraps = canSteal;
     }
 }

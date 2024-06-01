@@ -29,8 +29,9 @@ public class Player : NetworkBehaviour
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
     public RippleController RippleController => GetComponentInChildren<RippleController>();
     
+    
     private Vector3 spawnPoint;
-
+    
 
     [field: SyncVar] public string Username { get; private set; }
 
@@ -200,5 +201,10 @@ public class Player : NetworkBehaviour
             LocalPlayer = null;
         else
             Opponent = null;
+    }
+
+    public void SetCanStealTraps(bool canSteal)
+    {
+        StabManager.CmdSetCanStealTraps(canSteal);
     }
 }

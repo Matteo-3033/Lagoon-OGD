@@ -296,10 +296,13 @@ namespace Round
         }
         
         [Server]
-        public void KillPlayer(Player killed, Player by)
+        public void KillPlayer(Player killed, Player by, bool stealTrap)
         {
             if (killed.Inventory.StealKeyFragment())
                 by.Inventory.AddKeyFragment();
+            
+            if (stealTrap && !by.Inventory.IsTrapBagFull() && killed.Inventory.StealTrap(out var trap))
+                by.Inventory.AddTrap(trap);
             
             killed.RpcOnKilled();
             OnPlayerKilled?.Invoke(killed);
