@@ -11,10 +11,10 @@ namespace Round
     {
         [SerializeField] private ChancellorModifier[] effects;
         [SerializeField] private float alarmDuration;
+        [SerializeField, Range(0.0F, 1.0F)] private float baseProbability = 0.1F;
 
         private int minutesPassed;
         
-        private const float BASE_PROBABILITY = 0.1F;
         private const float PROBABILITY_INCREASE = 0.2F;
         private const float ACTIVATE_EVERY_SECONDS = 60F;
         
@@ -68,7 +68,7 @@ namespace Round
         [Server]
         private bool ShouldApplyEffect()
         {
-            var prob = Mathf.Max(BASE_PROBABILITY + (minutesPassed - 1) * PROBABILITY_INCREASE, 1F);
+            var prob = Mathf.Max(baseProbability + (minutesPassed - 1) * PROBABILITY_INCREASE, 1F);
             return effects.Length > 0 && Random.Range(0, 1) < prob;
         }
 

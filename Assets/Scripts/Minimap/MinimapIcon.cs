@@ -1,7 +1,9 @@
 using System;
+using Mirror;
 using UnityEngine;
+using Utils;
 
-public class MinimapIcon : MonoBehaviour
+public class MinimapIcon : NetworkBehaviour
 {
     [SerializeField] private MinimapCamera minimapCamera;
     [SerializeField] private bool startHidden;
@@ -111,6 +113,7 @@ public class MinimapIcon : MonoBehaviour
     public void Show()
     {
         SetIconShown(true);
+        Layers.SetLayerRecursively(gameObject, Layers.Default);
     }
 
     public void Hide()
@@ -118,6 +121,18 @@ public class MinimapIcon : MonoBehaviour
         if (Player.LocalPlayer?.transform == transform.root) return;
 
         SetIconShown(false);
+    }
+    
+    [ClientRpc]
+    public void RpcShow()
+    {
+        Show();
+    }
+
+    [ClientRpc]
+    public void RpcHide()
+    {
+        Hide();
     }
 
     private void SetIconShown(bool active)

@@ -21,15 +21,15 @@ namespace Modifiers.Chancellor
             FunctionTimer.Create(() =>
             {
                 Debug.Log("ShowPlayerPosition Show");
-                player1.GetComponent<MinimapIcon>().Show();
-                player2.GetComponent<MinimapIcon>().Show();
+                player1.GetComponentInChildren<MinimapIcon>().RpcShow();
+                player2.GetComponentInChildren<MinimapIcon>().RpcShow();
             }, 2F);
             
             FunctionTimer.Create(() =>
             {
                 Debug.Log("ShowPlayerPosition Hide");
-                player1.GetComponent<MinimapIcon>().Hide();
-                player2.GetComponent<MinimapIcon>().Hide();
+                player1.GetComponentInChildren<MinimapIcon>().RpcHide();
+                player2.GetComponentInChildren<MinimapIcon>().RpcHide();
             }, 32F);
         }
     }
