@@ -13,13 +13,15 @@ namespace Interaction
         private IInputHandler _inputHandler;
         private GameObject selectedObj;
         private bool interacting = false;
-        
+
         private void Start()
         {
             var player = GetComponentInParent<Player>();
+#if !UNITY_EDITOR
             if (!player.isLocalPlayer)
                 return;
-            
+#endif
+
             _inputHandler = player.InputHandler;
             _inputHandler.OnInteract += CheckInteraction;
         }
@@ -28,7 +30,7 @@ namespace Interaction
         {
             if (_inputHandler == null)
                 return;
-            
+
             _numFound = Physics.OverlapSphereNonAlloc(_interactionPoint.position, _interactionPointRadius, _colliders,
                 _interactableMask);
 
@@ -49,7 +51,7 @@ namespace Interaction
         private void ActivateMinimapIcon(GameObject obj)
         {
             if (!obj || obj == Player.Opponent?.gameObject || obj == Player.LocalPlayer?.gameObject) return;
-            
+
             MinimapIcon icon = obj.GetComponentInChildren<MinimapIcon>();
             icon?.Show();
         }

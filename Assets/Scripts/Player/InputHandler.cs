@@ -57,10 +57,12 @@ public class InputHandler : MonoBehaviour, IInputHandler
     private IEnumerator Enable()
     {
         yield return null;
-        
+
+#if !UNITY_EDITOR
         if (!GetComponent<Player>().isLocalPlayer)
             yield break;
-        
+#endif
+
         input.Enable();
         input.Player.Movement.performed += Movement_performed;
         input.Player.Movement.canceled += Movement_canceled;
@@ -88,10 +90,12 @@ public class InputHandler : MonoBehaviour, IInputHandler
     private IEnumerator Disable()
     {
         yield return null;
-        
+
+#if !UNITY_EDITOR
         if (!GetComponent<Player>().isLocalPlayer)
             yield break;
-        
+#endif
+
         input.Disable();
         input.Player.Movement.performed -= Movement_performed;
         input.Player.Movement.canceled -= Movement_canceled;
