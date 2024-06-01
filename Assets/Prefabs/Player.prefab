@@ -304,14 +304,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ef4b5c0c1329a4188529f37ec9c6e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   minimapCamera: {fileID: 0}
   startHidden: 1
   hideAfterBorder: 0
   clampToBorder: 1
-  circleClamp: 0
+  circleClamp: 1
 --- !u!1 &923501315294346588
 GameObject:
   m_ObjectHideFlags: 0

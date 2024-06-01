@@ -6,7 +6,6 @@ using Modifiers;
 using TrapModifiers;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Serialization;
 
 public class Inventory : NetworkBehaviour
 {
@@ -177,6 +176,7 @@ public class Inventory : NetworkBehaviour
     
     private void OnKeyFragmentsUpdated(int oldValue, int newValue)
     {
+        Debug.Log($"{player.Username} fragments: {oldValue} -> {newValue}");
         OnKeyFragmentUpdated?.Invoke(this, new OnKeyFragmentUpdatedArgs
         {
             OldValue = oldValue,

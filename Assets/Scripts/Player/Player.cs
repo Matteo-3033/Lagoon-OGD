@@ -193,4 +193,12 @@ public class Player : NetworkBehaviour
     }
     
     #endregion
+
+    private void OnDestroy()
+    {
+        if (isLocalPlayer)
+            LocalPlayer = null;
+        else
+            Opponent = null;
+    }
 }

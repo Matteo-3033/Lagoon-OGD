@@ -1,12 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Mirror;
-using Mirror.SimpleWeb;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class MinimapIcon : MonoBehaviour
 {
@@ -39,13 +32,9 @@ public class MinimapIcon : MonoBehaviour
     private void Start()
     {
         if (startHidden)
-        {
             Hide();
-        }
         else
-        {
             Show();
-        }
     }
 
     private void LateUpdate()
