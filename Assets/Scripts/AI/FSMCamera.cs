@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
 
@@ -27,28 +28,23 @@ public class FSMCamera : EnemyFSM
         _baseColor = alarmLight.color;
         FieldOfView = GetComponentInChildren<FieldOfView>();
         SoundManager = GetComponent<SentinelSoundManager>();
-
+    }
+    
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        
         if (patrolRotations.Length > 0)
         {
             _rotationTarget = patrolRotations[_currentPatrolRotationIndex];
         }
 
-        GameObject localPlayer = Player.LocalPlayer?.gameObject;
-        if (!localPlayer)
-        {
-            TargetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
-        }
-        else
-        {
-            GameObject opponent = Player.Opponent?.gameObject;
-            TargetObjects = new[] { localPlayer, opponent };
-        }
+        Debug.Log("Camera OnStartServer");
 
         SetupFSM();
-
-        StartCoroutine(Patrol());
     }
 
+    [Server]
     private void SetupFSM()
     {
         FSMState patrolState = new FSMState();
@@ -79,10 +75,13 @@ public class FSMCamera : EnemyFSM
         searchState.AddTransition(rotationReachedTransition, searchState);
 
         FSM = new FSM(patrolState);
+        StartCoroutine(Patrol());
     }
 
     private void FixedUpdate()
     {
+        if(!isServer) return;
+        
         float target;
 
         if (AlarmTarget)
@@ -108,23 +107,29 @@ public class FSMCamera : EnemyFSM
 
     private void AlarmReset()
     {
-        alarmLight.color = _baseColor;
+        RpcSetAlarmColor(_baseColor);
         _rotationSpeed = patrolRotationSpeed;
         AlarmTarget = null;
     }
 
     private void AlarmStart()
     {
-        alarmLight.color = alarmColor;
+        RpcSetAlarmColor(alarmColor);
         _rotationSpeed = alarmRotationSpeed;
     }
 
     private void AlarmSearch()
     {
-        alarmLight.color = searchColor;
+        RpcSetAlarmColor(searchColor);
         _rotationSpeed = searchRotationSpeed;
         _currentTimeInSearch = 0;
         AlarmTarget = null;
+    }
+
+    [ClientRpc]
+    private void RpcSetAlarmColor(Color color)
+    {
+        alarmLight.color = color;
     }
 
     private bool RotationReached()

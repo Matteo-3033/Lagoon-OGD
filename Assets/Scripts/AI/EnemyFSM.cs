@@ -14,12 +14,12 @@ public abstract class EnemyFSM : NetworkBehaviour
     public Color searchColor = Color.yellow;
 
     protected FSM FSM;
-    protected GameObject[] TargetObjects;
     protected FieldOfView FieldOfView;
 
     protected Transform AlarmTarget;
     protected SentinelSoundManager SoundManager;
 
+    [Server]
     protected IEnumerator Patrol()
     {
         while (true)
@@ -34,7 +34,7 @@ public abstract class EnemyFSM : NetworkBehaviour
         Vector3 distance = Vector3.positiveInfinity;
         GameObject potentialTarget = null;
 
-        foreach (GameObject go in TargetObjects)
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("Player"))
         {
             Vector3 tempDistance = go.transform.position - transform.position;
             if (tempDistance.magnitude < distance.magnitude)

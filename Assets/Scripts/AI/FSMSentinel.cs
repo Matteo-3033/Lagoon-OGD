@@ -23,6 +23,7 @@ public class FSMSentinel : EnemyFSM
     private int _currentPatrolPositionIndex;
     private Vector3 _previousPosition;
     private Animator _animator;
+    [SyncVar] private float _agentSpeed;
     private static readonly int SpeedParam = Animator.StringToHash("speed");
 
     private void Awake()
@@ -36,17 +37,6 @@ public class FSMSentinel : EnemyFSM
         if (patrolPositions.Length > 0)
         {
             _positionTarget = patrolPositions[_currentPatrolPositionIndex];
-        }
-
-        GameObject localPlayer = Player.LocalPlayer?.gameObject;
-        if (!localPlayer)
-        {
-            TargetObjects = new[] { GameObject.FindGameObjectWithTag("Player") };
-        }
-        else
-        {
-            GameObject opponent = Player.Opponent?.gameObject;
-            TargetObjects = new[] { localPlayer, opponent };
         }
     }
 
@@ -62,8 +52,6 @@ public class FSMSentinel : EnemyFSM
     [Server]
     private void SetupFSM()
     {
-        //if (!authority) return;
-
         FSMState patrolState = new FSMState();
         patrolState.EnterActions.Add(PositionDestination);
 
@@ -94,18 +82,19 @@ public class FSMSentinel : EnemyFSM
         searchState.AddTransition(enemyVisibleTransition, alarmState);
 
         FSM = new FSM(patrolState);
-        StartPatrolling();
+        StartCoroutine(Patrol());
     }
 
     private void Update()
     {
-        _animator.SetFloat(SpeedParam, _agent.velocity.magnitude);
-    }
-
-    [Server]
-    private void StartPatrolling()
-    {
-        StartCoroutine(Patrol());
+        if (isServer)
+        {
+            _agentSpeed = _agent.velocity.magnitude;
+        }
+        else
+        {
+            _animator.SetFloat(SpeedParam, _agentSpeed);
+        }
     }
 
     #region ACTIONS
