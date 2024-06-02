@@ -116,7 +116,7 @@ MonoBehaviour:
   reactionTime: 0.25
   obstructionMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 257
   alarmLight: {fileID: 952045759732404142}
   alarmColor: {r: 1, g: 0, b: 0, a: 1}
   searchColor: {r: 1, g: 0.7254902, b: 0.015686274, a: 1}
@@ -446,7 +446,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 80
+  m_Intensity: 50
   m_Range: 100
   m_SpotAngle: 90
   m_InnerSpotAngle: 30
