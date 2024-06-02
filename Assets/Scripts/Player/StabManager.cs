@@ -14,7 +14,7 @@ public class StabManager : NetworkBehaviour
 
     private float lastStabTime;
 
-    [SyncVar] private bool canStealTraps = false;
+    [field: SyncVar] public bool CanStealTraps { get; private set; }
 
     public override void OnStartClient()
     {
@@ -45,7 +45,7 @@ public class StabManager : NetworkBehaviour
 
         if (hit.collider.TryGetComponent(out Player opponent))
         {
-            RoundController.Instance.TryKillPlayer(opponent, sender.Player(), canStealTraps);
+            KillController.Instance.TryKillPlayer(opponent, sender.Player(), CanStealTraps);
         }
         else if (hit.collider.TryGetComponent(out FSMSentinel sentinel))
         {
@@ -76,6 +76,6 @@ public class StabManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdSetCanStealTraps(bool canSteal)
     {
-        canStealTraps = canSteal;
+        CanStealTraps = canSteal;
     }
 }

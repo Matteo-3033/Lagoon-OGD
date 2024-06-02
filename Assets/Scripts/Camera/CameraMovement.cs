@@ -38,8 +38,8 @@ public class CameraMovement : NetworkBehaviour
 
     private void OnRoundLoaded()
     {
-        RoundController.Instance.OnPlayerKilled += OnPlayerKilled;
-        RoundController.Instance.OnPlayerRespawned += OnPlayerRespawned;
+        KillController.OnPlayerKilled += OnPlayerKilled;
+        KillController.OnPlayerRespawned += OnPlayerRespawned;
 
         var inputHandler = Target()?.GetComponent<IInputHandler>();
         if (inputHandler == null) return;
@@ -129,5 +129,7 @@ public class CameraMovement : NetworkBehaviour
     private void OnDestroy()
     {
         RoundController.OnRoundLoaded -= OnRoundLoaded;
+        KillController.OnPlayerKilled -= OnPlayerKilled;
+        KillController.OnPlayerRespawned -= OnPlayerRespawned;
     }
 }

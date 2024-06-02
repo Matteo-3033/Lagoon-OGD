@@ -51,10 +51,7 @@ namespace Round
         public event Action OnCountdownStart;
         public event Action<int> OnCountdown;
         public event Action OnRoundStarted;
-        public event Action<Player> OnRoundEnded;
-        public event Action<Player> OnPlayerKilled;
-        public event Action<Player> OnPlayerRespawned;
-        
+        public event Action<Player> OnRoundEnded;        
         
         private void Awake()
         {
@@ -294,35 +291,6 @@ namespace Round
             State = RoundState.LoadingNext;
             OnLoadNextRound?.Invoke();
         }
-        
-        [Server]
-        public void TryKillPlayer(Player killed, Player by, bool stealTrap)
-        {
-            if (killed.FieldOfView.CanSeePlayer || !by.FieldOfView.CanSeePlayer)
-                return;
-            
-            if (killed.Inventory.StealKeyFragment())
-                by.Inventory.AddKeyFragment();
-            
-            if (stealTrap && !by.Inventory.IsTrapBagFull() && killed.Inventory.StealTrap(out var trap))
-                by.Inventory.AddTrap(trap);
-            
-            killed.RpcOnKilled();
-            OnPlayerKilled?.Invoke(killed);
-            RpcPlayerKilled(killed);
-            
-            StartCoroutine(RespawnPlayer(killed));
-        }
-
-        [Server]
-        private IEnumerator RespawnPlayer(Player player)
-        {
-            yield return new WaitForSeconds(RESPAWN_TIME);
-            
-            player.RpcOnRespawned();
-            OnPlayerRespawned?.Invoke(player);
-            RpcPlayerRespawned(player);
-        }
 
         #endregion
         
@@ -373,18 +341,6 @@ namespace Round
         private void TargetNotifyNoWinningCondition(NetworkConnectionToClient target)
         {
             OnNoWinningCondition?.Invoke();
-        }
-        
-        [ClientRpc]
-        private void RpcPlayerKilled(Player player)
-        {
-            OnPlayerKilled?.Invoke(player);
-        }
-        
-        [ClientRpc]
-        private void RpcPlayerRespawned(Player player)
-        {
-            OnPlayerRespawned?.Invoke(player);
         }
         
         #endregion
