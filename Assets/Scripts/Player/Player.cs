@@ -11,6 +11,7 @@ public class Player : NetworkBehaviour
 {
     [SerializeField] private Material transparentMaterial;
     private Material defaultMaterial;
+    private bool _isDead = false;
 
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
@@ -78,6 +79,11 @@ public class Player : NetworkBehaviour
         defaultMaterial = GetComponentInChildren<MeshRenderer>().material;
         spawnPoint = transform.position;
     }
+
+    public bool isPlayerDead()
+    {
+        return _isDead;
+    }
     
     [ClientRpc]
     public void RpcOnKilled()
@@ -85,6 +91,7 @@ public class Player : NetworkBehaviour
         InputHandler.enabled = false;
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Collider>().enabled = false;
+        _isDead = true;
         
         for (var i = 0; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(false);
@@ -99,6 +106,7 @@ public class Player : NetworkBehaviour
         InputHandler.enabled = true;
         GetComponent<Collider>().enabled = true;
         GetComponent<Rigidbody>().useGravity = true;
+        _isDead = false;
     }
 
     public override void OnStartLocalPlayer()

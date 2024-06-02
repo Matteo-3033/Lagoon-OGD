@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Audio;
 using Mirror;
+using Round;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class EnemyFSM : NetworkBehaviour
@@ -34,13 +36,16 @@ public abstract class EnemyFSM : NetworkBehaviour
         Vector3 distance = Vector3.positiveInfinity;
         GameObject potentialTarget = null;
 
-        foreach (GameObject go in GameObject.FindGameObjectsWithTag("Player"))
+        var players = GameObject.FindGameObjectsWithTag("Player");
+        if (players == null) return null;
+
+        foreach (GameObject p in players)
         {
-            Vector3 tempDistance = go.transform.position - transform.position;
-            if (tempDistance.magnitude < distance.magnitude)
+            Vector3 tempDistance = p.transform.position - transform.position;
+            if (!p.GetComponent<Player>().isPlayerDead() && tempDistance.magnitude < distance.magnitude)
             {
                 distance = tempDistance;
-                potentialTarget = go;
+                potentialTarget = p.gameObject;
             }
         }
 
