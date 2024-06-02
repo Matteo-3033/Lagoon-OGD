@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class RippleController : MonoBehaviour
+public class RippleController : NetworkBehaviour
 {
     [SerializeField] private RippleSignal alarmRippleSignal;
     [SerializeField] private RippleSignal keyRippleSignal;
@@ -38,6 +39,7 @@ public class RippleController : MonoBehaviour
         UpdateKeyRippleEffect(inventory.KeyFragments);
     }
 
+    [ClientRpc]
     public void ShowAlarmRipple()
     {
         _isAlarmState = true;
@@ -46,6 +48,7 @@ public class RippleController : MonoBehaviour
         OnAlarmRippleStarted?.Invoke(this, EventArgs.Empty);
     }
 
+    [ClientRpc]
     public void StopAlarmRipple()
     {
         _isAlarmState = false;

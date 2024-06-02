@@ -5,18 +5,17 @@ using UnityEngine;
 public class CameraMovement : NetworkBehaviour
 {
     [SerializeField] private Player testTarget = null;
-    
-    private bool followOpponent = false;
-    
+
+    private bool _followOpponent = false;
+
     private Transform Target()
     {
-        if (followOpponent)
+        if (_followOpponent)
             return Player.Opponent.transform;
-        if (Player.LocalPlayer != null)
-            return Player.LocalPlayer.transform;
-        return testTarget?.transform;
+
+        return Player.LocalPlayer ? Player.LocalPlayer.transform : testTarget?.transform;
     }
-    
+
     private float rotationTime = .5f;
 
     private int _targetRotation;
@@ -30,45 +29,45 @@ public class CameraMovement : NetworkBehaviour
         _startRotation = 0;
         _targetRotation = _startRotation;
         _currentRotation = _targetRotation;
-        
+
         if (RoundController.HasLoaded())
             OnRoundLoaded();
         else
             RoundController.OnRoundLoaded += OnRoundLoaded;
-        
-        var inputHandler = Target()?.GetComponent<IInputHandler>();
-        if (inputHandler != null)
-            inputHandler.OnCameraRotation += OnOnCameraRotation;
     }
 
     private void OnRoundLoaded()
     {
         RoundController.Instance.OnPlayerKilled += OnPlayerKilled;
         RoundController.Instance.OnPlayerRespawned += OnPlayerRespawned;
+
+        var inputHandler = Target()?.GetComponent<IInputHandler>();
+        if (inputHandler == null) return;
+        inputHandler.OnCameraRotation += OnOnCameraRotation;
     }
 
     private void OnPlayerKilled(Player player)
     {
         if (Player.LocalPlayer != player)
             return;
-        
-        followOpponent = true;
+
+        _followOpponent = true;
         Player.Opponent.MakeVisible(false);
     }
-    
+
     private void OnPlayerRespawned(Player player)
     {
         if (Player.LocalPlayer != player)
             return;
-        
-        followOpponent = false;
+
+        _followOpponent = false;
         Player.Opponent.MakeInvisible(false);
     }
 
     protected override void OnValidate()
     {
         base.OnValidate();
-        
+
         var inputHandler = Target()?.GetComponent<IInputHandler>();
         if (inputHandler == null) return;
 
@@ -85,7 +84,7 @@ public class CameraMovement : NetworkBehaviour
     private void LateUpdate()
     {
         if (isServer) return;
-        
+
         var target = Target();
         if (target)
         {
@@ -116,7 +115,7 @@ public class CameraMovement : NetworkBehaviour
             _currentTime = 0;
         }
     }
-    
+
     private static float Slope(float x)
     {
         return (1 + Mathf.Cos(Mathf.PI * (x - 1))) / 2;
@@ -126,7 +125,7 @@ public class CameraMovement : NetworkBehaviour
     {
         return Mathf.Acos(2 * y - 1) / Mathf.PI;
     }
-    
+
     private void OnDestroy()
     {
         RoundController.OnRoundLoaded -= OnRoundLoaded;

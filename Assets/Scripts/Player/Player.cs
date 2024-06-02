@@ -27,6 +27,7 @@ public class Player : NetworkBehaviour
     public TrapSelector TrapSelector => GetComponentInChildren<TrapSelector>();
     public StabManager StabManager => GetComponentInChildren<StabManager>();
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
+    public MinimapIcon MinimapIcon => GetComponentInChildren<MinimapIcon>();
     public RippleController RippleController => GetComponentInChildren<RippleController>();
     
     
@@ -146,7 +147,7 @@ public class Player : NetworkBehaviour
         Layers.SetLayerRecursively(gameObject, Layers.BehindFieldOfView);
         Layers.SetLayerRecursively(RippleController.gameObject, Layers.Minimap);
         if (hideIcon)
-            gameObject.GetComponentInChildren<MinimapIcon>().Hide();
+            MinimapIcon.Hide();
     }
 
     // On client only
@@ -156,7 +157,7 @@ public class Player : NetworkBehaviour
         Layers.SetLayerRecursively(gameObject, Layers.FieldOfView);
         Layers.SetLayerRecursively(RippleController.gameObject, Layers.Minimap);
         if (showIcon)
-            gameObject.GetComponentInChildren<MinimapIcon>().Show();
+            MinimapIcon.Show();
     }
 
     [Command(requiresAuthority = false)]

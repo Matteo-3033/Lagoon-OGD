@@ -7,13 +7,15 @@ public class PlayerRotationController : MonoBehaviour
 
     private Rigidbody rb;
     private IInputHandler inputHandler;
-    
+
     private void Start()
     {
         var player = GetComponent<Player>();
+#if !UNITY_EDITOR
         if (!player.isLocalPlayer)
             return;
-        
+#endif
+
         rb = GetComponent<Rigidbody>();
         inputHandler = player.InputHandler;
         RotationSpeed = baseRotationSpeed;
@@ -24,7 +26,7 @@ public class PlayerRotationController : MonoBehaviour
     {
         if (inputHandler == null)
             return;
-        
+
         var lookDirection = inputHandler.GetLookDirection();
         LookRotation(lookDirection);
     }
@@ -35,12 +37,12 @@ public class PlayerRotationController : MonoBehaviour
         float step = RotationSpeed * Time.fixedDeltaTime;
         rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, angle, 0), step));
     }
-    
+
     public void AddPercentage(float percent)
     {
         RotationSpeed += baseRotationSpeed * percent / 100;
     }
-    
+
     public void SubPercentage(float percent)
     {
         RotationSpeed -= baseRotationSpeed * percent / 100;
