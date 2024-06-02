@@ -45,7 +45,7 @@ public class StabManager : NetworkBehaviour
 
         if (hit.collider.TryGetComponent(out Player opponent))
         {
-            RoundController.Instance.TryKillPlayer(opponent, sender.Player(), canStealTraps);
+            KillController.Instance.TryKillPlayer(opponent, sender.Player(), canStealTraps);
         }
         else if (hit.collider.TryGetComponent(out FSMSentinel sentinel))
         {
