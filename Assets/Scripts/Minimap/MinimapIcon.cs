@@ -13,6 +13,7 @@ public class MinimapIcon : NetworkBehaviour
 
     private SimpleIcon[] _simpleIcons;
     private bool _isShown;
+    private bool _permanentVisibility;
     private GameObject _currentRippleObject;
     private Coroutine _currentClampIntermittentCoroutine;
 
@@ -50,7 +51,7 @@ public class MinimapIcon : NetworkBehaviour
             Vector3 cameraPosition = MinimapCameraPosition;
             cameraPosition.y = 0;
             float orthographicSize = MinimapCameraOrthographicSize;
-            if((iconPosition - cameraPosition).magnitude > orthographicSize + 3) Hide();
+            if ((iconPosition - cameraPosition).magnitude > orthographicSize + 3) Hide();
         }
 
         if (!clampToBorder)
@@ -110,28 +111,30 @@ public class MinimapIcon : NetworkBehaviour
             Color.cyan);
     }
 
-    public void Show()
+    public void Show(bool permanent = false)
     {
+        _permanentVisibility = permanent;
         SetIconShown(true);
     }
 
-    public void Hide()
+    public void Hide(bool permanent = false)
     {
         if (Player.LocalPlayer?.transform == transform.root) return;
 
+        _permanentVisibility = permanent;
         SetIconShown(false);
-    }
-    
-    [ClientRpc]
-    public void RpcShow()
-    {
-        Show();
     }
 
     [ClientRpc]
-    public void RpcHide()
+    public void RpcShow(bool permanent)
     {
-        Hide();
+        Show(permanent);
+    }
+
+    [ClientRpc]
+    public void RpcHide(bool permanent)
+    {
+        Hide(permanent);
     }
 
     private void SetIconShown(bool active)
@@ -155,7 +158,7 @@ public class MinimapIcon : NetworkBehaviour
 
     public void PlayIconFade(float fadeDuration)
     {
-        if (Player.LocalPlayer?.transform == transform.root) return;
+        if (_permanentVisibility || Player.LocalPlayer?.transform == transform.root) return;
 
         if (fadeDuration <= 0)
         {

@@ -81,8 +81,6 @@ public class RippleController : NetworkBehaviour
 
     private void OnKeyFragmentUpdated(object sender, Inventory.OnKeyFragmentUpdatedArgs args)
     {
-        Debug.Log("Key fragment updated");
-        Debug.Log("New value: " + args.NewValue);
         UpdateKeyRippleEffect(args.NewValue);
     }
 
