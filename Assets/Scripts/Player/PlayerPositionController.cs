@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerPositionController : MonoBehaviour
 {
     [SerializeField] private float baseMaxSpeed = 10F;
     [Space] [SerializeField] private bool acceleratedMovement = true;
+    [Space] [SerializeField] private bool forceMovementPosition = false;
     [SerializeField] private float acceleration = 50F;
     [SerializeField] private float deacceleration = 25F;
 
@@ -79,7 +81,18 @@ public class PlayerPositionController : MonoBehaviour
 
         Debug.DrawRay(transform.position, currentSpeed, Color.cyan);
 
-        rb.MovePosition(transform.position + movement);
+#if UNITY_EDITOR
+        if (forceMovementPosition)
+        {
+            rb.MovePosition(transform.position + movement);
+        }
+        else
+        {
+            rb.velocity = currentSpeed;
+        }
+#else
+        rb.velocity = currentSpeed;
+#endif
         //Debug.Log("Speed: " + movement.magnitude / t + " m/s");
     }
 
