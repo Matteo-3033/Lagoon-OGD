@@ -47,6 +47,7 @@ namespace Audio
             TrapPressurePlate.OnStateChanged += OnTrapPressurePlateStateChanged;
             DoorInteractable.OnStateChanged += OnDoorStateChanged;
             TrapDispenserInteractable.OnVendingMachineUsed += OnVendingMachineUsed;
+            KillController.OnPlayerKilled += OnPlayerKilled;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -54,7 +55,6 @@ namespace Audio
             RoundController.Instance.OnCountdown += OnCountdown;
             RoundController.Instance.OnRoundStarted += OnRoundStart;
             RoundController.Instance.OnNoWinningCondition += OnError;
-            RoundController.Instance.OnPlayerKilled += OnPlayerKilled;
         }
 
         private void RegisterPlayerCallbacks(Player player)
@@ -176,6 +176,7 @@ namespace Audio
             TrapPressurePlate.OnStateChanged -= OnTrapPressurePlateStateChanged;
             DoorInteractable.OnStateChanged -= OnDoorStateChanged;
             TrapDispenserInteractable.OnVendingMachineUsed -= OnVendingMachineUsed;
+            KillController.OnPlayerKilled -= OnPlayerKilled;
         }
     }
 }

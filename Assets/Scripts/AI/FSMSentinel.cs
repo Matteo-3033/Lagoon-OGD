@@ -125,7 +125,7 @@ public class FSMSentinel : EnemyFSM
     private void PredictNewPosition()
     {
         Vector3 newPosition =
-            AlarmTarget.position + (AlarmTarget.position - _alarmTargetLastPosition) * reactionTime * 2;
+            AlarmTarget.position + (AlarmTarget.position - _alarmTargetLastPosition) * (reactionTime * 2);
         _agent.SetDestination(newPosition);
     }
 
@@ -199,4 +199,12 @@ public class FSMSentinel : EnemyFSM
     }
 
     #endregion
+
+    private void OnDestroy()
+    {
+        if (AlarmTarget)
+        {
+            StopSignalOnTarget();
+        }
+    }
 }

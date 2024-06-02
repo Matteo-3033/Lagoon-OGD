@@ -11,6 +11,8 @@ public class FieldOfView : NetworkBehaviour
     [SyncVar(hook = nameof(OnViewDistanceChanged)), SerializeField] private float viewDistance = 10F;
     [SyncVar, SerializeField] private int rayCount = 60;
     
+    public bool CanSeePlayer { get; private set; }  // L'avversario nel caso il proprietario del field of view sia il player, altrimenti uno dei due giocatori
+    
     public class FieldOfViewArgs
     {
         public float FieldOfViewDegree;
@@ -52,12 +54,17 @@ public class FieldOfView : NetworkBehaviour
 
         var startAngle = Quaternion.AngleAxis(-fieldOfViewDegree / 2, Vector3.up);
         var direction = startAngle * transform.forward;
+
+        var canSeePlayer = false;
         
         for (var i = 0; i <= rayCount; i++)
         {
             Vector3 newVertex;
             if (Physics.Raycast(transform.position, direction, out var hit, viewDistance))
+            {
+                canSeePlayer = canSeePlayer || hit.collider.gameObject.TryGetComponent(out Player opponent);
                 newVertex = transform.worldToLocalMatrix.MultiplyPoint(hit.point);
+            }
             else newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
 
             vertices[i + 1] = newVertex;
@@ -71,6 +78,8 @@ public class FieldOfView : NetworkBehaviour
 
             direction = Quaternion.AngleAxis(AngleIncrease, Vector3.up) * direction;
         }
+        
+        CanSeePlayer = canSeePlayer;
         
         mesh.Clear();
         mesh.vertices = vertices;

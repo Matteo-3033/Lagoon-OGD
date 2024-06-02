@@ -7,20 +7,23 @@ using UnityEngine;
 public class StabManager : NetworkBehaviour
 {
     [SerializeField] private float delay;
-    
+
     private const float KILL_DISTANCE = 1.5f;
-    
+
     public event EventHandler<EventArgs> OnStab;
-    
+
     private float lastStabTime;
-    
+
     [SyncVar] private bool canStealTraps = false;
 
     public override void OnStartClient()
     {
         var player = GetComponent<Player>();
+
+#if !UNITY_EDITOR
         if (!player.isLocalPlayer)
             return;
+#endif
 
         player.InputHandler.OnStab += OnStabInteraction;
     }
@@ -28,7 +31,7 @@ public class StabManager : NetworkBehaviour
     private void OnStabInteraction(object sender, EventArgs args)
     {
         if (!CanStab()) return;
-        
+
         lastStabTime = Time.time;
         OnStab?.Invoke(gameObject, EventArgs.Empty);
         CmdStab();
@@ -38,11 +41,24 @@ public class StabManager : NetworkBehaviour
     private void CmdStab(NetworkConnectionToClient sender = null)
     {
         TargetOnStab(sender.Opponent().connectionToClient);
-        
-        if (Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE))
+        if (!Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE)) return;
+
+        if (hit.collider.TryGetComponent(out Player opponent))
         {
-            if (hit.collider.TryGetComponent(out Player opponent))
-                RoundController.Instance.KillPlayer(opponent, sender.Player(), canStealTraps);
+            KillController.Instance.TryKillPlayer(opponent, sender.Player(), canStealTraps);
+        }
+        else if (hit.collider.TryGetComponent(out FSMSentinel sentinel))
+        {
+            float halfFieldOfViewAngle = sentinel.GetComponentInChildren<FieldOfView>().GetAngle() / 2;
+            float dotProduct = Vector3.Dot(transform.forward, sentinel.transform.forward);
+
+            float stabAngle = Mathf.Acos(dotProduct) * Mathf.Rad2Deg;
+            if ((dotProduct > 0 && stabAngle < halfFieldOfViewAngle) ||
+                (dotProduct < 0 && stabAngle < 180 - halfFieldOfViewAngle))
+            {
+                Debug.Log("Sentinel Killed");
+                NetworkServer.Destroy(sentinel.gameObject);
+            }
         }
     }
 
@@ -56,7 +72,7 @@ public class StabManager : NetworkBehaviour
     {
         return Time.time - lastStabTime >= delay;
     }
-    
+
     [Command(requiresAuthority = false)]
     public void CmdSetCanStealTraps(bool canSteal)
     {
