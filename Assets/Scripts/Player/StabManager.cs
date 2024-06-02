@@ -42,7 +42,7 @@ public class StabManager : NetworkBehaviour
         if (Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE))
         {
             if (hit.collider.TryGetComponent(out Player opponent))
-                RoundController.Instance.KillPlayer(opponent, sender.Player(), canStealTraps);
+                RoundController.Instance.TryKillPlayer(opponent, sender.Player(), canStealTraps);
         }
     }
 
