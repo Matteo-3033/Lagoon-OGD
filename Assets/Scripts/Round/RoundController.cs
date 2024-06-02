@@ -298,7 +298,7 @@ namespace Round
         [Server]
         public void TryKillPlayer(Player killed, Player by, bool stealTrap)
         {
-            if (killed.FieldOfView.CanSeeOpponent || !by.FieldOfView.CanSeeOpponent)
+            if (killed.FieldOfView.CanSeePlayer || !by.FieldOfView.CanSeePlayer)
                 return;
             
             if (killed.Inventory.StealKeyFragment())
