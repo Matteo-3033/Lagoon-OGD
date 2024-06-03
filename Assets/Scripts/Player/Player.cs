@@ -4,6 +4,8 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Utils;
 
 [RequireComponent(typeof(NetworkIdentity))]
@@ -102,7 +104,7 @@ public class Player : NetworkBehaviour
 
         LocalPlayer = this;
 
-        SetUpModel();
+        SetUpModel(true);
         MakeVisible();
         OnPlayerSpawned?.Invoke(LocalPlayer);
     }
@@ -112,23 +114,23 @@ public class Player : NetworkBehaviour
     {
         Opponent = this;
 
-        SetUpModel();
+        SetUpModel(false);
         MakeInvisible();
         OnPlayerSpawned?.Invoke(Opponent);
     }
 
-    private void SetUpModel()
+    private void SetUpModel(bool isLocal)
     {
-        GameObject model = null; //IsMangiagalli ? mangiagalliBodyPrefab : golgiBodyPrefab;
+        GameObject model = IsMangiagalli ? mangiagalliBodyPrefab : golgiBodyPrefab;
 
         if (model)
         {
             GetComponentInChildren<MeshRenderer>().gameObject.SetActive(false);
             model = Instantiate(model, transform);
+            Layers.SetLayerRecursively(model, isLocal ? Layers.FieldOfView : Layers.BehindFieldOfView);
         }
 
-        //defaultMaterial = model.GetComponentInChildren<MeshRenderer>().material;
-        defaultMaterial = GetComponentInChildren<MeshRenderer>().material;
+        defaultMaterial = model.GetComponentInChildren<MeshRenderer>().material;
     }
 
     [TargetRpc]
@@ -204,7 +206,7 @@ public class Player : NetworkBehaviour
         transform.position = spawnPoint;
         CmdPositionChanged(spawnPoint);
     }
-    
+
     [Client]
     public void InvertControls(bool invert)
     {
