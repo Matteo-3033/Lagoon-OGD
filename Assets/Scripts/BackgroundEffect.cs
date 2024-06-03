@@ -2,7 +2,7 @@ using System.Collections;
 using Round;
 using UnityEngine;
 
-public class BlurEffect : MonoBehaviour
+public class BackgroundEffect : MonoBehaviour
 {
     [SerializeField] private Camera blurCamera;
     [SerializeField] private SpriteRenderer blurScreen;
@@ -34,6 +34,12 @@ public class BlurEffect : MonoBehaviour
         
         KillController.OnPlayerKilled += OnPlayerKilled;
         KillController.OnPlayerRespawned += OnPlayerRespawned;
+        KillController.OnMiniGameNextKey += OnMiniGameNextKey;
+    }
+
+    private void OnMiniGameNextKey(KillController.MiniGameKeys? key)
+    {
+        blurScreen.material.color = key == null ? defaultColor : alarmColor;
     }
 
     private void OnPlayerKilled(Player player)
@@ -50,16 +56,6 @@ public class BlurEffect : MonoBehaviour
             return;
 
         blurScreen.material.color = defaultColor;
-    }
-
-    private void OnDestroy()
-    {
-        if (blurCamera != null && blurCamera.targetTexture != null)
-            blurCamera.targetTexture.Release();
-        
-        ChancellorEffectsController.OnEffectEnabled -= OnAlarm;
-        KillController.OnPlayerKilled -= OnPlayerKilled;
-        KillController.OnPlayerRespawned -= OnPlayerRespawned;
     }
     
     private void OnAlarm(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
@@ -97,5 +93,17 @@ public class BlurEffect : MonoBehaviour
         blurScreen.material.color = Player.LocalPlayer.IsDead ? alarmColor : defaultColor;
 
         alarmInProgress = false;
+    }
+    
+    private void OnDestroy()
+    {
+        if (blurCamera != null && blurCamera.targetTexture != null)
+            blurCamera.targetTexture.Release();
+        
+        ChancellorEffectsController.OnEffectEnabled -= OnAlarm;
+        
+        KillController.OnPlayerKilled -= OnPlayerKilled;
+        KillController.OnPlayerRespawned -= OnPlayerRespawned;
+        KillController.OnMiniGameNextKey -= OnMiniGameNextKey;
     }
 }

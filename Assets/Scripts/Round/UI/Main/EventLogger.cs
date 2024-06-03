@@ -59,6 +59,19 @@ namespace Round.UI.Main
             TrapDispenserInteractable.OnTrapNotAdded += LogTrapNotAdded;
 
             ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
+            
+            KillController.OnMiniGameStarting += OnMiniGameStarting;
+            KillController.OnMiniGameEnded += OnMiniGameEnded;
+        }
+
+        private void OnMiniGameStarting()
+        {
+            
+        }
+        
+        private void OnMiniGameEnded()
+        {
+            
         }
 
         private void RegisterRoundControllerCallbacks()

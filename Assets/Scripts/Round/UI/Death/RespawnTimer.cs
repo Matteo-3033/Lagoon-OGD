@@ -45,13 +45,13 @@ namespace Round.UI.Death
 
         private void UpdateText(int i)
         {
-            text.text = $"<color=red>Respawning in {i}...</color>";
+            text.text = $"Respawning in {i}...";
         }
         
         private void SetDots(int i)
         {
             var dots = new string('.', i);
-            text.text = $"<color=red>Waiting for server{dots}</color>";
+            text.text = $"Waiting for server{dots}";
         }
     }
 }

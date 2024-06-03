@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Round
 {
@@ -12,7 +13,6 @@ namespace Round
         public const int RESPAWN_TIME = 10;
         private const int WAIT_BEFORE_MINIGAME = 1;
         private const int KEYS_PER_MINIGAME = 3;
-        private const float MINIGAME_TIME = 15;
 
         public enum MiniGameKeys
         {
@@ -32,11 +32,13 @@ namespace Round
         
 
         private bool roundInProgress;
-        private bool miniGameRunning;
-        private readonly Dictionary<string, float> playerTimes = new();
+        
+        public bool MiniGameRunning { get; private set; }
+        private readonly object miniGameLock = new();
 
         private List<Player> _players;
         private List<Player> Players => _players ??= RoundController.Instance.Players.ToList();
+        
 
         private void Awake()
         {
@@ -68,7 +70,7 @@ namespace Round
         [Server]
         public void TryKillPlayer(Player killed, object by, bool stealTrap = false)
         {
-            if (miniGameRunning || killed.IsDead || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
+            if (MiniGameRunning || killed.IsDead || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
                 return;
 
             KillPlayer(killed, by, stealTrap);
@@ -98,7 +100,7 @@ namespace Round
 
         private void Update()
         {
-            if (!isServer || !roundInProgress || miniGameRunning)
+            if (!isServer || !roundInProgress || MiniGameRunning)
                 return;
 
             if (Players.TrueForAll(p => p.FieldOfView.CanSeePlayer && !p.IsDead)) // TODO: controllare solo il triangolo interno
@@ -109,8 +111,7 @@ namespace Round
         private IEnumerator StartKillMiniGame()
         {
             Debug.Log("Starting kill minigame");
-            miniGameRunning = true;
-            playerTimes.Clear();
+            MiniGameRunning = true;
             
             var enemies = FindObjectsByType<EnemyFSM>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var enemy in enemies)
@@ -128,7 +129,7 @@ namespace Round
         }
 
         [Server]
-        private IEnumerator EndMiniGame()
+        private IEnumerator EndMiniGame(Player winner)
         {
             Debug.Log("Ending kill minigame");
                         
@@ -139,18 +140,10 @@ namespace Round
             
             yield return new WaitForSeconds(1);
 
-            var players = RoundController.Instance.Players.ToList();
-
-            var winner = players[0];
-            var loser = players[1];
-            if (playerTimes[winner.Username] > playerTimes[loser.Username])
-            {
-                winner = players[1];
-                loser = players[0];
-            }
+            var loser = Players.First(p => p.Username != winner.Username);
 
             KillPlayer(loser, winner, winner.StabManager.CanStealTraps);
-            miniGameRunning = false;
+            MiniGameRunning = false;
         }
 
         [Server]
@@ -178,7 +171,7 @@ namespace Round
         {
             Debug.Log("Starting kill minigame");
             
-            miniGameRunning = true;
+            MiniGameRunning = true;
             Player.LocalPlayer.EnableMovement(false);
             OnMiniGameStarting?.Invoke();
         }
@@ -195,7 +188,7 @@ namespace Round
         {
             Debug.Log("Ending kill minigame");
 
-            miniGameRunning = false;
+            MiniGameRunning = false;
             Player.LocalPlayer.EnableMovement(true);
             OnMiniGameEnded?.Invoke();
         }
@@ -203,13 +196,12 @@ namespace Round
         [Client]
         private IEnumerator GetPlayerInput(List<MiniGameKeys> sequence)
         {
-            // TODO: aggiungere timeout
             yield return null;
             var startTime = Time.time * 1000;
 
             Debug.Log("Starting minigame sequence");
             var i = 0;
-            while (miniGameRunning && i < sequence.Count)
+            while (MiniGameRunning && i < sequence.Count)
             {
                 Debug.Log($"Waiting for key {sequence[i]}");
                 OnMiniGameNextKey?.Invoke(sequence[i]);
@@ -238,24 +230,24 @@ namespace Round
             
             OnMiniGameNextKey?.Invoke(null);
             
-            if (miniGameRunning)
+            if (MiniGameRunning)
                 CmdMiniGameSequenceEnded(Player.LocalPlayer.Username, time);
         }
-
-
+        
         [Command(requiresAuthority = false)]
         private void CmdMiniGameSequenceEnded(string playerUsername, float time)
         {
-            if (!miniGameRunning || time < 0)
-                return;
+            lock (miniGameLock)
+            {
+                if (!MiniGameRunning || time < 0)
+                    return;
+                MiniGameRunning = false;
+            }
 
             Debug.Log($"Player {playerUsername} completed the minigame in {time} milliseconds");
             
             var player = RoundController.Instance.Players.First(p => p.Username == playerUsername);
-            playerTimes[player.Username] = time;
-
-            if (playerTimes.Count == 2)
-                StartCoroutine(EndMiniGame());
+            StartCoroutine(EndMiniGame(player));
         }
 
         private void OnDestroy()
