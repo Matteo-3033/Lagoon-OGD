@@ -66,7 +66,7 @@ namespace Round
         [Server]
         public void TryKillPlayer(Player killed, object by, bool stealTrap = false)
         {
-            if (miniGameStarted || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
+            if (miniGameStarted || killed.IsDead || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
                 return;
 
             KillPlayer(killed, by, stealTrap);
@@ -99,7 +99,7 @@ namespace Round
             if (!isServer || !roundInProgress || miniGameStarted)
                 return;
 
-            if (Players.TrueForAll(p => p.FieldOfView.CanSeePlayer)) // TODO: controllare solo il triangolo interno
+            if (Players.TrueForAll(p => p.FieldOfView.CanSeePlayer && !p.IsDead)) // TODO: controllare solo il triangolo interno
                 StartCoroutine(StartKillMiniGame());
         }
 

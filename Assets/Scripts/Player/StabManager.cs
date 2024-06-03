@@ -40,15 +40,21 @@ public class StabManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CmdStab(NetworkConnectionToClient sender = null)
     {
+        if (!CanStab()) return;
+        lastStabTime = Time.time;
+        
+        Debug.Log("Stab from " + sender.Player());
         TargetOnStab(sender.Opponent().connectionToClient);
         if (!Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE)) return;
 
         if (hit.collider.TryGetComponent(out Player opponent))
         {
+            Debug.Log("Trying to kill opponent");
             KillController.Instance.TryKillPlayer(opponent, sender.Player(), CanStealTraps);
         }
         else if (hit.collider.TryGetComponent(out FSMSentinel sentinel))
         {
+            Debug.Log("Trying to kill sentinel");
             float halfFieldOfViewAngle = sentinel.GetComponentInChildren<FieldOfView>().GetAngle() / 2;
             float dotProduct = Vector3.Dot(transform.forward, sentinel.transform.forward);
 

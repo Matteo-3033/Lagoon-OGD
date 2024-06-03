@@ -12,23 +12,23 @@ public class SentinelSoundManager : SoundManager
         OnSentinelStep();
     }
 
-    public void OnSentinelStep()
+    private void OnSentinelStep()
     {
-        PlayClipAtPoint(audioClips.sentinelSteps, transform.position);
+        PlayClipAtPoint(audioClips.sentinelSteps, transform.position, 0.5F, true);
     }
 
     public void OnSentinelAlarm()
     {
-        PlayClipAtPoint(audioClips.sentinelAlarm, transform.position);
+        PlayClipAtPoint(audioClips.sentinelAlarm, transform.position, 0.5F, true);
     }
 
     public void OnSentinelEnemyLost()
     {
-        PlayClipAtPoint(audioClips.sentinelEnemyLost, transform.position);
+        PlayClipAtPoint(audioClips.sentinelEnemyLost, transform.position, 0.5F, true);
     }
 
     public void OnSentinelSearching()
     {
-        PlayClipAtPoint(audioClips.sentinelSearchingSound, transform.position);
+        PlayClipAtPoint(audioClips.sentinelSearchingSound, transform.position, 0.5F, true);
     }
 }

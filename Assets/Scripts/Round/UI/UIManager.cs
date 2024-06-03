@@ -12,16 +12,20 @@ namespace Round.UI
         [SerializeField] private Screen countdown;
         [SerializeField] private Screen round;
         [SerializeField] private Screen winner;
+        [SerializeField] private Screen death;
+        [SerializeField] private Screen killMiniGame;
         
         private readonly Dictionary<ScreenKey, Screen> menus = new();
-        private Screen currentScreen;
+        private readonly List<Screen> screenStack = new();
 
         private enum ScreenKey
         {
             Waiting,
             Countdown,
             Main,
-            Winner
+            Winner,
+            Death,
+            KillMiniGame
         }
         
         private void Start()
@@ -33,15 +37,27 @@ namespace Round.UI
             AddMenu(ScreenKey.Countdown, countdown);
             AddMenu(ScreenKey.Main, round);
             AddMenu(ScreenKey.Winner, winner);
+            AddMenu(ScreenKey.Death, death);
+            AddMenu(ScreenKey.KillMiniGame, killMiniGame);
             
             ShowMenu(ScreenKey.Waiting);
-            
+
+            RegisterCallbacks();
+        }
+        
+        private void RegisterCallbacks()
+        {
             if (RoundController.HasLoaded())
                 RegisterRoundCallbacks();
             else
                 RoundController.OnRoundLoaded += RegisterRoundCallbacks;
-        }
 
+            KillController.OnPlayerKilled += OnPlayerKilled;
+            KillController.OnPlayerRespawned += OnPlayerRespawned;
+            KillController.OnMinigameStarting += OnKillMiniGameStarting;
+            KillController.OnMinigameEnded += OnKillMiniGameEnded;
+        }
+        
         private void RegisterRoundCallbacks()
         {
             RoundController.Instance.OnCountdownStart += () => ShowMenu(ScreenKey.Countdown);
@@ -55,11 +71,36 @@ namespace Round.UI
             
             StartCoroutine(DoShowWinnerScreen());
         }
+        
+        private void OnPlayerKilled(Player player)
+        {
+            if (!player.isLocalPlayer)
+                return;
+            
+            ShowMenu(ScreenKey.Death, false);
+        }
+        
+        private void OnPlayerRespawned(Player player)
+        {
+            if (!player.isLocalPlayer)
+                return;
+            
+            ShowMenu(ScreenKey.Main);
+        }
+        
+        private void OnKillMiniGameStarting()
+        {
+            ShowMenu(ScreenKey.KillMiniGame, false);
+        }
+        
+        private void OnKillMiniGameEnded()
+        {
+            ShowMenu(ScreenKey.Main);
+        }
 
         private IEnumerator DoShowWinnerScreen()
         {
             yield return new WaitForSeconds(1);
-            
             ShowMenu(ScreenKey.Winner);
         }
 
@@ -70,17 +111,27 @@ namespace Round.UI
             value.gameObject.SetActive(false);
         }
 
-        private void ShowMenu(ScreenKey key)
+        private void ShowMenu(ScreenKey key, bool clearStack = true)
         {
-            if (currentScreen != null)
-                currentScreen.OnUnfocus();
-            currentScreen = menus[key];
-            currentScreen.OnFocus();
+            if (clearStack)
+            {
+                foreach (var s in screenStack)
+                    s.OnUnfocus();
+                screenStack.Clear();
+            }
+            
+            var newScreen = menus[key];
+            screenStack.Add(newScreen);
+            newScreen.OnFocus();
         }
 
         private void OnDestroy()
         {
             RoundController.OnRoundLoaded -= RegisterRoundCallbacks;
+            KillController.OnPlayerKilled -= OnPlayerKilled;
+            KillController.OnPlayerRespawned -= OnPlayerRespawned;
+            KillController.OnMinigameStarting -= OnKillMiniGameStarting;
+            KillController.OnMinigameEnded -= OnKillMiniGameEnded;
         }
     }
 }

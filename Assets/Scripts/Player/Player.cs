@@ -4,17 +4,17 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utils;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
-    [FormerlySerializedAs("MangiagalliBodyGameObject")] [SerializeField] private GameObject MangiagalliBodyPrefab;
-    [FormerlySerializedAs("GolgiBodyGameObject")] [SerializeField] private GameObject GolgiBodyPrefab;
+    [SerializeField] private GameObject mangiagalliBodyPrefab = null;
+    [SerializeField] private GameObject golgiBodyPrefab = null;
     [SerializeField] private Material transparentMaterial;
+    public bool IsDead { get; private set; }
+    
     private Material defaultMaterial;
-    [field: SyncVar(hook = nameof(OnDeadUpdate))] public bool IsDead { get; private set; }
 
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
@@ -60,7 +60,7 @@ public class Player : NetworkBehaviour
         Kills = profile.Kills().Value;
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     private void CmdPositionChanged(Vector3 position)
     {
         OnPositionChanged?.Invoke(this, position);
@@ -70,12 +70,14 @@ public class Player : NetworkBehaviour
     public void Kill()
     {
         IsDead = true;
+        RpcOnKilled();
     }
     
     [Server]
     public void Respawn()
     {
         IsDead = false;
+        RpcOnRespawned();
     }
 
     #endregion
@@ -117,7 +119,7 @@ public class Player : NetworkBehaviour
 
     private void SetUpModel()
     {
-        GameObject model = IsMangiagalli ? MangiagalliBodyPrefab : GolgiBodyPrefab;
+        GameObject model = null; //IsMangiagalli ? mangiagalliBodyPrefab : golgiBodyPrefab;
 
         if (model)
         {
@@ -125,7 +127,8 @@ public class Player : NetworkBehaviour
             model = Instantiate(model, transform);
         }
 
-        defaultMaterial = model.GetComponentInChildren<MeshRenderer>().material;
+        //defaultMaterial = model.GetComponentInChildren<MeshRenderer>().material;
+        defaultMaterial = GetComponentInChildren<MeshRenderer>().material;
     }
 
     [TargetRpc]
@@ -146,6 +149,7 @@ public class Player : NetworkBehaviour
     {
         PositionController.enabled = enable;
         Interactor.enabled = enable;
+        StabManager.enabled = enable;
     }
 
     // On client only
@@ -196,6 +200,7 @@ public class Player : NetworkBehaviour
     [Client]
     public void ReturnToSpawn()
     {
+        Debug.Log("Returning to spawn");
         transform.position = spawnPoint;
         CmdPositionChanged(spawnPoint);
     }
@@ -206,18 +211,13 @@ public class Player : NetworkBehaviour
         InputHandler.Inverted = invert;
     }
     
-    [Client]
-    private void OnDeadUpdate(bool oldValue, bool newValue)
+    [ClientRpc]
+    private void RpcOnKilled()
     {
-        if (newValue)
-            OnKilled();
-        else
-            OnRespawned();
-    }
-    
-    [Client]
-    private void OnKilled()
-    {
+        Debug.Log("Player " + Username + " killed");
+        IsDead = true;
+        ReturnToSpawn();
+        
         InputHandler.enabled = false;
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Collider>().enabled = false;
@@ -226,9 +226,12 @@ public class Player : NetworkBehaviour
             transform.GetChild(i).gameObject.SetActive(false);
     }
     
-    [Client]
-    private void OnRespawned()
+    [ClientRpc]
+    private void RpcOnRespawned()
     {
+        Debug.Log("Player " + Username + " respawned");
+        IsDead = false;
+        
         for (var i = 0; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(true);
 

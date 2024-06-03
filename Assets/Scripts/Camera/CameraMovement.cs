@@ -48,7 +48,7 @@ public class CameraMovement : NetworkBehaviour
 
     private void OnPlayerKilled(Player player)
     {
-        if (Player.LocalPlayer != player)
+        if (!player.isLocalPlayer)
             return;
 
         _followOpponent = true;
@@ -57,7 +57,7 @@ public class CameraMovement : NetworkBehaviour
 
     private void OnPlayerRespawned(Player player)
     {
-        if (Player.LocalPlayer != player)
+        if (!player.isLocalPlayer)
             return;
 
         _followOpponent = false;

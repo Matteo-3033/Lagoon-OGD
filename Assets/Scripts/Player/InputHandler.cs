@@ -83,19 +83,6 @@ public class InputHandler : MonoBehaviour, IInputHandler
 
     private void OnDisable()
     {
-        if (isActiveAndEnabled)
-            StartCoroutine(Disable());
-    }
-
-    private IEnumerator Disable()
-    {
-        yield return null;
-
-#if !UNITY_EDITOR
-        if (!GetComponent<Player>().isLocalPlayer)
-            yield break;
-#endif
-
         input.Disable();
         input.Player.Movement.performed -= Movement_performed;
         input.Player.Movement.canceled -= Movement_canceled;
@@ -189,6 +176,8 @@ public class InputHandler : MonoBehaviour, IInputHandler
     
     private void Stab_performed(InputAction.CallbackContext obj)
     {
+        Debug.Log("StabPerformed");
+        Debug.Log(GetComponent<Player>().Username);
         OnStab?.Invoke(this, EventArgs.Empty);
     }
 
