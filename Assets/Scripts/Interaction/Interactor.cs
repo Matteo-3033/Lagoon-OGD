@@ -41,19 +41,10 @@ namespace Interaction
                 {
                     Deselect();
                     Select(obj);
-                    ActivateMinimapIcon(obj);
                 }
             }
             else
                 Deselect();
-        }
-
-        private void ActivateMinimapIcon(GameObject obj)
-        {
-            if (!obj || obj == Player.Opponent?.gameObject || obj == Player.LocalPlayer?.gameObject) return;
-
-            MinimapIcon icon = obj.GetComponentInChildren<MinimapIcon>();
-            icon?.Show();
         }
 
         private void CheckInteraction(object sender, bool pressed)

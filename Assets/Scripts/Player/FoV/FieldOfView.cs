@@ -64,17 +64,27 @@ public class FieldOfView : NetworkBehaviour
         var startAngle = Quaternion.AngleAxis(-fieldOfViewDegree / 2, Vector3.up);
         var direction = startAngle * transform.forward;
 
-        var canSeePlayer = false;
+        bool canSeePlayer = false;
 
         for (var i = 0; i <= rayCount; i++)
         {
             Vector3 newVertex;
             if (Physics.Raycast(transform.position, direction, out var hit, viewDistance))
             {
-                canSeePlayer = canSeePlayer || hit.collider.gameObject.TryGetComponent(out Player opponent);
+                GameObject colliderGameObject = hit.collider.gameObject;
+                canSeePlayer = canSeePlayer || colliderGameObject.TryGetComponent(out Player _);
+                
+                if (i == rayCount / 2)
+                {
+                    ActivateMinimapIcon(colliderGameObject);
+                }
+
                 newVertex = transform.worldToLocalMatrix.MultiplyPoint(hit.point);
             }
-            else newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
+            else
+            {
+                newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
+            }
 
             vertices[i + 1] = newVertex;
 
@@ -94,6 +104,14 @@ public class FieldOfView : NetworkBehaviour
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
+    }
+
+    private void ActivateMinimapIcon(GameObject obj)
+    {
+        if (!obj || obj == Player.Opponent?.gameObject || obj == Player.LocalPlayer?.gameObject) return;
+
+        MinimapIcon icon = obj.GetComponentInChildren<MinimapIcon>();
+        icon?.Show();
     }
 
     public float GetViewDistance()
