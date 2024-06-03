@@ -54,8 +54,8 @@ namespace Round.UI
 
             KillController.OnPlayerKilled += OnPlayerKilled;
             KillController.OnPlayerRespawned += OnPlayerRespawned;
-            KillController.OnMinigameStarting += OnKillMiniGameStarting;
-            KillController.OnMinigameEnded += OnKillMiniGameEnded;
+            KillController.OnMiniGameStarting += OnKillMiniGameStarting;
+            KillController.OnMiniGameEnded += OnKillMiniGameEnded;
         }
         
         private void RegisterRoundCallbacks()
@@ -130,8 +130,8 @@ namespace Round.UI
             RoundController.OnRoundLoaded -= RegisterRoundCallbacks;
             KillController.OnPlayerKilled -= OnPlayerKilled;
             KillController.OnPlayerRespawned -= OnPlayerRespawned;
-            KillController.OnMinigameStarting -= OnKillMiniGameStarting;
-            KillController.OnMinigameEnded -= OnKillMiniGameEnded;
+            KillController.OnMiniGameStarting -= OnKillMiniGameStarting;
+            KillController.OnMiniGameEnded -= OnKillMiniGameEnded;
         }
     }
 }

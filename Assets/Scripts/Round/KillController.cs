@@ -12,25 +12,27 @@ namespace Round
         public const int RESPAWN_TIME = 10;
         private const int WAIT_BEFORE_MINIGAME = 1;
         private const int KEYS_PER_MINIGAME = 3;
+        private const float MINIGAME_TIME = 15;
 
-        private enum MiniGameKeys
+        public enum MiniGameKeys
         {
-            UpArrow,
-            DownArrow,
-            LeftArrow,
-            RightArrow
+            Up = 'w',
+            Down = 's',
+            Left = 'a',
+            Right = 'd'
         }
 
         public static KillController Instance { get; private set; }
 
         public static event Action<Player> OnPlayerKilled;
         public static event Action<Player> OnPlayerRespawned;
-        public static event Action OnMinigameStarting;
-        public static event Action OnMinigameEnded;
+        public static event Action OnMiniGameStarting;
+        public static event Action OnMiniGameEnded;
+        public static event Action<MiniGameKeys?> OnMiniGameNextKey;
         
 
         private bool roundInProgress;
-        private bool miniGameStarted;
+        private bool miniGameRunning;
         private readonly Dictionary<string, float> playerTimes = new();
 
         private List<Player> _players;
@@ -66,7 +68,7 @@ namespace Round
         [Server]
         public void TryKillPlayer(Player killed, object by, bool stealTrap = false)
         {
-            if (miniGameStarted || killed.IsDead || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
+            if (miniGameRunning || killed.IsDead || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
                 return;
 
             KillPlayer(killed, by, stealTrap);
@@ -96,7 +98,7 @@ namespace Round
 
         private void Update()
         {
-            if (!isServer || !roundInProgress || miniGameStarted)
+            if (!isServer || !roundInProgress || miniGameRunning)
                 return;
 
             if (Players.TrueForAll(p => p.FieldOfView.CanSeePlayer && !p.IsDead)) // TODO: controllare solo il triangolo interno
@@ -107,16 +109,19 @@ namespace Round
         private IEnumerator StartKillMiniGame()
         {
             Debug.Log("Starting kill minigame");
-            miniGameStarted = true;
+            miniGameRunning = true;
             playerTimes.Clear();
-
-            RpcDisableMovement();
+            
+            var enemies = FindObjectsByType<EnemyFSM>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var enemy in enemies)
+                enemy.StopFSM();
+            RpcBeforeMiniGameStart();
 
             yield return new WaitForSeconds(WAIT_BEFORE_MINIGAME);
 
             var sequence = new List<MiniGameKeys>
             {
-                MiniGameKeys.UpArrow, MiniGameKeys.DownArrow, MiniGameKeys.LeftArrow, MiniGameKeys.RightArrow
+                MiniGameKeys.Up, MiniGameKeys.Down, MiniGameKeys.Left, MiniGameKeys.Right
             }.OrderBy(_ => Guid.NewGuid()).ToList().GetRange(0, KEYS_PER_MINIGAME);
 
             RpcStartMiniGame(sequence);
@@ -126,7 +131,12 @@ namespace Round
         private IEnumerator EndMiniGame()
         {
             Debug.Log("Ending kill minigame");
-            RpcEnableMovement();
+                        
+            RpcEndMinigame();
+            var enemies = FindObjectsByType<EnemyFSM>(FindObjectsSortMode.None);
+            foreach (var enemy in enemies)
+                enemy.PlayFSM();
+            
             yield return new WaitForSeconds(1);
 
             var players = RoundController.Instance.Players.ToList();
@@ -140,7 +150,7 @@ namespace Round
             }
 
             KillPlayer(loser, winner, winner.StabManager.CanStealTraps);
-            miniGameStarted = false;
+            miniGameRunning = false;
         }
 
         [Server]
@@ -164,39 +174,79 @@ namespace Round
         }
 
         [ClientRpc]
-        private void RpcDisableMovement()
+        private void RpcBeforeMiniGameStart()
         {
             Debug.Log("Starting kill minigame");
-            // TODO: disable cameras and sentinels
-            OnMinigameStarting?.Invoke();
+            
+            miniGameRunning = true;
             Player.LocalPlayer.EnableMovement(false);
-        }
-
-        [ClientRpc]
-        private void RpcEnableMovement()
-        {
-            Debug.Log("Ending kill minigame");
-            // TODO: enable cameras and sentinels
-            OnMinigameEnded?.Invoke();
-            Player.LocalPlayer.EnableMovement(true);
+            OnMiniGameStarting?.Invoke();
         }
 
         [ClientRpc]
         private void RpcStartMiniGame(List<MiniGameKeys> sequence)
         {
             Debug.Log("Kill minigame sequence: " + string.Join(", ", sequence));
+            StartCoroutine(GetPlayerInput(sequence));
+        }
+        
+        [ClientRpc]
+        private void RpcEndMinigame()
+        {
+            Debug.Log("Ending kill minigame");
+
+            miniGameRunning = false;
+            Player.LocalPlayer.EnableMovement(true);
+            OnMiniGameEnded?.Invoke();
         }
 
         [Client]
-        public void OnMiniGameSequenceCompleted(float time)
+        private IEnumerator GetPlayerInput(List<MiniGameKeys> sequence)
         {
-            CmdMiniGameSequenceEnded(Player.LocalPlayer.Username, time);
+            // TODO: aggiungere timeout
+            yield return null;
+            var startTime = Time.time * 1000;
+
+            Debug.Log("Starting minigame sequence");
+            var i = 0;
+            while (miniGameRunning && i < sequence.Count)
+            {
+                Debug.Log($"Waiting for key {sequence[i]}");
+                OnMiniGameNextKey?.Invoke(sequence[i]);
+                if (Input.anyKeyDown)
+                {
+                    foreach (var c in Input.inputString.ToLower())
+                    {
+                        if(c == (char) sequence[i])
+                        {
+                            Debug.Log($"The next key '{c}' was entered correctly");
+                            i++;
+                        }
+                        else
+                        {
+                            Debug.Log($"The next key '{c}' was entered correctly");
+                            i++;
+                        }
+                    }
+                }
+                
+                yield return null;
+            }
+            
+            Debug.Log("The minigame sequence ended");
+            var time = Time.time * 1000 - startTime;
+            
+            OnMiniGameNextKey?.Invoke(null);
+            
+            if (miniGameRunning)
+                CmdMiniGameSequenceEnded(Player.LocalPlayer.Username, time);
         }
+
 
         [Command(requiresAuthority = false)]
         private void CmdMiniGameSequenceEnded(string playerUsername, float time)
         {
-            if (!miniGameStarted || time < 0)
+            if (!miniGameRunning || time < 0)
                 return;
 
             Debug.Log($"Player {playerUsername} completed the minigame in {time} milliseconds");
