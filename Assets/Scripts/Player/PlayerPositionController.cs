@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerPositionController : MonoBehaviour
@@ -13,12 +14,15 @@ public class PlayerPositionController : MonoBehaviour
     private float factor = 1F;
 
     private float MaxSpeed => baseMaxSpeed * factor;
-    
+
     private IInputHandler inputHandler;
     private Rigidbody rb;
 
     private Vector3 currentSpeed;
     private List<Vector3> additionalVectors = new();
+    private Animator[] _animator;
+    private static readonly int SpeedParam = Animator.StringToHash("speed");
+
 
     private void Start()
     {
@@ -30,6 +34,7 @@ public class PlayerPositionController : MonoBehaviour
 #endif
 
         rb = GetComponent<Rigidbody>();
+        _animator = GetComponentsInChildren<Animator>();
         inputHandler = player.InputHandler;
     }
 
@@ -37,7 +42,18 @@ public class PlayerPositionController : MonoBehaviour
     {
         if (inputHandler == null)
             return;
-        
+
+        foreach (Animator a in _animator)
+        {
+            foreach (AnimatorControllerParameter parameter in a.parameters)
+            {
+                if (parameter.nameHash == SpeedParam)
+                {
+                    a.SetFloat(SpeedParam, currentSpeed.magnitude);
+                }
+            }
+        }
+
         Vector3 inputDirection = inputHandler.GetMovementDirection();
 
         if (acceleratedMovement)
@@ -71,7 +87,10 @@ public class PlayerPositionController : MonoBehaviour
             accelerationComponent += v;
         }
 
-        float speedLimit = inputDirection.magnitude != 0 ? MaxSpeed * inputDirection.magnitude : MaxSpeed; //Speed is limited by the controller analogue
+        float speedLimit =
+            inputDirection.magnitude != 0
+                ? MaxSpeed * inputDirection.magnitude
+                : MaxSpeed; //Speed is limited by the controller analogue
         Vector3 movement = currentSpeed * t + .5f * t * t * accelerationComponent;
         currentSpeed = Vector3.ClampMagnitude(currentSpeed + t * accelerationComponent, speedLimit);
 
