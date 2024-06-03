@@ -64,9 +64,9 @@ namespace Round
 
 
         [Server]
-        public void TryKillPlayer(Player killed, object by, bool stealTrap)
+        public void TryKillPlayer(Player killed, object by, bool stealTrap = false)
         {
-            if (by is Player p && (miniGameStarted || killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer))
+            if (miniGameStarted || (by is Player p && (killed.FieldOfView.CanSeePlayer || !p.FieldOfView.CanSeePlayer)))
                 return;
 
             KillPlayer(killed, by, stealTrap);
@@ -106,6 +106,7 @@ namespace Round
         [Server]
         private IEnumerator StartKillMiniGame()
         {
+            Debug.Log("Starting kill minigame");
             miniGameStarted = true;
             playerTimes.Clear();
 
@@ -124,6 +125,7 @@ namespace Round
         [Server]
         private IEnumerator EndMiniGame()
         {
+            Debug.Log("Ending kill minigame");
             RpcEnableMovement();
             yield return new WaitForSeconds(1);
 
@@ -144,6 +146,7 @@ namespace Round
         [Server]
         private void KillPlayer(Player killed, object by, bool stealTrap)
         {
+            Debug.Log($"Player {killed.Username} killed by {by}");
             if (by is Player p)
             {
                 if (killed.Inventory.StealKeyFragment())
@@ -163,6 +166,7 @@ namespace Round
         [ClientRpc]
         private void RpcDisableMovement()
         {
+            Debug.Log("Starting kill minigame");
             // TODO: disable cameras and sentinels
             OnMinigameStarting?.Invoke();
             Player.LocalPlayer.EnableMovement(false);
@@ -171,6 +175,7 @@ namespace Round
         [ClientRpc]
         private void RpcEnableMovement()
         {
+            Debug.Log("Ending kill minigame");
             // TODO: enable cameras and sentinels
             OnMinigameEnded?.Invoke();
             Player.LocalPlayer.EnableMovement(true);
@@ -179,21 +184,23 @@ namespace Round
         [ClientRpc]
         private void RpcStartMiniGame(List<MiniGameKeys> sequence)
         {
-            throw new NotImplementedException();
+            Debug.Log("Kill minigame sequence: " + string.Join(", ", sequence));
         }
 
         [Client]
-        public void OnMiniGameEnded(float time)
+        public void OnMiniGameSequenceCompleted(float time)
         {
-            CmdMiniGameEnded(Player.LocalPlayer.Username, time);
+            CmdMiniGameSequenceEnded(Player.LocalPlayer.Username, time);
         }
 
         [Command(requiresAuthority = false)]
-        private void CmdMiniGameEnded(string playerUsername, float time)
+        private void CmdMiniGameSequenceEnded(string playerUsername, float time)
         {
             if (!miniGameStarted || time < 0)
                 return;
 
+            Debug.Log($"Player {playerUsername} completed the minigame in {time} milliseconds");
+            
             var player = RoundController.Instance.Players.First(p => p.Username == playerUsername);
             playerTimes[player.Username] = time;
 
