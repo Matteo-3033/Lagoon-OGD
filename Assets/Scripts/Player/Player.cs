@@ -4,11 +4,14 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
+    [FormerlySerializedAs("MangiagalliBodyGameObject")] [SerializeField] private GameObject MangiagalliBodyPrefab;
+    [FormerlySerializedAs("GolgiBodyGameObject")] [SerializeField] private GameObject GolgiBodyPrefab;
     [SerializeField] private Material transparentMaterial;
     private Material defaultMaterial;
 
@@ -21,7 +24,7 @@ public class Player : NetworkBehaviour
 
     public Inventory Inventory => GetComponent<Inventory>();
     public PlayerPositionController PositionController => GetComponent<PlayerPositionController>();
-	public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
+    public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
     public InputHandler InputHandler => GetComponent<InputHandler>();
     public Interactor Interactor => GetComponentInChildren<Interactor>();
     public TrapSelector TrapSelector => GetComponentInChildren<TrapSelector>();
@@ -29,10 +32,10 @@ public class Player : NetworkBehaviour
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
     public MinimapIcon MinimapIcon => GetComponentInChildren<MinimapIcon>();
     public RippleController RippleController => GetComponentInChildren<RippleController>();
-    
-    
+
+
     private Vector3 spawnPoint;
-    
+
 
     [field: SyncVar] public string Username { get; private set; }
 
@@ -75,27 +78,26 @@ public class Player : NetworkBehaviour
         if (!identity.isLocalPlayer)
             OnStartOpponent();
 
-        defaultMaterial = GetComponentInChildren<MeshRenderer>().material;
         spawnPoint = transform.position;
     }
-    
+
     [ClientRpc]
     public void RpcOnKilled()
     {
         InputHandler.enabled = false;
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Collider>().enabled = false;
-        
+
         for (var i = 0; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(false);
     }
-    
+
     [ClientRpc]
     public void RpcOnRespawned()
     {
         for (var i = 0; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(true);
-        
+
         InputHandler.enabled = true;
         GetComponent<Collider>().enabled = true;
         GetComponent<Rigidbody>().useGravity = true;
@@ -107,6 +109,7 @@ public class Player : NetworkBehaviour
 
         LocalPlayer = this;
 
+        SetUpModel();
         MakeVisible();
         OnPlayerSpawned?.Invoke(LocalPlayer);
     }
@@ -116,8 +119,22 @@ public class Player : NetworkBehaviour
     {
         Opponent = this;
 
+        SetUpModel();
         MakeInvisible();
         OnPlayerSpawned?.Invoke(Opponent);
+    }
+
+    private void SetUpModel()
+    {
+        GameObject model = IsMangiagalli ? MangiagalliBodyPrefab : GolgiBodyPrefab;
+
+        if (model)
+        {
+            GetComponentInChildren<MeshRenderer>().gameObject.SetActive(false);
+            model = Instantiate(model, transform);
+        }
+
+        defaultMaterial = model.GetComponentInChildren<MeshRenderer>().material;
     }
 
     [TargetRpc]
@@ -191,13 +208,13 @@ public class Player : NetworkBehaviour
         transform.position = spawnPoint;
         CmdPositionChanged(spawnPoint);
     }
-    
+
     [Client]
     public void InvertControls(bool invert)
     {
         InputHandler.Inverted = invert;
     }
-    
+
     #endregion
 
     private void OnDestroy()
