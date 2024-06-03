@@ -218,7 +218,7 @@ public class FSMSentinel : EnemyFSM
 
         if (!hit.collider.TryGetComponent(out Player enemy)) return false;
 
-        KillController.Instance.TryKillPlayer(enemy, this, false);
+        KillController.Instance.TryKillPlayer(enemy, this);
         return true;
     }
 
