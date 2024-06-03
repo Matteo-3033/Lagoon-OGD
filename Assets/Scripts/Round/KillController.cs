@@ -167,18 +167,28 @@ namespace Round
         private void RpcDisableMovement()
         {
             Debug.Log("Starting kill minigame");
-            // TODO: disable cameras and sentinels
-            OnMinigameStarting?.Invoke();
+            
+            var enemies = FindObjectsByType<EnemyFSM>(FindObjectsSortMode.None);
+            foreach (var enemy in enemies)
+                enemy.PlayFSM();
+            
             Player.LocalPlayer.EnableMovement(false);
+            
+            OnMinigameStarting?.Invoke();
         }
 
         [ClientRpc]
         private void RpcEnableMovement()
         {
             Debug.Log("Ending kill minigame");
-            // TODO: enable cameras and sentinels
-            OnMinigameEnded?.Invoke();
+            
+            var enemies = FindObjectsByType<EnemyFSM>(FindObjectsSortMode.None);
+            foreach (var enemy in enemies)
+                enemy.PlayFSM();
+            
             Player.LocalPlayer.EnableMovement(true);
+            
+            OnMinigameEnded?.Invoke();
         }
 
         [ClientRpc]
