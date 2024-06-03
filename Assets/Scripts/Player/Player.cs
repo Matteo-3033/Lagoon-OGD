@@ -14,7 +14,7 @@ public class Player : NetworkBehaviour
     [FormerlySerializedAs("GolgiBodyGameObject")] [SerializeField] private GameObject GolgiBodyPrefab;
     [SerializeField] private Material transparentMaterial;
     private Material defaultMaterial;
-    private bool _isDead = false;
+    [field: SyncVar(hook = nameof(OnDeadUpdate))] public bool IsDead { get; private set; }
 
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
@@ -65,6 +65,18 @@ public class Player : NetworkBehaviour
     {
         OnPositionChanged?.Invoke(this, position);
     }
+    
+    [Server]
+    public void Kill()
+    {
+        IsDead = true;
+    }
+    
+    [Server]
+    public void Respawn()
+    {
+        IsDead = false;
+    }
 
     #endregion
 
@@ -80,35 +92,6 @@ public class Player : NetworkBehaviour
             OnStartOpponent();
 
         spawnPoint = transform.position;
-    }
-
-    public bool isPlayerDead()
-    {
-        return _isDead;
-    }
-    
-    [ClientRpc]
-    public void RpcOnKilled()
-    {
-        InputHandler.enabled = false;
-        GetComponent<Rigidbody>().useGravity = false;
-        GetComponent<Collider>().enabled = false;
-        _isDead = true;
-        
-        for (var i = 0; i < transform.childCount; i++)
-            transform.GetChild(i).gameObject.SetActive(false);
-    }
-
-    [ClientRpc]
-    public void RpcOnRespawned()
-    {
-        for (var i = 0; i < transform.childCount; i++)
-            transform.GetChild(i).gameObject.SetActive(true);
-
-        InputHandler.enabled = true;
-        GetComponent<Collider>().enabled = true;
-        GetComponent<Rigidbody>().useGravity = true;
-        _isDead = false;
     }
 
     public override void OnStartLocalPlayer()
@@ -221,6 +204,41 @@ public class Player : NetworkBehaviour
     public void InvertControls(bool invert)
     {
         InputHandler.Inverted = invert;
+    }
+    
+    [Client]
+    private void OnDeadUpdate(bool oldValue, bool newValue)
+    {
+        if (newValue)
+            OnKilled();
+        else
+            OnRespawned();
+    }
+    
+    [Client]
+    private void OnKilled()
+    {
+        InputHandler.enabled = false;
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Collider>().enabled = false;
+        
+        for (var i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(false);
+    }
+    
+    [Client]
+    private void OnRespawned()
+    {
+        for (var i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(true);
+
+        InputHandler.enabled = true;
+        GetComponent<Collider>().enabled = true;
+        GetComponent<Rigidbody>().useGravity = true;
+        
+        if (isLocalPlayer)
+            MakeVisible();
+        else MakeInvisible();
     }
     
     #endregion

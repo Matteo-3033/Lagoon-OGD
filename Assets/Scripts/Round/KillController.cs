@@ -3,14 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
-using Network;
 using UnityEngine;
 
 namespace Round
 {
     public class KillController : NetworkBehaviour
     {
-        private const int RESPAWN_TIME = 10;
+        public const int RESPAWN_TIME = 10;
         private const int WAIT_BEFORE_MINIGAME = 1;
         private const int KEYS_PER_MINIGAME = 3;
 
@@ -28,6 +27,7 @@ namespace Round
         public static event Action<Player> OnPlayerRespawned;
         public static event Action OnMinigameStarting;
         public static event Action OnMinigameEnded;
+        
 
         private bool roundInProgress;
         private bool miniGameStarted;
@@ -59,7 +59,7 @@ namespace Round
         private void OnRoundLoaded()
         {
             RoundController.Instance.OnRoundStarted += () => roundInProgress = true;
-            RoundController.Instance.OnRoundEnded += (unused) => roundInProgress = false;
+            RoundController.Instance.OnRoundEnded += _ => roundInProgress = false;
         }
 
 
@@ -77,7 +77,7 @@ namespace Round
         {
             yield return new WaitForSeconds(RESPAWN_TIME);
 
-            player.RpcOnRespawned();
+            player.Respawn();
             OnPlayerRespawned?.Invoke(player);
             RpcPlayerRespawned(player);
         }
@@ -117,7 +117,7 @@ namespace Round
             var sequence = new List<MiniGameKeys>
             {
                 MiniGameKeys.UpArrow, MiniGameKeys.DownArrow, MiniGameKeys.LeftArrow, MiniGameKeys.RightArrow
-            }.OrderBy(k1 => Guid.NewGuid()).ToList().GetRange(0, KEYS_PER_MINIGAME);
+            }.OrderBy(_ => Guid.NewGuid()).ToList().GetRange(0, KEYS_PER_MINIGAME);
 
             RpcStartMiniGame(sequence);
         }
@@ -156,7 +156,7 @@ namespace Round
                     p.Inventory.AddTrap(trap);
             }
 
-            killed.RpcOnKilled();
+            killed.Kill();
             OnPlayerKilled?.Invoke(killed);
             RpcPlayerKilled(killed);
 

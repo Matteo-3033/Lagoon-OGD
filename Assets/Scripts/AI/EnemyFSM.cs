@@ -44,7 +44,7 @@ public abstract class EnemyFSM : NetworkBehaviour
         foreach (GameObject p in players)
         {
             Vector3 tempDistance = p.transform.position - transform.position;
-            if (!p.GetComponent<Player>().isPlayerDead() && tempDistance.magnitude < distance.magnitude)
+            if (!p.GetComponent<Player>().IsDead && tempDistance.magnitude < distance.magnitude)
             {
                 distance = tempDistance;
                 potentialTarget = p.gameObject;

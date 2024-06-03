@@ -69,7 +69,7 @@ namespace Round
         private bool ShouldApplyEffect()
         {
             var prob = Mathf.Max(baseProbability + (minutesPassed - 1) * PROBABILITY_INCREASE, 1F);
-            return effects.Length > 0 && Random.Range(0, 1) < prob;
+            return effects.Length > 0 && Random.Range(0, 1) < prob && RoundController.Instance.Players.ToList().TrueForAll(p => !p.IsDead);
         }
 
         [Server]
