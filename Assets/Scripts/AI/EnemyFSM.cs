@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Audio;
 using Mirror;
+using Round;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class EnemyFSM : NetworkBehaviour
@@ -18,11 +20,13 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected Transform AlarmTarget;
     protected SentinelSoundManager SoundManager;
+    private bool _canUpdate;
+    private Coroutine _fsmCoroutine;
 
     [Server]
     protected IEnumerator Patrol()
     {
-        while (true)
+        while (_canUpdate)
         {
             FSM.Update();
             yield return new WaitForSeconds(reactionTime);
@@ -34,13 +38,16 @@ public abstract class EnemyFSM : NetworkBehaviour
         Vector3 distance = Vector3.positiveInfinity;
         GameObject potentialTarget = null;
 
-        foreach (GameObject go in GameObject.FindGameObjectsWithTag("Player"))
+        var players = GameObject.FindGameObjectsWithTag("Player");
+        if (players == null) return null;
+
+        foreach (GameObject p in players)
         {
-            Vector3 tempDistance = go.transform.position - transform.position;
-            if (tempDistance.magnitude < distance.magnitude)
+            Vector3 tempDistance = p.transform.position - transform.position;
+            if (!p.GetComponent<Player>().IsDead && tempDistance.magnitude < distance.magnitude)
             {
                 distance = tempDistance;
-                potentialTarget = go;
+                potentialTarget = p.gameObject;
             }
         }
 
@@ -80,6 +87,25 @@ public abstract class EnemyFSM : NetworkBehaviour
         rippleController.StopAlarmRipple();
     }
 
+    public virtual void StopFSM()
+    {
+        _canUpdate = false;
+        if (_fsmCoroutine != null)
+        {
+            StopCoroutine(_fsmCoroutine);
+        }
+    }
+
+    public virtual void PlayFSM()
+    {
+        if (_fsmCoroutine != null)
+        {
+            StopCoroutine(_fsmCoroutine);
+        }
+
+        _canUpdate = true;
+        _fsmCoroutine = StartCoroutine(Patrol());
+    }
 
     [ClientRpc]
     protected void PlayAlarmSound()
@@ -97,5 +123,17 @@ public abstract class EnemyFSM : NetworkBehaviour
     protected void PlaySearchingSound()
     {
         SoundManager?.OnSentinelSearching();
+    }
+
+    private void OnDestroy()
+    {
+        if (!isServer) return;
+
+        if (AlarmTarget)
+        {
+            StopSignalOnTarget();
+        }
+
+        StopFSM();
     }
 }

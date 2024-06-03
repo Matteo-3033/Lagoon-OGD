@@ -25,6 +25,7 @@ public class FSMSentinel : EnemyFSM
     private Animator _animator;
     [SyncVar] private float _agentSpeed;
     private static readonly int SpeedParam = Animator.StringToHash("speed");
+    private const float KILL_DISTANCE = 1.5f;
 
     private void Awake()
     {
@@ -46,12 +47,21 @@ public class FSMSentinel : EnemyFSM
 
         Debug.Log("Sentinel OnStartServer");
 
-        SetupFSM();
+        if (RoundController.HasLoaded())
+        {
+            SetupFSM();
+        }
+        else
+        {
+            RoundController.OnRoundLoaded += SetupFSM;
+        }
     }
 
     [Server]
     private void SetupFSM()
     {
+        RoundController.OnRoundLoaded -= SetupFSM;
+
         FSMState patrolState = new FSMState();
         patrolState.EnterActions.Add(PositionDestination);
 
@@ -72,17 +82,20 @@ public class FSMSentinel : EnemyFSM
             new FSMTransition(IsEnemyVisible, new FSMAction[] { PlayAlarmSound });
         FSMTransition notEnemyVisibleTransition =
             new FSMTransition(EnemyNoMoreVisible, new FSMAction[] { PlaySearchingSound, NearestPosition });
+        FSMTransition enemyKilledTransition =
+            new FSMTransition(EnemyKilled, new FSMAction[] { AlarmColorReset, NearestPosition });
         FSMTransition enemyLostTransition =
             new FSMTransition(EnemyLost, new FSMAction[] { PlayEnemyLostSound, NearestPosition });
 
         patrolState.AddTransition(enemyVisibleTransition, alarmState);
         patrolState.AddTransition(positionReachedTransition, patrolState);
         alarmState.AddTransition(notEnemyVisibleTransition, searchState);
+        alarmState.AddTransition(enemyKilledTransition, patrolState);
         searchState.AddTransition(enemyLostTransition, patrolState);
         searchState.AddTransition(enemyVisibleTransition, alarmState);
 
         FSM = new FSM(patrolState);
-        StartCoroutine(Patrol());
+        PlayFSM();
     }
 
     private void Update()
@@ -136,9 +149,9 @@ public class FSMSentinel : EnemyFSM
 
     private bool PositionReached()
     {
-        bool reached = _agent.hasPath &&
-                       ((_previousPosition - transform.position).magnitude < 0.1f ||
-                        _agent.remainingDistance <= _agent.stoppingDistance);
+        bool reached = !_agent.hasPath || (_agent.hasPath &&
+                                           ((_previousPosition - transform.position).magnitude < 0.1f ||
+                                            _agent.remainingDistance <= _agent.stoppingDistance));
         _previousPosition = reached ? Vector3.zero : transform.position;
         return reached;
     }
@@ -198,13 +211,29 @@ public class FSMSentinel : EnemyFSM
         return !isEnemyVisible;
     }
 
+    private bool EnemyKilled()
+    {
+        if (_agent.remainingDistance > 2.5f) return false;
+        if (!Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE)) return false;
+
+        if (!hit.collider.TryGetComponent(out Player enemy)) return false;
+
+        KillController.Instance.TryKillPlayer(enemy, this);
+        return true;
+    }
+
     #endregion
 
-    private void OnDestroy()
+    public override void StopFSM()
     {
-        if (AlarmTarget)
-        {
-            StopSignalOnTarget();
-        }
+        _agent.isStopped = true;
+        base.StopFSM();
+    }
+
+    public override void PlayFSM()
+    {
+        _agent.isStopped = false;
+
+        base.PlayFSM();
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerPositionController : MonoBehaviour
@@ -14,7 +13,7 @@ public class PlayerPositionController : MonoBehaviour
     private float factor = 1F;
 
     private float MaxSpeed => baseMaxSpeed * factor;
-
+    
     private IInputHandler inputHandler;
     private Rigidbody rb;
 
@@ -38,7 +37,7 @@ public class PlayerPositionController : MonoBehaviour
     {
         if (inputHandler == null)
             return;
-
+        
         Vector3 inputDirection = inputHandler.GetMovementDirection();
 
         if (acceleratedMovement)
@@ -72,10 +71,7 @@ public class PlayerPositionController : MonoBehaviour
             accelerationComponent += v;
         }
 
-        float speedLimit =
-            inputDirection.magnitude != 0
-                ? MaxSpeed * inputDirection.magnitude
-                : MaxSpeed; //Speed is limited by the controller analogue
+        float speedLimit = inputDirection.magnitude != 0 ? MaxSpeed * inputDirection.magnitude : MaxSpeed; //Speed is limited by the controller analogue
         Vector3 movement = currentSpeed * t + .5f * t * t * accelerationComponent;
         currentSpeed = Vector3.ClampMagnitude(currentSpeed + t * accelerationComponent, speedLimit);
 

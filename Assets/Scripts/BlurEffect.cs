@@ -11,11 +11,15 @@ public class BlurEffect : MonoBehaviour
     [SerializeField] private Color alarmColor;
     [SerializeField] private float transitionDuration;
     
+    private Color defaultColor;
+    private bool alarmInProgress;
+    
     private static readonly int TextureId = Shader.PropertyToID("_Texture");
 
     private void Awake()
     {
         ChancellorEffectsController.OnEffectEnabled += OnAlarm;
+        defaultColor = blurScreen.material.color;
     }
 
     private void Start()
@@ -27,6 +31,25 @@ public class BlurEffect : MonoBehaviour
         blurScreen.material.SetTexture(TextureId, blurCamera.targetTexture);
         
         blurScreen.gameObject.SetActive(true);
+        
+        KillController.OnPlayerKilled += OnPlayerKilled;
+        KillController.OnPlayerRespawned += OnPlayerRespawned;
+    }
+
+    private void OnPlayerKilled(Player player)
+    {
+        if (!player.isLocalPlayer || alarmInProgress)
+            return;
+
+        blurScreen.material.color = alarmColor;
+    }
+    
+    private void OnPlayerRespawned(Player player)
+    {
+        if (!player.isLocalPlayer || alarmInProgress)   
+            return;
+
+        blurScreen.material.color = defaultColor;
     }
 
     private void OnDestroy()
@@ -35,6 +58,8 @@ public class BlurEffect : MonoBehaviour
             blurCamera.targetTexture.Release();
         
         ChancellorEffectsController.OnEffectEnabled -= OnAlarm;
+        KillController.OnPlayerKilled -= OnPlayerKilled;
+        KillController.OnPlayerRespawned -= OnPlayerRespawned;
     }
     
     private void OnAlarm(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
@@ -44,7 +69,9 @@ public class BlurEffect : MonoBehaviour
 
     private IEnumerator AlarmEffect(float duration)
     {
-        var startColor = blurScreen.material.color;
+        alarmInProgress = true;
+        
+        var startColor = defaultColor;
         var endColor = alarmColor;
 
         var totalElapsedTime = 0F;
@@ -66,5 +93,9 @@ public class BlurEffect : MonoBehaviour
             
             transitionsDone++;
         }
+        
+        blurScreen.material.color = Player.LocalPlayer.IsDead ? alarmColor : defaultColor;
+
+        alarmInProgress = false;
     }
 }
