@@ -8,19 +8,19 @@ namespace Round.Obstacles.TrapPressurePlate
     public class TrapPressurePlateAnimator: MonoBehaviour
     {
         private static readonly int PressedParameter = Animator.StringToHash("Pressed");
-        [SerializeField] private UnityEngine.Renderer[] trapRenderers;
+        private MeshRenderer[] _trapRenderers;
         
-        private Animator animator;
-        private ParticleSystem particles;
+        private Animator _animator;
+        private ParticleSystem _particles;
 
-        private bool disappearing;
+        private bool _disappearing;
 
         public event EventHandler<EventArgs> OnDisappearAnimationDone;
 
         private void Awake()
         {
-            //animator = gameObject.GetComponent<Animator>();
-            particles = gameObject.GetComponentInChildren<ParticleSystem>(); 
+            _animator = gameObject.GetComponentInChildren<Animator>();
+            _particles = gameObject.GetComponentInChildren<ParticleSystem>();
 
             TrapPressurePlate.OnStateChanged += OnStateChanged;
         }
@@ -31,20 +31,21 @@ namespace Round.Obstacles.TrapPressurePlate
             if ((TrapPressurePlate) sender != trapPressurePlate)
                 return;
             
-            //animator.SetBool(PressedParameter, pressed);
+            _animator.SetBool(PressedParameter, pressed);
             
-            if (pressed && !disappearing)
+            if (pressed && !_disappearing)
                 StartCoroutine(Disappear());
         }
 
         private IEnumerator Disappear()
         {
-            disappearing = true;
+            _trapRenderers = GetComponentsInChildren<MeshRenderer>();
+            _disappearing = true;
             
-            var halfDuration = (particles.main.duration + particles.main.startLifetime.constant) / 2;
-            var materials = trapRenderers.Select(r => r.material).ToList();
+            var halfDuration = (_particles.main.duration + _particles.main.startLifetime.constant) / 2;
+            var materials = _trapRenderers.Select(r => r.material).ToList();
          
-            particles.Play();
+            _particles.Play();
             
             var elapsedTime = 0F;
             while (elapsedTime < halfDuration)
@@ -55,8 +56,7 @@ namespace Round.Obstacles.TrapPressurePlate
                 foreach (var m in materials)
                 {
                     var color = m.color;
-                    color.a = alpha;
-                    m.color = color;
+                    m.color = new Color(color.r, color.g, color.b, alpha);
                 }
                 
                 yield return null;
