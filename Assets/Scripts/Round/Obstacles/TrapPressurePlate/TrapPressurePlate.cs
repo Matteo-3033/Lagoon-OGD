@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Mirror;
+using Network;
 using TrapModifiers;
 using UnityEngine;
 using Utils;
@@ -38,7 +39,7 @@ namespace Round.Obstacles.TrapPressurePlate
 
             if (sendRpcToOpponent)
             {
-                player = RoundController.Instance.Players.First(p => p.connectionToClient.connectionId != player.connectionToClient.connectionId);
+                player = connectionToClient.Opponent();
             }
 
             if (isServer)
