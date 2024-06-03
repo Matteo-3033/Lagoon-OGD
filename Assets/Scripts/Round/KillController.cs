@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Round
 {
@@ -111,7 +110,13 @@ namespace Round
         private IEnumerator StartKillMiniGame()
         {
             Debug.Log("Starting kill minigame");
-            MiniGameRunning = true;
+            lock (miniGameLock)
+            {
+                if (MiniGameRunning)
+                    yield break;
+                
+                MiniGameRunning = true;
+            }
             
             var enemies = FindObjectsByType<EnemyFSM>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             foreach (var enemy in enemies)
@@ -131,6 +136,13 @@ namespace Round
         [Server]
         private IEnumerator EndMiniGame(Player winner)
         {
+            lock (miniGameLock)
+            {
+                if (!MiniGameRunning)
+                    yield break;
+                MiniGameRunning = false;
+            }
+            
             Debug.Log("Ending kill minigame");
                         
             RpcEndMinigame();
@@ -143,7 +155,6 @@ namespace Round
             var loser = Players.First(p => p.Username != winner.Username);
 
             KillPlayer(loser, winner, winner.StabManager.CanStealTraps);
-            MiniGameRunning = false;
         }
 
         [Server]
@@ -199,7 +210,6 @@ namespace Round
             yield return null;
             var startTime = Time.time * 1000;
 
-            Debug.Log("Starting minigame sequence");
             var i = 0;
             while (MiniGameRunning && i < sequence.Count)
             {
@@ -225,7 +235,6 @@ namespace Round
                 yield return null;
             }
             
-            Debug.Log("The minigame sequence ended");
             var time = Time.time * 1000 - startTime;
             
             OnMiniGameNextKey?.Invoke(null);
@@ -237,15 +246,11 @@ namespace Round
         [Command(requiresAuthority = false)]
         private void CmdMiniGameSequenceEnded(string playerUsername, float time)
         {
-            lock (miniGameLock)
-            {
-                if (!MiniGameRunning || time < 0)
-                    return;
-                MiniGameRunning = false;
-            }
+            if (!MiniGameRunning || time < 0)
+                return;
 
             Debug.Log($"Player {playerUsername} completed the minigame in {time} milliseconds");
-            
+
             var player = RoundController.Instance.Players.First(p => p.Username == playerUsername);
             StartCoroutine(EndMiniGame(player));
         }

@@ -31,6 +31,8 @@ namespace Round.UI.KillMiniGame
             base.OnFocus();
             
             exclamationMark.SetActive(true);
+            keysToPress.SetActive(false);
+            waitingOpponent.SetActive(false);
         }
 
         public override void OnUnfocus()

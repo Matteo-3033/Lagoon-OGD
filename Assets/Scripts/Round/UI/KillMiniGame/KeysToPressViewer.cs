@@ -19,11 +19,8 @@ namespace Round.UI.KillMiniGame
         private void OnMiniGameNextKey(KillController.MiniGameKeys? key)
         {
             if (key == null)
-            {
-                gameObject.SetActive(false);
                 return;
-            }
-            
+                
             text.text = $"{(char) key}".ToUpper();
         }
     }

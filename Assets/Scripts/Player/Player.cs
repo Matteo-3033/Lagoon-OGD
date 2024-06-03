@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Utils;
+using WebSocketSharp;
 
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
@@ -16,8 +17,6 @@ public class Player : NetworkBehaviour
     [SerializeField] private Material transparentMaterial;
     public bool IsDead { get; private set; }
     
-    private Material defaultMaterial;
-
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
     public event EventHandler<Vector3> OnPositionChanged;
@@ -104,7 +103,7 @@ public class Player : NetworkBehaviour
 
         LocalPlayer = this;
 
-        SetUpModel(true);
+        SetUpModel();
         MakeVisible();
         OnPlayerSpawned?.Invoke(LocalPlayer);
     }
@@ -114,23 +113,21 @@ public class Player : NetworkBehaviour
     {
         Opponent = this;
 
-        SetUpModel(false);
+        SetUpModel();
         MakeInvisible();
         OnPlayerSpawned?.Invoke(Opponent);
     }
 
-    private void SetUpModel(bool isLocal)
+    private void SetUpModel()
     {
         GameObject model = IsMangiagalli ? mangiagalliBodyPrefab : golgiBodyPrefab;
 
         if (model)
         {
-            GetComponentInChildren<MeshRenderer>().gameObject.SetActive(false);
+            Destroy(GetComponentInChildren<MeshRenderer>());
             model = Instantiate(model, transform);
-            Layers.SetLayerRecursively(model, isLocal ? Layers.FieldOfView : Layers.BehindFieldOfView);
+            Layers.SetLayerRecursively(model, isLocalPlayer ? Layers.FieldOfView : Layers.BehindFieldOfView);
         }
-
-        defaultMaterial = model.GetComponentInChildren<MeshRenderer>().material;
     }
 
     [TargetRpc]
@@ -183,7 +180,28 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     private void RpcSetTransparent(bool transparent)
     {
-        GetComponentInChildren<MeshRenderer>().material = transparent ? transparentMaterial : defaultMaterial;
+        var mats = GetComponentInChildren<SkinnedMeshRenderer>().materials;
+        Material[] newMats;
+        
+        if (transparent)
+        {
+            if (mats.Length > 0 && mats[0] == transparentMaterial)
+                return;
+            
+            newMats = new Material[mats.Length + 1];
+            newMats[0] = transparentMaterial;
+            for (var i = 0; i < mats.Length; i++)
+                newMats[i + 1] = mats[i];
+        }
+        else if (mats.Length > 0 && mats[0] == transparentMaterial)
+        {
+            if (mats.Length > 0)
+                newMats = mats.SubArray(1, mats.Length - 1);
+            else newMats = mats;
+        }
+        else return;
+        
+        GetComponentInChildren<SkinnedMeshRenderer>().materials = newMats;
     }
 
     [Client]

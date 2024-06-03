@@ -2,12 +2,10 @@ using System.Collections;
 using Round;
 using UnityEngine;
 
-public class BackgroundEffect : MonoBehaviour
+public class BackgroundManager : MonoBehaviour
 {
     [SerializeField] private Camera blurCamera;
     [SerializeField] private SpriteRenderer blurScreen;
-
-    [Header("Chancellor alarm")]
     [SerializeField] private Color alarmColor;
     [SerializeField] private float transitionDuration;
     

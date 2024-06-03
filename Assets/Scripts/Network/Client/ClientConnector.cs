@@ -50,7 +50,6 @@ namespace Network
             }
             else
             {
-                Debug.Log("CONNECTING");
                 ClientToMasterConnector.Instance.OnConnectedEvent.AddListener(OnClientConnected);
                 ClientToMasterConnector.Instance.OnFailedConnectEvent.AddListener(OnFailedConnection);
                 ClientToMasterConnector.Instance.StartConnection();
