@@ -29,11 +29,11 @@ public class FSMCamera : EnemyFSM
         FieldOfView = GetComponentInChildren<FieldOfView>();
         SoundManager = GetComponent<SentinelSoundManager>();
     }
-    
+
     public override void OnStartServer()
     {
         base.OnStartServer();
-        
+
         if (patrolRotations.Length > 0)
         {
             _rotationTarget = patrolRotations[_currentPatrolRotationIndex];
@@ -75,13 +75,13 @@ public class FSMCamera : EnemyFSM
         searchState.AddTransition(rotationReachedTransition, searchState);
 
         FSM = new FSM(patrolState);
-        StartCoroutine(Patrol());
+        PlayFSM();
     }
 
     private void FixedUpdate()
     {
-        if(!isServer) return;
-        
+        if (!isServer) return;
+
         float target;
 
         if (AlarmTarget)

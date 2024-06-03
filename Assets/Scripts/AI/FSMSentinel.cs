@@ -95,7 +95,7 @@ public class FSMSentinel : EnemyFSM
         searchState.AddTransition(enemyVisibleTransition, alarmState);
 
         FSM = new FSM(patrolState);
-        StartCoroutine(Patrol());
+        PlayFSM();
     }
 
     private void Update()
@@ -149,9 +149,9 @@ public class FSMSentinel : EnemyFSM
 
     private bool PositionReached()
     {
-        bool reached = _agent.hasPath &&
-                       ((_previousPosition - transform.position).magnitude < 0.1f ||
-                        _agent.remainingDistance <= _agent.stoppingDistance);
+        bool reached = !_agent.hasPath || (_agent.hasPath &&
+                                           ((_previousPosition - transform.position).magnitude < 0.1f ||
+                                            _agent.remainingDistance <= _agent.stoppingDistance));
         _previousPosition = reached ? Vector3.zero : transform.position;
         return reached;
     }
@@ -224,11 +224,16 @@ public class FSMSentinel : EnemyFSM
 
     #endregion
 
-    private void OnDestroy()
+    public override void StopFSM()
     {
-        if (AlarmTarget)
-        {
-            StopSignalOnTarget();
-        }
+        _agent.isStopped = true;
+        base.StopFSM();
+    }
+
+    public override void PlayFSM()
+    {
+        _agent.isStopped = false;
+
+        base.PlayFSM();
     }
 }

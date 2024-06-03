@@ -20,11 +20,13 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected Transform AlarmTarget;
     protected SentinelSoundManager SoundManager;
+    private bool _canUpdate;
+    private Coroutine _fsmCoroutine;
 
     [Server]
     protected IEnumerator Patrol()
     {
-        while (true)
+        while (_canUpdate)
         {
             FSM.Update();
             yield return new WaitForSeconds(reactionTime);
@@ -85,6 +87,25 @@ public abstract class EnemyFSM : NetworkBehaviour
         rippleController.StopAlarmRipple();
     }
 
+    public virtual void StopFSM()
+    {
+        _canUpdate = false;
+        if (_fsmCoroutine != null)
+        {
+            StopCoroutine(_fsmCoroutine);
+        }
+    }
+
+    public virtual void PlayFSM()
+    {
+        if (_fsmCoroutine != null)
+        {
+            StopCoroutine(_fsmCoroutine);
+        }
+
+        _canUpdate = true;
+        _fsmCoroutine = StartCoroutine(Patrol());
+    }
 
     [ClientRpc]
     protected void PlayAlarmSound()
@@ -102,5 +123,17 @@ public abstract class EnemyFSM : NetworkBehaviour
     protected void PlaySearchingSound()
     {
         SoundManager?.OnSentinelSearching();
+    }
+
+    private void OnDestroy()
+    {
+        if (!isServer) return;
+
+        if (AlarmTarget)
+        {
+            StopSignalOnTarget();
+        }
+
+        StopFSM();
     }
 }
