@@ -13,7 +13,6 @@ namespace Round
     {
         private const int UPDATE_TIMER = 5;
         private const float LOAD_NEXT_ROUND_TIME = 10F;
-        private const int RESPAWN_TIME = 10;
 
         public static RoundController Instance { get; private set; }
         public static RoundConfiguration Round => MatchController.Instance.CurrentRound;
@@ -51,7 +50,8 @@ namespace Round
         public event Action OnCountdownStart;
         public event Action<int> OnCountdown;
         public event Action OnRoundStarted;
-        public event Action<Player> OnRoundEnded;        
+        public event Action<Player> OnRoundEnded;
+        
         
         private void Awake()
         {

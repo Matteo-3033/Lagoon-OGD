@@ -81,14 +81,13 @@ namespace Round
             OnPlayerRespawned?.Invoke(player);
             RpcPlayerRespawned(player);
         }
-
-
+                
         [ClientRpc]
         private void RpcPlayerKilled(Player player)
         {
             OnPlayerKilled?.Invoke(player);
         }
-
+        
         [ClientRpc]
         private void RpcPlayerRespawned(Player player)
         {
