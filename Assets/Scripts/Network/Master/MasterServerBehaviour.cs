@@ -8,7 +8,7 @@ namespace Network.Master
         {
             var address = NetworkUtils.GetMachineIp();
             serverIp = address;
-            Debug.Log("Machine address: " + address);
+            Debug.Log("\nMachine address: " + address + "\n");
             
             base.Awake();
         }
