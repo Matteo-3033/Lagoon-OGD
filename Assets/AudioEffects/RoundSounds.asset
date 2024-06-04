@@ -47,9 +47,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 622eccf8778574b4888ce74169bcbb3d, type: 3}
   - {fileID: 8300000, guid: ce73d3447e099c5438a984804e1f7b2c, type: 3}
   - {fileID: 8300000, guid: 4eb79cb5fa7fcb544bcb5eb4028447fe, type: 3}
-  fightBegin: {fileID: 8300000, guid: bdbf05b3a5d57c9468f732c45fb6750b, type: 3}
-  guardDetection: {fileID: 8300000, guid: cd0bd28fc6254014e91e49458fbc8684, type: 3}
-  cameraDetection: {fileID: 8300000, guid: 63593607ec58108468187f3e752fd015, type: 3}
+  killMiniGameBegin: {fileID: 8300000, guid: bdbf05b3a5d57c9468f732c45fb6750b, type: 3}
   doorOpen: {fileID: 8300000, guid: 58fd39d5ae004144a9407abc0bc70eaa, type: 3}
   doorClose: {fileID: 8300000, guid: 1116a3a79134fd24ab709c3ac5aa2513, type: 3}
   sentinelSteps:

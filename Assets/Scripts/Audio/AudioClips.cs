@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Audio
 {
@@ -21,12 +22,10 @@ namespace Audio
         public AudioClip stab;
         public AudioClip[] roundEnd;
         public AudioClip[] roundStart;
-        public AudioClip fightBegin;
-        public AudioClip guardDetection;
-        public AudioClip cameraDetection;
+        public AudioClip killMiniGameBegin;
         public AudioClip doorOpen;
         public AudioClip doorClose;
-        [Header("Sentinel")] public AudioClip[] sentinelSteps;
+        public AudioClip[] sentinelSteps;
         public AudioClip sentinelAlarm;
         public AudioClip sentinelEnemyLost;
         public AudioClip sentinelSearchingSound;

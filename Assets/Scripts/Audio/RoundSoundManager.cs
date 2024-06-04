@@ -48,6 +48,7 @@ namespace Audio
             DoorInteractable.OnStateChanged += OnDoorStateChanged;
             TrapDispenserInteractable.OnVendingMachineUsed += OnVendingMachineUsed;
             KillController.OnPlayerKilled += OnPlayerKilled;
+            KillController.OnMiniGameStarting += OnMiniGameStarting;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -119,6 +120,11 @@ namespace Audio
         private void OnPlayerKilled(Player player)
         {
             PlayClipAtPoint(audioClips.kill, Target);
+        }
+        
+        private void OnMiniGameStarting()
+        {
+            PlayClipAtPoint(audioClips.killMiniGameBegin, Target);
         }
         
         private void OnChancellorEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)

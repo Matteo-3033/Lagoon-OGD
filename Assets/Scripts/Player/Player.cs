@@ -28,12 +28,12 @@ public class Player : NetworkBehaviour
     public PlayerPositionController PositionController => GetComponent<PlayerPositionController>();
     public PlayerRotationController RotationController => GetComponent<PlayerRotationController>();
     public InputHandler InputHandler => GetComponent<InputHandler>();
-    public Interactor Interactor => GetComponentInChildren<Interactor>();
-    public TrapSelector TrapSelector => GetComponentInChildren<TrapSelector>();
-    public StabManager StabManager => GetComponentInChildren<StabManager>();
-    public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>();
-    public MinimapIcon MinimapIcon => GetComponentInChildren<MinimapIcon>();
-    public RippleController RippleController => GetComponentInChildren<RippleController>();
+    public Interactor Interactor => GetComponentInChildren<Interactor>(true);
+    public TrapSelector TrapSelector => GetComponentInChildren<TrapSelector>(true);
+    public StabManager StabManager => GetComponent<StabManager>();
+    public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>(true);
+    public MinimapIcon MinimapIcon => GetComponentInChildren<MinimapIcon>(true);
+    public RippleController RippleController => GetComponentInChildren<RippleController>(true);
 
 
     private Vector3 spawnPoint;

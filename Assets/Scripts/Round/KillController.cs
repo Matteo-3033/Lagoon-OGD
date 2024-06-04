@@ -140,21 +140,21 @@ namespace Round
             {
                 if (!MiniGameRunning)
                     yield break;
+            
+                Debug.Log("Ending kill minigame");
+                            
+                RpcEndMinigame();
+                var enemies = FindObjectsByType<EnemyFSM>(FindObjectsSortMode.None);
+                foreach (var enemy in enemies)
+                    enemy.PlayFSM();
+                
+                yield return new WaitForSeconds(1);
+
+                var loser = Players.First(p => p.Username != winner.Username);
+
+                KillPlayer(loser, winner, winner.StabManager.CanStealTraps);
                 MiniGameRunning = false;
             }
-            
-            Debug.Log("Ending kill minigame");
-                        
-            RpcEndMinigame();
-            var enemies = FindObjectsByType<EnemyFSM>(FindObjectsSortMode.None);
-            foreach (var enemy in enemies)
-                enemy.PlayFSM();
-            
-            yield return new WaitForSeconds(1);
-
-            var loser = Players.First(p => p.Username != winner.Username);
-
-            KillPlayer(loser, winner, winner.StabManager.CanStealTraps);
         }
 
         [Server]
