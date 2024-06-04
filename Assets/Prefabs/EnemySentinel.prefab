@@ -103,6 +103,8 @@ MonoBehaviour:
   fieldOfViewDegree: 90
   viewDistance: 10
   rayCount: 20
+  innerFieldDegreePercent: 0.8
+  innerFieldDistancePercent: 0.9
   obstaclesLayermask:
     serializedVersion: 2
     m_Bits: 0
@@ -197,7 +199,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 126
   m_CollisionDetection: 1
 --- !u!114 &4664312221691487621
 MonoBehaviour:
@@ -531,6 +533,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   minimapCamera: {fileID: 0}
+  rotateWithMinimapCamera: 1
   startHidden: 1
   hideAfterBorder: 1
   clampToBorder: 0

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Round1
   m_EditorClassIdentifier: 
   scene: Assets/Scenes/Client/Round1.unity
-  keyFragments: 5
+  keyFragments: 6
   timeLimitMinutes: 5
