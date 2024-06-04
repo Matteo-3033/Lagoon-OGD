@@ -74,7 +74,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 6495
+    m_Bits: 6487
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 0238117c0b2ae0b4f97be0a0fc113899, type: 2}
   m_TargetDisplay: 0
@@ -166,4 +166,5 @@ MonoBehaviour:
   minimapLayerMask:
     serializedVersion: 2
     m_Bits: 2048
+  clampOffset: 2
   darkCheckDistance: 2.5

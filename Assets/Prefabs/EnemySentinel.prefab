@@ -106,7 +106,7 @@ MonoBehaviour:
   obstaclesLayermask:
     serializedVersion: 2
     m_Bits: 0
-  ignoreLayermask:
+  consideredLayermask:
     serializedVersion: 2
     m_Bits: 0
 --- !u!1 &4478235319672859268
@@ -380,7 +380,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 264
+    m_Bits: 10079
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0

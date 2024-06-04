@@ -445,9 +445,9 @@ MonoBehaviour:
   obstaclesLayermask:
     serializedVersion: 2
     m_Bits: 8200
-  ignoreLayermask:
+  consideredLayermask:
     serializedVersion: 2
-    m_Bits: 10205
+    m_Bits: 10201
 --- !u!1 &1048079640413053169
 GameObject:
   m_ObjectHideFlags: 0
