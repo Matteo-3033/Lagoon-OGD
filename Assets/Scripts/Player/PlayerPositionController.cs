@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerPositionController : MonoBehaviour
@@ -136,5 +135,10 @@ public class PlayerPositionController : MonoBehaviour
     public void AddFactor(float f)
     {
         factor *= f;
+    }
+
+    private void OnDisable()
+    {
+        rb.velocity = Vector3.zero;
     }
 }
