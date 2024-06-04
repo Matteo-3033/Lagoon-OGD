@@ -8,7 +8,6 @@ namespace MainMenu.Connection
     public class UsernameInput : MonoBehaviour
     {
         private TMP_InputField nameInputField;
-        [SerializeField] private Button connectButton;
         
         private void Awake()
         {
@@ -31,7 +30,6 @@ namespace MainMenu.Connection
 
         private void SetUsername(string username)
         {
-            connectButton.interactable = !string.IsNullOrEmpty(username);
             PlayerPrefs.SetString(Utils.PlayerPrefsKeys.PlayerName, username);
         }
     }

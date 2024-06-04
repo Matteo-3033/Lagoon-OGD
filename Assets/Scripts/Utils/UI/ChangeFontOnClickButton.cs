@@ -16,6 +16,8 @@ namespace Utils.UI
         private TextMeshProUGUI textField;
         private bool fontChanged;
         
+        protected Button Button => button;
+        
         public static event EventHandler<EventArgs> OnBeforeClick;
         public static event EventHandler<EventArgs> OnAfterClick;
 

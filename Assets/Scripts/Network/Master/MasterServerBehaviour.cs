@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Net;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Network.Master
 {
@@ -8,15 +6,11 @@ namespace Network.Master
     {
         protected override void Awake()
         {
+            var address = NetworkUtils.GetMachineIp();
+            serverIp = address;
+            Debug.Log("Machine address: " + address);
+            
             base.Awake();
-            
-            var addresses = Dns.GetHostEntry(Dns.GetHostName())
-                .AddressList.Where(f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                .Select(a => a.ToString());
-            
-            Debug.Log("Addresses:");
-            foreach (var address in addresses)
-                Debug.Log("<color=blue>" + address + "</color>");
         }
     }
 }

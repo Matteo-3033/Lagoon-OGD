@@ -373,7 +373,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1005001215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82e54b562df669c47b9cf5e35002502a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f441669d8da46baae5912ef5ab9a680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   lookForModules: 1
@@ -556,7 +556,7 @@ MonoBehaviour:
   timeout: 5
   maxAttemptsToConnect: 5
   waitAndConnect: 0.2
-  connectOnStart: 1
+  connectOnStart: 0
   OnConnectedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -641,14 +641,14 @@ MonoBehaviour:
   logLevel: 0
   spawnerLogLevel: 0
   machineIp: 127.0.0.1
-  executableFilePath: D:\Files\Projects\Unity\Lagoon-OGD\Builds\Windows\Server\Server.exe
+  executableFilePath: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
   maxProcesses: 10
   spawnWebSocketServers: 0
   region: International
   killProcessesWhenStop: 1
-  autoStartInEditor: 1
+  autoStartInEditor: 0
   overrideExePathInEditor: 1
-  exePathFromEditor: D:\Files\Projects\Unity\Lagoon-OGD\Builds\Windows\Server\Server.exe
+  exePathFromEditor: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
   OnSpawnerStartedEvent:
     m_PersistentCalls:
       m_Calls: []

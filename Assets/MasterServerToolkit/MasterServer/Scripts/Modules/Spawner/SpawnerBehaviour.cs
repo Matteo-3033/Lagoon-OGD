@@ -53,7 +53,7 @@ namespace MasterServerToolkit.MasterServer
         [Header("Editor Settings"), SerializeField]
         private HelpBox hpEditor = new HelpBox()
         {
-            Text = "Editor settings are used only while running in editor and for test purpose only",
+            Text = "E>ditor settings are used only while running in editor and for test purpose only",
             Type = HelpBoxType.Warning
         };
 

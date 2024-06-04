@@ -14,6 +14,11 @@ namespace MainMenu.Connection
             textField = GetComponent<TextMeshProUGUI>();
         }
         
+        public void Hide()
+        {
+            SetText("");
+        }
+        
         private void SetText(string text)
         {
             textField.text = $"<color=red>{text}</color>";

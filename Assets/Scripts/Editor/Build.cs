@@ -61,7 +61,7 @@ namespace Editor
 
             Debug.Log("Building Master Server (Windows)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
-            Debug.Log("Built Server (Windows).");
+            Debug.Log("Built Master Server (Windows).");
         }
         
         [MenuItem("Build/Windows/Server")]

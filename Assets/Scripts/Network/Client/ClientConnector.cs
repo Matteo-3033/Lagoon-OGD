@@ -40,17 +40,26 @@ namespace Network
         {
             // Wait for a frame to make sure all the UI elements and events are updated
             yield return null;
-            
+                        
             if (ClientToMasterConnector.Instance.IsConnected)
             {
                 Debug.Log("Client already connected to server");
                 OnClientConnected();
             }
-            else
+            else if (PlayerPrefs.HasKey(Utils.PlayerPrefsKeys.ServerIp) && !string.IsNullOrEmpty(PlayerPrefs.GetString(Utils.PlayerPrefsKeys.ServerIp)))
             {
+                Debug.Log("Connecting to server...");
+                ClientToMasterConnector.Instance.SetIpAddress(PlayerPrefs.GetString(Utils.PlayerPrefsKeys.ServerIp));
+
                 ClientToMasterConnector.Instance.OnConnectedEvent.AddListener(OnClientConnected);
                 ClientToMasterConnector.Instance.OnFailedConnectEvent.AddListener(OnFailedConnection);
                 ClientToMasterConnector.Instance.StartConnection();
+            }
+            else
+            {
+                loadingSpinner.SetActive(false);
+                dataInput.SetActive(true);
+                infoText.Hide();
             }
         }
 
