@@ -102,7 +102,7 @@ namespace Round
             if (!isServer || !roundInProgress || MiniGameRunning)
                 return;
 
-            if (Players.TrueForAll(p => p.FieldOfView.CanSeePlayer && !p.IsDead)) // TODO: controllare solo il triangolo interno
+            if (Players.TrueForAll(p => p.FieldOfView.IsPlayerIn && !p.IsDead))
                 StartCoroutine(StartKillMiniGame());
         }
 

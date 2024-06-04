@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
 using Mirror;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
 public class FieldOfView : NetworkBehaviour
@@ -16,15 +13,18 @@ public class FieldOfView : NetworkBehaviour
     private float viewDistance = 10F;
 
     [SyncVar, SerializeField] private int rayCount = 60;
+    [SerializeField, Range(0F, 1F)] private float innerFieldDegreePercent = 0.8F;
+    [SerializeField, Range(0F, 1F)] private float innerFieldDistancePercent = 0.9F; 
+    
     [SerializeField] private LayerMask obstaclesLayermask;
     [SerializeField] private LayerMask consideredLayermask;
 
-    public bool
-        CanSeePlayer
+    public bool CanSeePlayer
     {
         get;
         private set;
     } // L'avversario nel caso il proprietario del field of view sia il player, altrimenti uno dei due giocatori
+    public bool IsPlayerIn { get; private set; }
 
     public class FieldOfViewArgs
     {
@@ -36,6 +36,8 @@ public class FieldOfView : NetworkBehaviour
 
     private float AngleIncrease => fieldOfViewDegree / rayCount;
     private Vector3 Origin => Vector3.zero;
+    private float InMaxDistance => innerFieldDistancePercent * viewDistance;
+    private int MinInRays => (int)((1 - innerFieldDegreePercent) / 2 * rayCount);
 
     private Mesh mesh;
     private Player player;
@@ -68,7 +70,8 @@ public class FieldOfView : NetworkBehaviour
         var startAngle = Quaternion.AngleAxis(-fieldOfViewDegree / 2, Vector3.up);
         var direction = startAngle * transform.forward;
 
-        bool canSeePlayer = false;
+        var canSeePlayer = false;
+        var isPlayerIn = false;
 
         RaycastHit[] raycastHits = new RaycastHit[5];
         for (var i = 0; i <= rayCount; i++)
@@ -90,6 +93,10 @@ public class FieldOfView : NetworkBehaviour
                 }
 
                 canSeePlayer = canSeePlayer || colliderGameObject.TryGetComponent(out Player _);
+                if (i > MinInRays && i < rayCount - MinInRays && raycastHit.distance < InMaxDistance)
+                {
+                    isPlayerIn = isPlayerIn || colliderGameObject.TryGetComponent(out Player _);
+                }
 
                 if (i == rayCount / 2)
                 {
@@ -110,7 +117,8 @@ public class FieldOfView : NetworkBehaviour
         }
 
         CanSeePlayer = canSeePlayer;
-
+        IsPlayerIn = isPlayerIn;
+        
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.uv = uv;
