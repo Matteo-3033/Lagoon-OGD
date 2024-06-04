@@ -161,6 +161,11 @@ namespace Round
         private void KillPlayer(Player killed, object by, bool stealTrap)
         {
             Debug.Log($"Player {killed.Username} killed by {by}");
+            
+            killed.Kill();
+            OnPlayerKilled?.Invoke(killed);
+            RpcPlayerKilled(killed);
+            
             if (by is Player p)
             {
                 if (killed.Inventory.StealKeyFragment())
@@ -169,10 +174,6 @@ namespace Round
                 if (stealTrap && !p.Inventory.IsTrapBagFull() && killed.Inventory.StealTrap(out var trap))
                     p.Inventory.AddTrap(trap);
             }
-
-            killed.Kill();
-            OnPlayerKilled?.Invoke(killed);
-            RpcPlayerKilled(killed);
 
             StartCoroutine(RespawnPlayer(killed));
         }

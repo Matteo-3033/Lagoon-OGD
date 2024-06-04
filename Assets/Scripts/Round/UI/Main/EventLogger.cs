@@ -59,19 +59,9 @@ namespace Round.UI.Main
             TrapDispenserInteractable.OnTrapNotAdded += LogTrapNotAdded;
 
             ChancellorEffectsController.OnEffectEnabled += LogChancellorEffect;
-            
-            KillController.OnMiniGameStarting += OnMiniGameStarting;
-            KillController.OnMiniGameEnded += OnMiniGameEnded;
-        }
 
-        private void OnMiniGameStarting()
-        {
-            
-        }
-        
-        private void OnMiniGameEnded()
-        {
-            
+            KillController.OnPlayerKilled += LogPlayerKilled;
+            KillController.OnPlayerRespawned += LogPlayerRespawned;
         }
 
         private void RegisterRoundControllerCallbacks()
@@ -199,6 +189,16 @@ namespace Round.UI.Main
             else
                 StartCoroutine(SpawnEvent(logMsg));
         }
+        
+        private void LogPlayerRespawned(Player player)
+        {
+            LogEvent($"<color=#FF0000>{player.Username}</color> respawned!", Duration.SHORT);
+        }
+
+        private void LogPlayerKilled(Player player)
+        {
+            LogEvent($"<color=#FF0000>{player.Username}</color> was killed!", Duration.SHORT);
+        }
 
         private IEnumerator SpawnEvent(EventLoggerText.LogMessage msg)
         {
@@ -220,13 +220,6 @@ namespace Round.UI.Main
             eventLog.OnHeightSurpassed += () => CanSpawnNext = true;
             eventLog.Init(msg, maxHeight, onScreenDuration);
         }
-
-        private void OnDestroy()
-        {
-            RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
-            Player.OnPlayerSpawned -= OnPlayerSpawned;
-            TrapDispenserInteractable.OnTrapNotAdded -= LogTrapNotAdded;
-        }
         
         [ContextMenu("Short test event")]
         public void ShortLogEvent()
@@ -244,6 +237,16 @@ namespace Round.UI.Main
         public void LongLogEvent()
         {
             LogEvent("Long test event", Duration.LONG);
+        }
+        
+        private void OnDestroy()
+        {
+            RoundController.OnRoundLoaded -= RegisterRoundControllerCallbacks;
+            Player.OnPlayerSpawned -= OnPlayerSpawned;
+            TrapDispenserInteractable.OnTrapNotAdded -= LogTrapNotAdded;
+            ChancellorEffectsController.OnEffectEnabled -= LogChancellorEffect;
+            KillController.OnPlayerKilled -= LogPlayerKilled;
+            KillController.OnPlayerRespawned -= LogPlayerRespawned;
         }
     }
 }
