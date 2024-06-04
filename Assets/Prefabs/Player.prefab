@@ -442,6 +442,12 @@ MonoBehaviour:
   fieldOfViewDegree: 90
   viewDistance: 6.5
   rayCount: 250
+  obstaclesLayermask:
+    serializedVersion: 2
+    m_Bits: 8200
+  ignoreLayermask:
+    serializedVersion: 2
+    m_Bits: 10205
 --- !u!1 &1048079640413053169
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using Mirror;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
@@ -14,6 +16,8 @@ public class FieldOfView : NetworkBehaviour
     private float viewDistance = 10F;
 
     [SyncVar, SerializeField] private int rayCount = 60;
+    [SerializeField] private LayerMask obstaclesLayermask;
+    [SerializeField] private LayerMask consideredLayermask;
 
     public bool
         CanSeePlayer
@@ -66,24 +70,31 @@ public class FieldOfView : NetworkBehaviour
 
         bool canSeePlayer = false;
 
+        RaycastHit[] raycastHits = new RaycastHit[5];
         for (var i = 0; i <= rayCount; i++)
         {
-            Vector3 newVertex;
-            if (Physics.Raycast(transform.position, direction, out var hit, viewDistance))
+            Vector3 newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
+            int results = Physics.RaycastNonAlloc(transform.position, direction, raycastHits, viewDistance,
+                consideredLayermask);
+
+            float minDist = float.MaxValue;
+            for (var j = 0; j < results; j++)
             {
-                GameObject colliderGameObject = hit.collider.gameObject;
+                var raycastHit = raycastHits[j];
+                GameObject colliderGameObject = raycastHit.collider.gameObject;
+                if (raycastHit.distance < minDist && obstaclesLayermask ==
+                    (obstaclesLayermask | (1 << colliderGameObject.layer)))
+                {
+                    minDist = raycastHit.distance;
+                    newVertex = transform.worldToLocalMatrix.MultiplyPoint(raycastHit.point);
+                }
+
                 canSeePlayer = canSeePlayer || colliderGameObject.TryGetComponent(out Player _);
-                
+
                 if (i == rayCount / 2)
                 {
                     ActivateMinimapIcon(colliderGameObject);
                 }
-
-                newVertex = transform.worldToLocalMatrix.MultiplyPoint(hit.point);
-            }
-            else
-            {
-                newVertex = Origin + viewDistance * transform.worldToLocalMatrix.MultiplyVector(direction);
             }
 
             vertices[i + 1] = newVertex;
