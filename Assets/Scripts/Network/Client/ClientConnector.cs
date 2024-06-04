@@ -34,8 +34,6 @@ namespace Network
             else infoText.ShowConnecting();
             
             StartCoroutine(DoInitClient());
-
-            
         }
 
         private IEnumerator DoInitClient()
