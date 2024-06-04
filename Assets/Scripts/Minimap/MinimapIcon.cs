@@ -44,6 +44,9 @@ public class MinimapIcon : NetworkBehaviour
     {
         if (!_isShown || !minimapCamera) return;
 
+        transform.rotation =
+            Quaternion.Euler(90, minimapCamera.transform.rotation.eulerAngles.y, 0);
+
         if (hideAfterBorder)
         {
             Vector3 iconPosition = transform.position;
