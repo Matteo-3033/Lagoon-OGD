@@ -313,6 +313,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   minimapCamera: {fileID: 0}
+  rotateWithMinimapCamera: 0
   startHidden: 1
   hideAfterBorder: 0
   clampToBorder: 1

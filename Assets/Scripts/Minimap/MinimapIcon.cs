@@ -6,6 +6,7 @@ using Utils;
 public class MinimapIcon : NetworkBehaviour
 {
     [SerializeField] private MinimapCamera minimapCamera;
+    [SerializeField] private bool rotateWithMinimapCamera = true;
     [SerializeField] private bool startHidden;
     [SerializeField] private bool hideAfterBorder;
     [Header("Clamp to border")] public bool clampToBorder = true;
@@ -44,8 +45,11 @@ public class MinimapIcon : NetworkBehaviour
     {
         if (!_isShown || !minimapCamera) return;
 
-        transform.rotation =
-            Quaternion.Euler(90, minimapCamera.transform.rotation.eulerAngles.y, 0);
+        if (rotateWithMinimapCamera)
+        {
+            transform.rotation =
+                Quaternion.Euler(90, minimapCamera.transform.rotation.eulerAngles.y, 0);
+        }
 
         if (hideAfterBorder)
         {
