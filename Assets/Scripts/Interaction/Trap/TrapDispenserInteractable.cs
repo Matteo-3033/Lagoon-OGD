@@ -3,6 +3,7 @@ using Mirror;
 using Network;
 using TrapModifiers;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace Interaction.Trap
@@ -12,7 +13,8 @@ namespace Interaction.Trap
         [SerializeField] private TrapModifier trap;
         [SerializeField] private GameObject enabledState;
         [SerializeField] private GameObject disabledState;
-        [SerializeField] private SpriteRenderer icon;
+        [SerializeField] private GameObject vignette;
+        [SerializeField] private SpriteRenderer iconHolder;
 
         public string InteractionPrompt => trap.modifierName;
         
@@ -25,8 +27,8 @@ namespace Interaction.Trap
 
         private void Awake()
         {
-            icon.sprite = trap.icon;
-            icon.gameObject.SetActive(false);
+            iconHolder.sprite = trap.icon;
+            vignette.gameObject.SetActive(false);
         }
 
         public override void OnStartServer()
@@ -92,7 +94,7 @@ namespace Interaction.Trap
         [TargetRpc]
         private void TargetShowTrapIcon(NetworkConnectionToClient target)
         {
-            icon.gameObject.SetActive(true);
+            vignette.gameObject.SetActive(true);
         }
         
         [Client]
