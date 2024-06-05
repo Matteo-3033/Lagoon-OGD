@@ -10,8 +10,10 @@ using WebSocketSharp;
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
-    [SerializeField] private GameObject mangiagalliBodyPrefab = null;
-    [SerializeField] private GameObject golgiBodyPrefab = null;
+    [SerializeField] private GameObject defaultBody;
+    [SerializeField] private GameObject mangiagalliBody;
+    [SerializeField] private GameObject golgiBody;
+    
     [SerializeField] private Material transparentMaterial;
     public bool IsDead { get; private set; }
 
@@ -57,6 +59,12 @@ public class Player : NetworkBehaviour
         Score = profile.Score().Value;
         Deaths = profile.Deaths().Value;
         Kills = profile.Kills().Value;
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        SetUpModel();
     }
 
     [Command(requiresAuthority = false)]
@@ -118,20 +126,18 @@ public class Player : NetworkBehaviour
 
     private void SetUpModel()
     {
-        GameObject model = IsMangiagalli ? mangiagalliBodyPrefab : golgiBodyPrefab;
-
+        var model = IsMangiagalli ? mangiagalliBody : golgiBody;
+        var otherModel = IsMangiagalli ? golgiBody : mangiagalliBody;
+        
         if (!model) return;
+        model.SetActive(true);
+        
+        Destroy(defaultBody);
+        Destroy(otherModel);
 
-        Destroy(GetComponentInChildren<MeshRenderer>());
-        model = Instantiate(model, transform);
-        Layers.SetLayerRecursively(model, isLocalPlayer ? Layers.FieldOfView : Layers.BehindFieldOfView);
-
-        if (isLocalPlayer) return;
-
-        NetworkAnimator networkAnimator = gameObject.AddComponent<NetworkAnimator>();
+        var networkAnimator = GetComponent<NetworkAnimator>();
         networkAnimator.animator = model.GetComponent<Animator>();
-        networkAnimator.clientAuthority = false;
-        networkAnimator.syncDirection = SyncDirection.ServerToClient;
+        networkAnimator.Initialize();
     }
 
     [TargetRpc]

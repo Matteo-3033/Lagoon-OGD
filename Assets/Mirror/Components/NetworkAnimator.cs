@@ -71,8 +71,10 @@ namespace Mirror
             }
         }
 
-        void Initialize()
+        public void Initialize()
         {
+            if (!animator)
+                return;
             // store the animator parameters in a variable - the "Animator.parameters" getter allocates
             // a new parameter array every time it is accessed so we should avoid doing it in a loop
             parameters = animator.parameters

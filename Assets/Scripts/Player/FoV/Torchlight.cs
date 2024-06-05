@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Utils;
 
 [RequireComponent(typeof(Light))]
 public class Torchlight : MonoBehaviour
