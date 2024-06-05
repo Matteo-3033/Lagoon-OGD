@@ -13,7 +13,7 @@ namespace Modifiers.Traps
         {
             var minimapObjs = Object.FindObjectsOfType<MinimapDarkArea>(true).ToList();
             
-            minimapObjs = minimapObjs.Where(obj => obj.IsVisible).OrderBy(x => Guid.NewGuid()).ToList();
+            minimapObjs = minimapObjs.Where(obj => !obj.IsVisible).OrderBy(x => Guid.NewGuid()).ToList();
             
             for (var i = 0; i < minimapObjs.Count / 2; i++)
                 minimapObjs[i].Show();
