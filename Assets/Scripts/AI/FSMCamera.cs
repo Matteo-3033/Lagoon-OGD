@@ -1,11 +1,5 @@
-using System;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Mirror;
-using UnityEngine.AI;
-using UnityEngine.Serialization;
 
 public class FSMCamera : EnemyFSM
 {
@@ -28,11 +22,6 @@ public class FSMCamera : EnemyFSM
         _baseColor = alarmLight.color;
         FieldOfView = GetComponentInChildren<FieldOfView>();
         SoundManager = GetComponent<SentinelSoundManager>();
-
-#if UNITY_EDITOR
-        _rotationTarget = patrolRotations[_currentPatrolRotationIndex];
-        SetupFSM();
-#endif
     }
 
     public override void OnStartServer()
@@ -49,9 +38,7 @@ public class FSMCamera : EnemyFSM
         SetupFSM();
     }
 
-#if !UNITY_EDITOR
     [Server]
-#endif
     private void SetupFSM()
     {
         FSMState patrolState = new FSMState();
@@ -87,9 +74,7 @@ public class FSMCamera : EnemyFSM
 
     private void FixedUpdate()
     {
-#if !UNITY_EDITOR
         if (!isServer) return;
-#endif
 
         float target;
 
@@ -135,9 +120,7 @@ public class FSMCamera : EnemyFSM
         AlarmTarget = null;
     }
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     private void RpcSetAlarmColor(Color color)
     {
         alarmLight.color = color;
