@@ -179,9 +179,12 @@ namespace Network
             yield return null;
             
             var profile = roomServerManager.GetPlayerProfile(conn);
-            
-            firstPlayerConnected ??= profile?.Username;
-            
+
+            lock (roomServerManager)
+            {
+                firstPlayerConnected ??= profile?.Username;
+            }
+
             player.name = profile?.Username ?? $"Player {conn.connectionId}";
             player.GetComponent<Player>().Init(profile, profile?.Username == firstPlayerConnected);
             
