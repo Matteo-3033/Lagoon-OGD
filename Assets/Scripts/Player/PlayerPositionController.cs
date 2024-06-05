@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerPositionController : MonoBehaviour
+public class PlayerPositionController : NetworkBehaviour
 {
     [SerializeField] private float baseMaxSpeed = 10F;
     [Space] [SerializeField] private bool acceleratedMovement = true;
@@ -19,39 +20,57 @@ public class PlayerPositionController : MonoBehaviour
 
     private Vector3 currentSpeed;
     private List<Vector3> additionalVectors = new();
-    private Animator[] _animator;
+    private Animator _animator;
+    [SyncVar] private float speedValue;
+    private bool isLocal = true;
     private static readonly int SpeedParam = Animator.StringToHash("speed");
 
 
     private void Start()
     {
+        Animator[] animators = GetComponentsInChildren<Animator>();
+        foreach (Animator a in animators)
+        {
+            foreach (AnimatorControllerParameter parameter in a.parameters)
+            {
+                if (parameter.nameHash != SpeedParam) continue;
+
+                _animator = a;
+                break;
+            }
+        }
+
         var player = GetComponent<Player>();
 
 #if !UNITY_EDITOR
         if (!player.isLocalPlayer)
+        {
+            isLocal = false;
             return;
+        }
 #endif
 
         rb = GetComponent<Rigidbody>();
-        _animator = GetComponentsInChildren<Animator>();
         inputHandler = player.InputHandler;
     }
 
     private void FixedUpdate()
     {
-        if (inputHandler == null)
-            return;
+        if (isServer) return;
 
-        foreach (Animator a in _animator)
+        if (isLocal)
         {
-            foreach (AnimatorControllerParameter parameter in a.parameters)
-            {
-                if (parameter.nameHash == SpeedParam)
-                {
-                    a.SetFloat(SpeedParam, currentSpeed.magnitude);
-                }
-            }
+            speedValue = currentSpeed.magnitude;
+            CmdUpdateAnimation(speedValue);
         }
+        else
+        {
+            // Debug.Log("Speed value received: " + speedValue);
+        }
+
+        _animator?.SetFloat(SpeedParam, speedValue);
+
+        if (inputHandler == null) return;
 
         Vector3 inputDirection = inputHandler.GetMovementDirection();
 
@@ -63,6 +82,12 @@ public class PlayerPositionController : MonoBehaviour
         {
             InstantMovement(inputDirection);
         }
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdUpdateAnimation(float value)
+    {
+        speedValue = value;
     }
 
     private void AcceleratedMovement(Vector3 inputDirection)
@@ -139,6 +164,9 @@ public class PlayerPositionController : MonoBehaviour
 
     private void OnDisable()
     {
-        rb.velocity = Vector3.zero;
+        if (rb)
+        {
+            rb.velocity = Vector3.zero;
+        }
     }
 }

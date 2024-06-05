@@ -4,8 +4,6 @@ using MasterServerToolkit.MasterServer;
 using Mirror;
 using Network.Master;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using Utils;
 using WebSocketSharp;
 
@@ -16,7 +14,7 @@ public class Player : NetworkBehaviour
     [SerializeField] private GameObject golgiBodyPrefab = null;
     [SerializeField] private Material transparentMaterial;
     public bool IsDead { get; private set; }
-    
+
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
     public event EventHandler<Vector3> OnPositionChanged;
@@ -66,14 +64,14 @@ public class Player : NetworkBehaviour
     {
         OnPositionChanged?.Invoke(this, position);
     }
-    
+
     [Server]
     public void Kill()
     {
         IsDead = true;
         RpcOnKilled();
     }
-    
+
     [Server]
     public void Respawn()
     {
@@ -122,12 +120,18 @@ public class Player : NetworkBehaviour
     {
         GameObject model = IsMangiagalli ? mangiagalliBodyPrefab : golgiBodyPrefab;
 
-        if (model)
-        {
-            Destroy(GetComponentInChildren<MeshRenderer>());
-            model = Instantiate(model, transform);
-            Layers.SetLayerRecursively(model, isLocalPlayer ? Layers.FieldOfView : Layers.BehindFieldOfView);
-        }
+        if (!model) return;
+
+        Destroy(GetComponentInChildren<MeshRenderer>());
+        model = Instantiate(model, transform);
+        Layers.SetLayerRecursively(model, isLocalPlayer ? Layers.FieldOfView : Layers.BehindFieldOfView);
+
+        if (isLocalPlayer) return;
+
+        NetworkAnimator networkAnimator = gameObject.AddComponent<NetworkAnimator>();
+        networkAnimator.animator = model.GetComponent<Animator>();
+        networkAnimator.clientAuthority = false;
+        networkAnimator.syncDirection = SyncDirection.ServerToClient;
     }
 
     [TargetRpc]
@@ -182,12 +186,12 @@ public class Player : NetworkBehaviour
     {
         var mats = GetComponentInChildren<SkinnedMeshRenderer>().materials;
         Material[] newMats;
-        
+
         if (transparent)
         {
             if (mats.Length > 0 && mats[0] == transparentMaterial)
                 return;
-            
+
             newMats = new Material[mats.Length + 1];
             newMats[0] = transparentMaterial;
             for (var i = 0; i < mats.Length; i++)
@@ -200,7 +204,7 @@ public class Player : NetworkBehaviour
             else newMats = mats;
         }
         else return;
-        
+
         GetComponentInChildren<SkinnedMeshRenderer>().materials = newMats;
     }
 
@@ -230,40 +234,40 @@ public class Player : NetworkBehaviour
     {
         InputHandler.Inverted = invert;
     }
-    
+
     [ClientRpc]
     private void RpcOnKilled()
     {
         Debug.Log("Player " + Username + " killed");
         IsDead = true;
         ReturnToSpawn();
-        
+
         InputHandler.enabled = false;
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Collider>().enabled = false;
-        
+
         for (var i = 0; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(false);
     }
-    
+
     [ClientRpc]
     private void RpcOnRespawned()
     {
         Debug.Log("Player " + Username + " respawned");
         IsDead = false;
-        
+
         for (var i = 0; i < transform.childCount; i++)
             transform.GetChild(i).gameObject.SetActive(true);
 
         InputHandler.enabled = true;
         GetComponent<Collider>().enabled = true;
         GetComponent<Rigidbody>().useGravity = true;
-        
+
         if (isLocalPlayer)
             MakeVisible();
         else MakeInvisible();
     }
-    
+
     #endregion
 
     private void OnDestroy()
