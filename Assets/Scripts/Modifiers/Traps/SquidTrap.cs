@@ -16,7 +16,7 @@ namespace Modifiers.Traps
             minimapObjs = minimapObjs.Where(obj => obj.IsVisible).OrderBy(x => Guid.NewGuid()).ToList();
             
             for (var i = 0; i < minimapObjs.Count / 2; i++)
-                minimapObjs[i].Hide();
+                minimapObjs[i].Show();
             
             base.Enable();
         }
