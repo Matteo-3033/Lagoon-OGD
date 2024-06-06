@@ -50,7 +50,17 @@ public class CameraMovement : NetworkBehaviour
     {
         if (!player.isLocalPlayer)
             return;
+        
+        PlayerAnimationEvents.OnAnimationEnded += OnAnimationEnded;
+    }
 
+    private void OnAnimationEnded(object sender, PlayerAnimationManager.Animation animation)
+    {
+        var player = ((GameObject)sender).GetComponentInParent<Player>();
+        if (animation != PlayerAnimationManager.Animation.Death || player != Player.LocalPlayer)
+            return;
+        
+        PlayerAnimationEvents.OnAnimationEnded -= OnAnimationEnded;
         _followOpponent = true;
         Player.Opponent.MakeVisible(false);
     }

@@ -10,15 +10,17 @@ using WebSocketSharp;
 [RequireComponent(typeof(NetworkIdentity))]
 public class Player : NetworkBehaviour
 {
+    [SerializeField] private Material transparentMaterial;
+    
     [SerializeField] private GameObject defaultBody;
     [SerializeField] private GameObject mangiagalliBody;
     [SerializeField] private GameObject golgiBody;
+    private GameObject body;
     
-    [SerializeField] private Material transparentMaterial;
     public bool IsDead { get; private set; }
 
     public static event Action<Player> OnPlayerSpawned;
-    public static event Action<Player> OnPlayerDespawned;
+    public static event Action<Player> OnPlayerDeSpawned;
     public event EventHandler<Vector3> OnPositionChanged;
 
     public static Player LocalPlayer { get; private set; }
@@ -34,6 +36,7 @@ public class Player : NetworkBehaviour
     public FieldOfView FieldOfView => GetComponentInChildren<FieldOfView>(true);
     public MinimapIcon MinimapIcon => GetComponentInChildren<MinimapIcon>(true);
     public RippleController RippleController => GetComponentInChildren<RippleController>(true);
+    public PlayerAnimationManager AnimationManager => GetComponentInChildren<PlayerAnimationManager>(true);
 
 
     private Vector3 spawnPoint;
@@ -128,9 +131,17 @@ public class Player : NetworkBehaviour
     {
         var model = IsMangiagalli ? mangiagalliBody : golgiBody;
         var otherModel = IsMangiagalli ? golgiBody : mangiagalliBody;
-        
-        if (!model) return;
+
+        if (!model)
+        {
+            body = defaultBody;
+            return;
+        }
+
+        body = model;
         model.SetActive(true);
+        
+        Debug.Log("Player " + Username + " is " + (IsMangiagalli ? "Mangiagalli" : "Golgi") + "!");
         
         Destroy(defaultBody);
         Destroy(otherModel);
@@ -217,7 +228,7 @@ public class Player : NetworkBehaviour
     [Client]
     public override void OnStopClient()
     {
-        OnPlayerDespawned?.Invoke(this);
+        OnPlayerDeSpawned?.Invoke(this);
         base.OnStopClient();
     }
 
@@ -246,14 +257,34 @@ public class Player : NetworkBehaviour
     {
         Debug.Log("Player " + Username + " killed");
         IsDead = true;
-        ReturnToSpawn();
-
+        
         InputHandler.enabled = false;
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Collider>().enabled = false;
-
+        
         for (var i = 0; i < transform.childCount; i++)
-            transform.GetChild(i).gameObject.SetActive(false);
+        {
+            if (transform.GetChild(i).gameObject != body)
+                transform.GetChild(i).gameObject.SetActive(false);
+        }
+        
+        PlayerAnimationEvents.OnAnimationEnded += OnAnimationEnded;
+    }
+
+    [ClientCallback]
+    private void OnAnimationEnded(object sender, PlayerAnimationManager.Animation animation)
+    {
+        if (animation == PlayerAnimationManager.Animation.Death)
+            OnKillCompleted();
+    }
+
+    [Client]
+    private void OnKillCompleted()
+    {
+        PlayerAnimationEvents.OnAnimationEnded -= OnAnimationEnded;
+        Debug.Log("KILL COMPLETED");
+        body.SetActive(false);
+        ReturnToSpawn();
     }
 
     [ClientRpc]

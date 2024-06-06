@@ -20,34 +20,17 @@ public class PlayerPositionController : NetworkBehaviour
 
     private Vector3 currentSpeed;
     private List<Vector3> additionalVectors = new();
-    private Animator _animator;
-    [SyncVar] private float speedValue;
-    private bool isLocal = true;
-    private static readonly int SpeedParam = Animator.StringToHash("speed");
+    
+    public float SpeedValue { get; private set; }
 
 
     private void Start()
     {
-        Animator[] animators = GetComponentsInChildren<Animator>();
-        foreach (Animator a in animators)
-        {
-            foreach (AnimatorControllerParameter parameter in a.parameters)
-            {
-                if (parameter.nameHash != SpeedParam) continue;
-
-                _animator = a;
-                break;
-            }
-        }
-
         var player = GetComponent<Player>();
 
 #if !UNITY_EDITOR
         if (!player.isLocalPlayer)
-        {
-            isLocal = false;
             return;
-        }
 #endif
 
         rb = GetComponent<Rigidbody>();
@@ -58,17 +41,8 @@ public class PlayerPositionController : NetworkBehaviour
     {
         if (isServer) return;
 
-        if (isLocal)
-        {
-            speedValue = currentSpeed.magnitude;
-            CmdUpdateAnimation(speedValue);
-        }
-        else
-        {
-            // Debug.Log("Speed value received: " + speedValue);
-        }
-
-        _animator?.SetFloat(SpeedParam, speedValue);
+        if (isLocalPlayer)
+            SpeedValue = currentSpeed.magnitude;
 
         if (inputHandler == null) return;
 
@@ -82,12 +56,6 @@ public class PlayerPositionController : NetworkBehaviour
         {
             InstantMovement(inputDirection);
         }
-    }
-
-    [Command(requiresAuthority = false)]
-    private void CmdUpdateAnimation(float value)
-    {
-        speedValue = value;
     }
 
     private void AcceleratedMovement(Vector3 inputDirection)

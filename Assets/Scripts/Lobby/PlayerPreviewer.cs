@@ -16,7 +16,7 @@ namespace Lobby
             loadingSpinner.SetActive(true);
             
             Player.OnPlayerSpawned += OnPlayerSpawned;
-            Player.OnPlayerDespawned += OnPlayerDespawned;
+            Player.OnPlayerDeSpawned += OnPlayerDeSpawned;
         }
 
         private void OnPlayerSpawned(Player player)
@@ -24,7 +24,7 @@ namespace Lobby
             ShowPreview(player);
         }
         
-        private void OnPlayerDespawned(Player player)
+        private void OnPlayerDeSpawned(Player player)
         {
             DeletePreview(player);
         }
@@ -61,7 +61,7 @@ namespace Lobby
         private void OnDestroy()
         {
             Player.OnPlayerSpawned -= OnPlayerSpawned;
-            Player.OnPlayerDespawned -= OnPlayerDespawned;
+            Player.OnPlayerDeSpawned -= OnPlayerDeSpawned;
         }
     }
 }
