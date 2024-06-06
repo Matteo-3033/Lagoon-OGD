@@ -1,13 +1,6 @@
-using System;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Audio;
-using Cinemachine.Utility;
 using Mirror;
 using Round;
-using UnityEditor;
 using UnityEngine.AI;
 
 public class FSMSentinel : EnemyFSM
@@ -40,13 +33,6 @@ public class FSMSentinel : EnemyFSM
             _positionTarget = patrolPositions[_currentPatrolPositionIndex];
         }
     }
-    
-    #if UNITY_EDITOR
-    private void Start()
-    {
-        SetupFSM();
-    }
-#endif
 
     public override void OnStartServer()
     {
@@ -64,9 +50,7 @@ public class FSMSentinel : EnemyFSM
         }
     }
 
-#if !UNITY_EDITOR
     [Server]
-#endif
     private void SetupFSM()
     {
         RoundController.OnRoundLoaded -= SetupFSM;
@@ -121,25 +105,19 @@ public class FSMSentinel : EnemyFSM
 
     #region ACTIONS
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     private void AlarmColorReset()
     {
         alarmLight.color = _baseColor;
     }
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     private void AlarmColor()
     {
         alarmLight.color = alarmColor;
     }
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     private void SearchColor()
     {
         alarmLight.color = searchColor;

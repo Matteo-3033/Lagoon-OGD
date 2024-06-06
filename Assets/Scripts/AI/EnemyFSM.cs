@@ -1,9 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using Audio;
 using Mirror;
-using Round;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class EnemyFSM : NetworkBehaviour
@@ -23,9 +19,7 @@ public abstract class EnemyFSM : NetworkBehaviour
     private bool _canUpdate;
     private Coroutine _fsmCoroutine;
 
-#if !UNITY_EDITOR
     [Server]
-#endif
     protected IEnumerator Patrol()
     {
         while (_canUpdate)
@@ -109,25 +103,19 @@ public abstract class EnemyFSM : NetworkBehaviour
         _fsmCoroutine = StartCoroutine(Patrol());
     }
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     protected void PlayAlarmSound()
     {
         SoundManager?.OnSentinelAlarm();
     }
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     protected void PlayEnemyLostSound()
     {
         SoundManager?.OnSentinelEnemyLost();
     }
 
-#if !UNITY_EDITOR
     [ClientRpc]
-#endif
     protected void PlaySearchingSound()
     {
         SoundManager?.OnSentinelSearching();
