@@ -8,6 +8,8 @@ namespace Utils
         public const string Menu = "Assets/Scenes/Client/MainMenu.unity";
         public const string Lobby = "Assets/Scenes/Client/Lobby.unity";
         public const string Round1 = "Assets/Scenes/Client/Round1.unity";
+        public const string Round2 = "Assets/Scenes/Client/Round2.unity";
+        public const string Round3 = "Assets/Scenes/Client/Round3.unity";
 
         public static bool IsIn(string scene)
         {

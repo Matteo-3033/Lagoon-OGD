@@ -79,6 +79,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: BeaconTrapPressurePlate
       objectReference: {fileID: 0}
+    - target: {fileID: 8638890152162334711, guid: 18909ae2074168e4ab0591b4b9e6b20e,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8638890152162334711, guid: 18909ae2074168e4ab0591b4b9e6b20e,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8638890152162334711, guid: 18909ae2074168e4ab0591b4b9e6b20e,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8638890152162334711, guid: 18909ae2074168e4ab0591b4b9e6b20e,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9098714839954178000, guid: 18909ae2074168e4ab0591b4b9e6b20e,
         type: 3}
       propertyPath: _assetId
