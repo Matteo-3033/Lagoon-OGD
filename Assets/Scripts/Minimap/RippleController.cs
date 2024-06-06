@@ -42,6 +42,9 @@ public class RippleController : NetworkBehaviour
     [ClientRpc]
     public void ShowAlarmRipple()
     {
+        if (!isActiveAndEnabled)
+            return;
+        
         _isAlarmState = true;
         StopCurrentRipple();
         PlayAlarmRipple();
@@ -53,7 +56,10 @@ public class RippleController : NetworkBehaviour
     {
         _isAlarmState = false;
         StopCurrentRipple();
-        PlayKeyRipple();
+        
+        if (isActiveAndEnabled)
+            PlayKeyRipple();
+        
         OnAlarmRippleEnded?.Invoke(this, EventArgs.Empty);
     }
 
@@ -98,7 +104,7 @@ public class RippleController : NetworkBehaviour
             keyRippleConfig.scale,
             keyRippleConfig.rippleColor);
 
-        if (_currentRippleCoroutine == null) PlayKeyRipple();
+        if (_currentRippleCoroutine == null && isActiveAndEnabled) PlayKeyRipple();
     }
 
     private IEnumerator RippleLoop(RippleSignal rippleSignal)
@@ -109,5 +115,14 @@ public class RippleController : NetworkBehaviour
             _minimapIcon.PlayIconFade(rippleSignal.RippleLifetime / 2);
             yield return new WaitForSeconds(rippleSignal.Interval);
         }
+    }
+
+    private void OnEnable()
+    {
+        var player = GetComponentInParent<Player>();
+        if (!player)
+            return;
+        
+        UpdateKeyRippleEffect(player.Inventory.KeyFragments);
     }
 }
