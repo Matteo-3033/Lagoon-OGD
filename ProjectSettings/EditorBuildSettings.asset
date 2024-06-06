@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Client/Round2.unity
     guid: e3b41e1b7955e0c44953a56cc62c88ad
   - enabled: 1
+    path: Assets/Scenes/Client/Round3.unity
+    guid: 38d50f7b23c3b624299efd1548b44a2e
+  - enabled: 1
     path: Assets/Scenes/Master/Master.unity
     guid: f6e364cdcd55f4f4692fdca33c11d678
   m_configObjects:
