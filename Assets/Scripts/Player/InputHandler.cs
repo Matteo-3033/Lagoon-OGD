@@ -127,7 +127,8 @@ public class InputHandler : MonoBehaviour, IInputHandler
     private void View_performed(InputAction.CallbackContext callbackContext)
     {
         Vector3 temp = callbackContext.ReadValue<Vector2>();
-        lookDirection = new Vector3(temp.x, 0, temp.y);
+        lookDirection = temp.x * _camera.transform.root.right +
+                        temp.y * _camera.transform.root.forward;
         mousePerformed = false;
     }
 
