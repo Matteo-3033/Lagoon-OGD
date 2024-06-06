@@ -6,6 +6,7 @@ public abstract class EnemyFSM : NetworkBehaviour
 {
     public float reactionTime = 1f;
     public LayerMask obstructionMask;
+    public float maxVisionDistance;
 
     [Header("Alarm")] public Light alarmLight;
     public Color alarmColor = Color.red;
@@ -60,10 +61,11 @@ public abstract class EnemyFSM : NetworkBehaviour
     protected bool VisibleEnemy(Transform potentialTarget)
     {
         Vector3 toTarget = potentialTarget.position - transform.position;
+        float distance = toTarget.magnitude;
 
-        return !Physics.Raycast(transform.position,
+        return (maxVisionDistance <= 0 || distance < maxVisionDistance) && !Physics.Raycast(transform.position,
             toTarget.normalized,
-            toTarget.magnitude,
+            distance,
             obstructionMask);
     }
 
