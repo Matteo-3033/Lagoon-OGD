@@ -311,7 +311,7 @@ Transform:
   m_GameObject: {fileID: 433713014521445415}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 15, z: 0}
+  m_LocalPosition: {x: 0, y: 20, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1082,6 +1082,11 @@ PrefabInstance:
         type: 3}
       propertyPath: SizeModule.enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
+      value: 0.627451
       objectReference: {fileID: 0}
     - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}
@@ -2405,6 +2410,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AlarmRipple
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
+      value: 0.627451
       objectReference: {fileID: 0}
     - target: {fileID: 5032688367053238132, guid: 6bf4c72bafe535e44acdc941706bc7e5,
         type: 3}
