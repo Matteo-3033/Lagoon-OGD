@@ -68,6 +68,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SquidTrap
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8c7d515d5f8e12f43b23be5f767fe6e6,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
