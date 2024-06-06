@@ -176,8 +176,6 @@ public class InputHandler : MonoBehaviour, IInputHandler
     
     private void Stab_performed(InputAction.CallbackContext obj)
     {
-        Debug.Log("StabPerformed");
-        Debug.Log(GetComponent<Player>().Username);
         OnStab?.Invoke(this, EventArgs.Empty);
     }
 
