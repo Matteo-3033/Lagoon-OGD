@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Client/Round1.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Scenes/Client/Round2.unity
+    guid: e3b41e1b7955e0c44953a56cc62c88ad
+  - enabled: 1
     path: Assets/Scenes/Master/Master.unity
     guid: f6e364cdcd55f4f4692fdca33c11d678
   m_configObjects:

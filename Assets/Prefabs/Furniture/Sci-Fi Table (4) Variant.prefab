@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2991636705603762011}
   - component: {fileID: 1126756642560674660}
   - component: {fileID: 6829530639416068994}
+  - component: {fileID: 2037696634751181186}
   m_Layer: 0
   m_Name: pCube1 (2)
   m_TagString: Untagged
@@ -85,6 +86,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &2037696634751181186
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204484463532652015}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6842717, y: 2.8746967, z: 1.5883005}
+  m_Center: {x: -0.22228628, y: 1.4521475, z: 0.68207824}
 --- !u!1 &3920381320666852489
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,6 +118,7 @@ GameObject:
   - component: {fileID: 2747372827681450202}
   - component: {fileID: 6493428765487709216}
   - component: {fileID: 6789477807898784957}
+  - component: {fileID: 3246803112994854065}
   m_Layer: 0
   m_Name: pCube1 (4)
   m_TagString: Untagged
@@ -170,6 +193,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3246803112994854065
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3920381320666852489}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6842717, y: 2.8746967, z: 1.5883005}
+  m_Center: {x: -0.22228628, y: 1.4521475, z: 0.68207824}
 --- !u!1 &4525546644865853181
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,6 +225,7 @@ GameObject:
   - component: {fileID: 4844456143000904407}
   - component: {fileID: 4350019557795664261}
   - component: {fileID: 1801013542371681300}
+  - component: {fileID: 9068935829791322371}
   m_Layer: 0
   m_Name: pCube1 (3)
   m_TagString: Untagged
@@ -255,6 +300,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &9068935829791322371
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525546644865853181}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6842717, y: 2.8746967, z: 1.5883005}
+  m_Center: {x: -0.22228628, y: 1.4521475, z: 0.68207824}
 --- !u!1 &7772990951444368815
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,6 +332,7 @@ GameObject:
   - component: {fileID: 7853007425106149116}
   - component: {fileID: 8433302095206020905}
   - component: {fileID: 4856748816514524895}
+  - component: {fileID: 1090539472016421858}
   m_Layer: 0
   m_Name: pCube1 (1)
   m_TagString: Untagged
@@ -340,6 +407,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1090539472016421858
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7772990951444368815}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6842717, y: 2.8746967, z: 1.5883005}
+  m_Center: {x: -0.22229391, y: 1.4521475, z: 0.68207824}
 --- !u!1001 &2756493579352957722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -423,7 +511,8 @@ PrefabInstance:
       propertyPath: m_LightProbeUsage
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 333436167030855601, guid: 60b7bb233fde8cc46a2ca85a04901d02, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1658187286719633597, guid: 60b7bb233fde8cc46a2ca85a04901d02,
@@ -442,8 +531,39 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2747372827681450202}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1012562619905570609, guid: 60b7bb233fde8cc46a2ca85a04901d02,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7632714366335235478}
   m_SourcePrefab: {fileID: 100100000, guid: 60b7bb233fde8cc46a2ca85a04901d02, type: 3}
+--- !u!1 &2903783927090320427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1012562619905570609, guid: 60b7bb233fde8cc46a2ca85a04901d02,
+    type: 3}
+  m_PrefabInstance: {fileID: 2756493579352957722}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &7632714366335235478
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2903783927090320427}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 6.1680174, y: 2.045306, z: 1.7801803}
+  m_Center: {x: -0.011413097, y: 0.0022917988, z: -0.88778186}
 --- !u!4 &3549426682337459111 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1658187286719633597, guid: 60b7bb233fde8cc46a2ca85a04901d02,
