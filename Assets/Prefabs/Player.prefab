@@ -466,7 +466,7 @@ MonoBehaviour:
   viewDistance: 6.5
   rayCount: 250
   innerFieldDegreePercent: 0.8
-  innerFieldDistancePercent: 0.9
+  innerFieldDistancePercent: 0.7
   obstaclesLayermask:
     serializedVersion: 2
     m_Bits: 8200
