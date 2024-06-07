@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class StabManager : NetworkBehaviour
 {
-    [SerializeField] private float delay;
+    [SerializeField] private float delaySeconds;
 
     private const float KILL_DISTANCE = 1.5f;
 
@@ -76,7 +76,7 @@ public class StabManager : NetworkBehaviour
 
     private bool CanStab()
     {
-        return Time.time - lastStabTime >= delay;
+        return Time.time - lastStabTime >= delaySeconds;
     }
 
     [Command(requiresAuthority = false)]

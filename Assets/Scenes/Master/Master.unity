@@ -702,7 +702,6 @@ MonoBehaviour:
   logLevel: 0
   registerRoomPermissionLevel: 0
   roundPool:
-  - {fileID: 11400000, guid: bc3c7aa4ba2c2fe439f5d8263b45552f, type: 2}
   - {fileID: 11400000, guid: 3bfc46a5c6687c64cb4edff193653171, type: 2}
   - {fileID: 11400000, guid: 5ac8299ac2a4cf94dbfc1794d68d2ee1, type: 2}
 --- !u!1 &1977181801

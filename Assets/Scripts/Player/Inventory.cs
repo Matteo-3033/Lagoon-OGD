@@ -158,18 +158,24 @@ public class Inventory : NetworkBehaviour
     {
         Debug.Log($"Using trap {trap} from {player.Username}");
         if (!traps.Contains(trap))
+        {
+            Debug.Log("Trap not in inventory");
             return;
-        
+        }
+
         var playerRadius = player.GetComponent<CapsuleCollider>().radius;
         var position = player.transform.position + player.transform.forward * playerRadius * 3;
 
         if (Physics.Raycast(transform.position, Vector3.down, out var hit))
         {
             position.y = hit.point.y;
-            
+
             var obstacles = Physics.OverlapBoxNonAlloc(position, new Vector3(0.5F, 0.5F, 0.5F), new Collider[5],  Quaternion.identity, obstaclesMask);
             if (obstacles > 0)
+            {
+                Debug.Log("Cannot place trap on top of obstacles");
                 return;
+            }
         }
         else
             position.y = 0;
@@ -177,7 +183,10 @@ public class Inventory : NetworkBehaviour
         lock (traps)
         {
             if (!traps.Contains(trap))
+            {
+                Debug.Log("Trap not in inventory");
                 return;
+            }
             traps.Remove(trap);
         }
 

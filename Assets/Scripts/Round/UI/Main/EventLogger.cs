@@ -108,14 +108,14 @@ namespace Round.UI.Main
             switch (args.Op)
             {
                 case Inventory.InventoryOp.Acquired when args.Modifier.canBeFoundInGame:
-                    LogEvent($"{args.Modifier.modifierName} activated!", Duration.LONG);
+                    LogEvent($"<color=red>{args.Modifier.modifierName}</color> activated!", Duration.LONG);
                     break;
                 case Inventory.InventoryOp.Acquired:
                     LogEvent($"Super effect activated!", Duration.SHORT);
                     LogEvent($"<color=red>{args.Modifier.modifierName}</color>", Duration.LONG);
                     break;
                 case Inventory.InventoryOp.Removed:
-                    LogEvent($"{args.Modifier.modifierName} deactivated...");
+                    LogEvent($"<color=red>{args.Modifier.modifierName}</color> deactivated...");
                     break;
             }
         }
@@ -123,9 +123,9 @@ namespace Round.UI.Main
         private void LogTrapsUpdate(object sender, Inventory.OnTrapsUpdatedArgs args)
         {
             if (args.Op == Inventory.InventoryOp.Acquired)
-                LogEvent($"{args.Trap.modifierName} trap acquired!", Duration.SHORT);
+                LogEvent($"<color=red>{args.Trap.modifierName}</color> trap acquired!", Duration.SHORT);
             else if (args.Op == Inventory.InventoryOp.Removed)
-                LogEvent($"{args.Trap.modifierName} trap placed");
+                LogEvent($"<color=red>{args.Trap.modifierName}</color> trap placed");
         }
         
         private void LogChancellorEffect(object sender, ChancellorEffectsController.OnEffectEnabledArgs args)
@@ -139,7 +139,7 @@ namespace Round.UI.Main
             if (args.NewValue > args.OldValue)
             {
                 LogEvent(args.Player.isLocalPlayer
-                    ? $"Badge fragment acquired!"
+                    ? $"<color=red>Badge fragment</color> acquired!"
                     : $"<color=#FF0000>{Player.Opponent.Username}</color> acquired a badge fragment!");
 
                 if (args.NewValue == RoundController.Round.keyFragments)
@@ -168,7 +168,7 @@ namespace Round.UI.Main
             if (Player.LocalPlayer.Inventory.KeyFragments == Player.Opponent.Inventory.KeyFragments)
             {
                 LogEvent("Time limit reached!", Duration.SHORT);
-                LogEvent("Find a badge fragment to win the round");
+                LogEvent("Find a <color=red>badge fragment</color> to win the round");
             }
         }
         
@@ -177,7 +177,7 @@ namespace Round.UI.Main
             if (Player.LocalPlayer.Inventory.IsTrapBagFull())
                 LogEvent("Trap bag is full!");
             else
-                LogEvent($"{trap.modifierName} already in your inventory!");
+                LogEvent($"<color=red>{trap.modifierName}</color> already in your inventory!");
         }
 
         private void LogEvent(string msg, float duration = Duration.MEDIUM)

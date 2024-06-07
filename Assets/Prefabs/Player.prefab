@@ -185,7 +185,7 @@ MonoBehaviour:
   syncInterval: 0
   obstaclesMask:
     serializedVersion: 2
-    m_Bits: 1527
+    m_Bits: 1495
   trapsCapacity: 3
 --- !u!114 &9194985185400045934
 MonoBehaviour:
@@ -215,7 +215,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  delay: 1
+  delaySeconds: 1
 --- !u!114 &5372978510782166586
 MonoBehaviour:
   m_ObjectHideFlags: 0
