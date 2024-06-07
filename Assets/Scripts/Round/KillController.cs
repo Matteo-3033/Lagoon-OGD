@@ -10,7 +10,7 @@ namespace Round
     public class KillController : NetworkBehaviour
     {
         public const int RESPAWN_TIME = 10;
-        private const int WAIT_BEFORE_MINIGAME = 1;
+        private const int WAIT_BEFORE_MINIGAME = 2;
         private const int KEYS_PER_MINIGAME = 3;
 
         public enum MiniGameKeys
@@ -228,8 +228,8 @@ namespace Round
                         }
                         else
                         {
-                            Debug.Log($"The next key '{c}' was entered correctly");
-                            i++;
+                            Debug.Log($"The next key '{c}' was entered wrong");
+                            i = 0;
                         }
                     }
                 }
