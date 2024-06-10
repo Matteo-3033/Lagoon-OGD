@@ -109,6 +109,12 @@ namespace Round
         [Server]
         private IEnumerator StartKillMiniGame()
         {
+            var player1 = Players[0];
+            var player2 = Players[1];
+            
+            if (Vector3.Distance(player1.transform.position, player2.transform.position) > 8)
+                yield break;
+            
             Debug.Log("Starting kill minigame");
             lock (miniGameLock)
             {
