@@ -135,6 +135,7 @@ public class PlayerPositionController : NetworkBehaviour
         if (rb)
         {
             rb.velocity = Vector3.zero;
+            SpeedValue = 0F;
         }
     }
 }
