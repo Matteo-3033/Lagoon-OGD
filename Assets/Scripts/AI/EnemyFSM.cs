@@ -2,7 +2,7 @@ using System.Collections;
 using Mirror;
 using UnityEngine;
 
-public abstract class EnemyFSM : NetworkBehaviour
+public abstract class EnemyFSM : MonoBehaviour
 {
     public float reactionTime = 1f;
     public LayerMask obstructionMask;
@@ -20,7 +20,7 @@ public abstract class EnemyFSM : NetworkBehaviour
     private bool _canUpdate;
     private Coroutine _fsmCoroutine;
 
-    [Server]
+    
     protected IEnumerator Patrol()
     {
         while (_canUpdate)
@@ -105,19 +105,19 @@ public abstract class EnemyFSM : NetworkBehaviour
         _fsmCoroutine = StartCoroutine(Patrol());
     }
 
-    [ClientRpc]
+    
     protected void PlayAlarmSound()
     {
         SoundManager?.OnSentinelAlarm();
     }
 
-    [ClientRpc]
+    
     protected void PlayEnemyLostSound()
     {
         SoundManager?.OnSentinelEnemyLost();
     }
 
-    [ClientRpc]
+    
     protected void PlaySearchingSound()
     {
         SoundManager?.OnSentinelSearching();
@@ -125,8 +125,6 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     private void OnDestroy()
     {
-        if (!isServer) return;
-
         if (AlarmTarget)
         {
             StopSignalOnTarget();

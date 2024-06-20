@@ -4,26 +4,27 @@ using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(MeshRenderer))]
-public class FieldOfView : NetworkBehaviour
+public class FieldOfView : MonoBehaviour
 {
-    [SyncVar(hook = nameof(OnFoVDegreeChanged)), SerializeField]
-    private float fieldOfViewDegree = 120F;
+    public bool shootRays = false;
+    [SerializeField] private float fieldOfViewDegree = 120F;
 
-    [SyncVar(hook = nameof(OnViewDistanceChanged)), SerializeField]
-    private float viewDistance = 10F;
+    [SerializeField] private float viewDistance = 10F;
 
-    [SyncVar, SerializeField] private int rayCount = 60;
+    [SerializeField] private int rayCount = 60;
     [SerializeField, Range(0F, 1F)] private float innerFieldDegreePercent = 0.8F;
-    [SerializeField, Range(0F, 1F)] private float innerFieldDistancePercent = 0.9F; 
-    
+    [SerializeField, Range(0F, 1F)] private float innerFieldDistancePercent = 0.9F;
+
     [SerializeField] private LayerMask obstaclesLayermask;
     [SerializeField] private LayerMask consideredLayermask;
 
-    public bool CanSeePlayer
+    public bool
+        CanSeePlayer
     {
         get;
         private set;
     } // L'avversario nel caso il proprietario del field of view sia il player, altrimenti uno dei due giocatori
+
     public bool IsPlayerIn { get; private set; }
 
     public class FieldOfViewArgs
@@ -49,17 +50,14 @@ public class FieldOfView : NetworkBehaviour
         player = GetComponentInParent<Player>();
     }
 
-    public override void OnStartClient()
+    public void Start()
     {
-        base.OnStartServer();
-
         OnFoVUpdated();
     }
 
     private void Update()
     {
-        if ((isClient && player && Player.Opponent?.transform == transform.root) || !player)
-            return;
+        if (!shootRays) return;
 
         var vertices = new Vector3[rayCount + 2]; // +2 for the origin and the last vertex
         var uv = new Vector2[vertices.Length];
@@ -118,7 +116,7 @@ public class FieldOfView : NetworkBehaviour
 
         CanSeePlayer = canSeePlayer;
         IsPlayerIn = isPlayerIn;
-        
+
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.uv = uv;
@@ -162,21 +160,21 @@ public class FieldOfView : NetworkBehaviour
         return fieldOfViewDegree;
     }
 
-    [ClientCallback]
+
     private void OnFoVDegreeChanged(float oldValue, float newValue)
     {
         Debug.Log("Field of view degree changed");
         OnFoVUpdated();
     }
 
-    [ClientCallback]
+
     private void OnViewDistanceChanged(float oldValue, float newValue)
     {
         Debug.Log("Field distance changed");
         OnFoVUpdated();
     }
 
-    [ClientCallback]
+
     private void OnFoVUpdated()
     {
         OnFieldOfViewChanged?.Invoke(this,

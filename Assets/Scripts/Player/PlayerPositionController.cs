@@ -28,11 +28,6 @@ public class PlayerPositionController : NetworkBehaviour
     {
         var player = GetComponent<Player>();
 
-#if !UNITY_EDITOR
-        if (!player.isLocalPlayer)
-            return;
-#endif
-
         rb = GetComponent<Rigidbody>();
         inputHandler = player.InputHandler;
     }

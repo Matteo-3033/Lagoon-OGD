@@ -641,14 +641,14 @@ MonoBehaviour:
   logLevel: 0
   spawnerLogLevel: 0
   machineIp: 127.0.0.1
-  executableFilePath: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
+  executableFilePath: D:\Projects\Lagoon-OGD\Builds\Windows\Server\Server.exe
   maxProcesses: 10
   spawnWebSocketServers: 0
   region: International
   killProcessesWhenStop: 1
   autoStartInEditor: 0
   overrideExePathInEditor: 1
-  exePathFromEditor: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
+  exePathFromEditor: D:\Projects\Lagoon-OGD\Builds\Windows\Server\Server.exe
   OnSpawnerStartedEvent:
     m_PersistentCalls:
       m_Calls: []

@@ -16,7 +16,7 @@ public class FSMSentinel : EnemyFSM
     private int _currentPatrolPositionIndex;
     private Vector3 _previousPosition;
     private Animator _animator;
-    [SyncVar] private float _agentSpeed;
+    private float _agentSpeed;
     private static readonly int SpeedParam = Animator.StringToHash("speed");
     private const float KILL_DISTANCE = 1.5f;
 
@@ -34,23 +34,12 @@ public class FSMSentinel : EnemyFSM
         }
     }
 
-    public override void OnStartServer()
+    public void Start()
     {
-        base.OnStartServer();
-
-        Debug.Log("Sentinel OnStartServer");
-
-        if (RoundController.HasLoaded())
-        {
-            SetupFSM();
-        }
-        else
-        {
-            RoundController.OnRoundLoaded += SetupFSM;
-        }
+        SetupFSM();
     }
 
-    [Server]
+
     private void SetupFSM()
     {
         RoundController.OnRoundLoaded -= SetupFSM;
@@ -93,31 +82,24 @@ public class FSMSentinel : EnemyFSM
 
     private void Update()
     {
-        if (isServer)
-        {
-            _agentSpeed = _agent.velocity.magnitude;
-        }
-        else
-        {
-            _animator.SetFloat(SpeedParam, _agentSpeed);
-        }
+        _agentSpeed = _agent.velocity.magnitude;
+        _animator.SetFloat(SpeedParam, _agentSpeed);
     }
 
     #region ACTIONS
 
-    [ClientRpc]
     private void AlarmColorReset()
     {
         alarmLight.color = _baseColor;
     }
 
-    [ClientRpc]
+
     private void AlarmColor()
     {
         alarmLight.color = alarmColor;
     }
 
-    [ClientRpc]
+
     private void SearchColor()
     {
         alarmLight.color = searchColor;

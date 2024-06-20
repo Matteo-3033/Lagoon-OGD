@@ -22,23 +22,16 @@ public class FSMCamera : EnemyFSM
         _baseColor = alarmLight.color;
         FieldOfView = GetComponentInChildren<FieldOfView>();
         SoundManager = GetComponent<SentinelSoundManager>();
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
 
         if (patrolRotations.Length > 0)
         {
             _rotationTarget = patrolRotations[_currentPatrolRotationIndex];
         }
 
-        Debug.Log("Camera OnStartServer");
-
         SetupFSM();
     }
 
-    [Server]
+    
     private void SetupFSM()
     {
         FSMState patrolState = new FSMState();
@@ -74,8 +67,6 @@ public class FSMCamera : EnemyFSM
 
     private void FixedUpdate()
     {
-        if (!isServer) return;
-
         float target;
 
         if (AlarmTarget)
@@ -120,7 +111,7 @@ public class FSMCamera : EnemyFSM
         AlarmTarget = null;
     }
 
-    [ClientRpc]
+    
     private void RpcSetAlarmColor(Color color)
     {
         alarmLight.color = color;

@@ -331,9 +331,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ef4b5c0c1329a4188529f37ec9c6e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   minimapCamera: {fileID: 0}
   rotateWithMinimapCamera: 0
   startHidden: 1
@@ -459,9 +456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c969c12efeca5394d84d79652fda8819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
+  shootRays: 1
   fieldOfViewDegree: 90
   viewDistance: 6.5
   rayCount: 250

@@ -3,7 +3,7 @@ using Mirror;
 using UnityEngine;
 using Utils;
 
-public class MinimapIcon : NetworkBehaviour
+public class MinimapIcon : MonoBehaviour
 {
     [SerializeField] private MinimapCamera minimapCamera;
     [SerializeField] private bool rotateWithMinimapCamera = true;
@@ -132,13 +132,13 @@ public class MinimapIcon : NetworkBehaviour
         SetIconShown(false);
     }
 
-    [ClientRpc]
+    
     public void RpcShow(bool permanent)
     {
         Show(permanent);
     }
 
-    [ClientRpc]
+    
     public void RpcHide(bool permanent)
     {
         Hide(permanent);
