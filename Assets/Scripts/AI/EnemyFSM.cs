@@ -17,6 +17,7 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected Transform AlarmTarget;
     protected SentinelSoundManager SoundManager;
+    private RippleController _currentRippleController;
     private bool _canUpdate;
     private Coroutine _fsmCoroutine;
 
@@ -71,18 +72,16 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected void SignalOnTarget()
     {
-        RippleController rippleController = AlarmTarget?.GetComponentInChildren<RippleController>();
-        if (!rippleController) return;
-
-        rippleController.ShowAlarmRipple();
+        _currentRippleController?.StopAlarmRipple();
+        
+        _currentRippleController = AlarmTarget?.GetComponentInChildren<RippleController>();
+        _currentRippleController?.ShowAlarmRipple();
     }
 
     protected void StopSignalOnTarget()
     {
-        RippleController rippleController = AlarmTarget?.GetComponentInChildren<RippleController>();
-        if (!rippleController) return;
-
-        rippleController.StopAlarmRipple();
+        _currentRippleController?.StopAlarmRipple();
+        _currentRippleController = null;
     }
 
     public virtual void StopFSM()
@@ -127,7 +126,7 @@ public abstract class EnemyFSM : NetworkBehaviour
     {
         if (!isServer) return;
 
-        if (AlarmTarget)
+        if (_currentRippleController)
         {
             StopSignalOnTarget();
         }
