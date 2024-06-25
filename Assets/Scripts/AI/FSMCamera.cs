@@ -120,12 +120,6 @@ public class FSMCamera : EnemyFSM
         AlarmTarget = null;
     }
 
-    [ClientRpc]
-    private void RpcSetAlarmColor(Color color)
-    {
-        alarmLight.color = color;
-    }
-
     private bool RotationReached()
     {
         return Mathf.Abs(transform.eulerAngles.y - _rotationTarget) < .1f;
@@ -150,11 +144,9 @@ public class FSMCamera : EnemyFSM
     {
         Transform potentialTarget = ScanField();
         bool isEnemyVisible = potentialTarget && VisibleEnemy(potentialTarget);
-        if (isEnemyVisible)
-        {
-            AlarmTarget = potentialTarget;
-        }
-
+        
+        if (potentialTarget) AlarmTarget = potentialTarget;
+        
         return isEnemyVisible;
     }
 

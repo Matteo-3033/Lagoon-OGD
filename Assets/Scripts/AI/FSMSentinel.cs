@@ -105,22 +105,19 @@ public class FSMSentinel : EnemyFSM
 
     #region ACTIONS
 
-    [ClientRpc]
     private void AlarmColorReset()
     {
-        alarmLight.color = _baseColor;
+        RpcSetAlarmColor(_baseColor);
     }
 
-    [ClientRpc]
     private void AlarmColor()
     {
-        alarmLight.color = alarmColor;
+        RpcSetAlarmColor(alarmColor);
     }
 
-    [ClientRpc]
     private void SearchColor()
     {
-        alarmLight.color = searchColor;
+        RpcSetAlarmColor(searchColor);
     }
 
     private void AlarmFollowTarget()

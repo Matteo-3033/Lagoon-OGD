@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Mirror;
 using UnityEngine;
@@ -72,25 +73,25 @@ public abstract class EnemyFSM : NetworkBehaviour
 
     protected void SignalOnTarget()
     {
-        _currentRippleController?.StopAlarmRipple();
-        
+        _currentRippleController?.RpcStopAlarmRipple();
+
         _currentRippleController = AlarmTarget?.GetComponentInChildren<RippleController>();
-        _currentRippleController?.ShowAlarmRipple();
+        _currentRippleController?.RpcShowAlarmRipple();
     }
 
     protected void StopSignalOnTarget()
     {
-        _currentRippleController?.StopAlarmRipple();
+        _currentRippleController?.RpcStopAlarmRipple();
         _currentRippleController = null;
     }
 
     public virtual void StopFSM()
     {
         _canUpdate = false;
-        if (_fsmCoroutine != null)
-        {
-            StopCoroutine(_fsmCoroutine);
-        }
+        if (_fsmCoroutine == null) return;
+
+        StopCoroutine(_fsmCoroutine);
+        _fsmCoroutine = null;
     }
 
     public virtual void PlayFSM()
@@ -102,6 +103,12 @@ public abstract class EnemyFSM : NetworkBehaviour
 
         _canUpdate = true;
         _fsmCoroutine = StartCoroutine(Patrol());
+    }
+
+    [ClientRpc]
+    protected void RpcSetAlarmColor(Color color)
+    {
+        alarmLight.color = color;
     }
 
     [ClientRpc]
@@ -122,15 +129,11 @@ public abstract class EnemyFSM : NetworkBehaviour
         SoundManager?.OnSentinelSearching();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (!isServer) return;
 
-        if (_currentRippleController)
-        {
-            StopSignalOnTarget();
-        }
-
+        StopSignalOnTarget();
         StopFSM();
     }
 }

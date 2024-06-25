@@ -12,7 +12,7 @@ public class RippleController : NetworkBehaviour
     [Header("Alarm signal Configuration")] public RippleConfiguration alarmRippleConfig;
 
     [Header("Key signal Configuration")] public RippleConfiguration keyRippleConfig;
-    [FormerlySerializedAs("minimumKeyNumber")] public int minimumBadgeNumber = 0;
+    public int minimumBadgeNumber = 0;
 
     private MinimapIcon _minimapIcon;
     private int _keyFragments;
@@ -40,7 +40,7 @@ public class RippleController : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void ShowAlarmRipple()
+    public void RpcShowAlarmRipple()
     {
         if (!isActiveAndEnabled)
             return;
@@ -52,7 +52,7 @@ public class RippleController : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void StopAlarmRipple()
+    public void RpcStopAlarmRipple()
     {
         _isAlarmState = false;
         StopCurrentRipple();
