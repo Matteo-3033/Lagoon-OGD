@@ -76,6 +76,21 @@ namespace Round
         }
 
         [Server]
+        public void TryKillSentinel(FSMSentinel sentinel, Player player)
+        {
+            float halfFieldOfViewAngle = sentinel.GetComponentInChildren<FieldOfView>().GetAngle() / 2;
+            float dotProduct = Vector3.Dot(player.transform.forward, sentinel.transform.forward);
+
+            float stabAngle = Mathf.Acos(dotProduct) * Mathf.Rad2Deg;
+            if ((dotProduct > 0 && stabAngle < halfFieldOfViewAngle) ||
+                (dotProduct < 0 && stabAngle < 180 - halfFieldOfViewAngle))
+            {
+                Debug.Log("Sentinel Killed");
+                NetworkServer.Destroy(sentinel.gameObject);
+            }
+        }
+
+        [Server]
         private IEnumerator RespawnPlayer(Player player)
         {
             yield return new WaitForSeconds(RESPAWN_TIME);

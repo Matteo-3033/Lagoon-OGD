@@ -3,16 +3,18 @@ using Mirror;
 using Network;
 using Round;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class StabManager : NetworkBehaviour
 {
     [SerializeField] private float delaySeconds;
 
-    private const float KILL_DISTANCE = 1.5f;
+    [SerializeField] private float killDistance = 1.7f;
+    [SerializeField] private float sphereRadius = 0.3f;
 
     public event EventHandler<EventArgs> OnStab;
 
-    private float lastStabTime;
+    private float _lastStabTime;
 
     [field: SyncVar] public bool CanStealTraps { get; private set; }
 
@@ -20,10 +22,8 @@ public class StabManager : NetworkBehaviour
     {
         var player = GetComponent<Player>();
 
-#if !UNITY_EDITOR
         if (!player.isLocalPlayer)
             return;
-#endif
 
         player.InputHandler.OnStab += OnStabInteraction;
     }
@@ -32,7 +32,7 @@ public class StabManager : NetworkBehaviour
     {
         if (!CanStab()) return;
 
-        lastStabTime = Time.time;
+        _lastStabTime = Time.time;
         OnStab?.Invoke(gameObject, EventArgs.Empty);
         CmdStab();
     }
@@ -41,31 +41,50 @@ public class StabManager : NetworkBehaviour
     private void CmdStab(NetworkConnectionToClient sender = null)
     {
         if (!CanStab()) return;
-        lastStabTime = Time.time;
-        
-        Debug.Log("Stab from " + sender.Player());
+        _lastStabTime = Time.time;
+
+        Player player = sender.Player();
+
+        Debug.Log("Stab from " + player);
         TargetOnStab(sender.Opponent().connectionToClient);
-        if (!Physics.Raycast(transform.position, transform.forward, out var hit, KILL_DISTANCE)) return;
+
+        float distanceWithCompensation = killDistance + GetCompensation(player);
+
+        Ray ray = new Ray(transform.position, transform.forward);
+        if (!Physics.SphereCast(ray, sphereRadius, out var hit, distanceWithCompensation)) return;
+
 
         if (hit.collider.TryGetComponent(out Player opponent))
         {
             Debug.Log("Trying to kill opponent");
-            KillController.Instance.TryKillPlayer(opponent, sender.Player(), CanStealTraps);
+            KillController.Instance.TryKillPlayer(opponent, player, CanStealTraps);
         }
         else if (hit.collider.TryGetComponent(out FSMSentinel sentinel))
         {
             Debug.Log("Trying to kill sentinel");
-            float halfFieldOfViewAngle = sentinel.GetComponentInChildren<FieldOfView>().GetAngle() / 2;
-            float dotProduct = Vector3.Dot(transform.forward, sentinel.transform.forward);
-
-            float stabAngle = Mathf.Acos(dotProduct) * Mathf.Rad2Deg;
-            if ((dotProduct > 0 && stabAngle < halfFieldOfViewAngle) ||
-                (dotProduct < 0 && stabAngle < 180 - halfFieldOfViewAngle))
-            {
-                Debug.Log("Sentinel Killed");
-                NetworkServer.Destroy(sentinel.gameObject);
-            }
+            KillController.Instance.TryKillSentinel(sentinel, player);
         }
+    }
+
+    private float GetCompensation(Player player)
+    {
+        Vector3 speed = player.PositionController.GetCurrentSpeed();
+
+        if (Vector3.Dot(speed, player.transform.forward) <= 0) return 0;
+
+        float distanceWithCompensation =
+            Vector3.Project(speed, player.transform.forward).magnitude * 2 * Time.fixedDeltaTime;
+        Debug.Log("Distance with compensation: " + distanceWithCompensation);
+        return distanceWithCompensation;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        float distanceWithCompensation = killDistance + GetCompensation(Player.LocalPlayer);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawRay(transform.position, transform.forward * distanceWithCompensation);
+        Gizmos.DrawWireSphere(transform.position + transform.forward * distanceWithCompensation, sphereRadius);
     }
 
     [TargetRpc]
@@ -76,7 +95,7 @@ public class StabManager : NetworkBehaviour
 
     private bool CanStab()
     {
-        return Time.time - lastStabTime >= delaySeconds;
+        return Time.time - _lastStabTime >= delaySeconds;
     }
 
     [Command(requiresAuthority = false)]

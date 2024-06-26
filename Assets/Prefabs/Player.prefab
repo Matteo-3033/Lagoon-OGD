@@ -216,6 +216,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   delaySeconds: 1
+  killDistance: 1.75
+  sphereRadius: 0.25
 --- !u!114 &5372978510782166586
 MonoBehaviour:
   m_ObjectHideFlags: 0
