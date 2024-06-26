@@ -74,7 +74,6 @@ public class StabManager : NetworkBehaviour
 
         float distanceWithCompensation =
             Vector3.Project(speed, player.transform.forward).magnitude * 2 * Time.fixedDeltaTime;
-        Debug.Log("Distance with compensation: " + distanceWithCompensation);
         return distanceWithCompensation;
     }
 
