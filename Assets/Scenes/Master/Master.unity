@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731713, g: 0.13414738, b: 0.121078536, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -641,14 +641,14 @@ MonoBehaviour:
   logLevel: 0
   spawnerLogLevel: 0
   machineIp: 127.0.0.1
-  executableFilePath: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
+  executableFilePath: ' C:\Users\chmar\Desktop\unityprova\Lagoon-OGD\Builds\Windows\Server\Server.exe'
   maxProcesses: 10
   spawnWebSocketServers: 0
   region: International
   killProcessesWhenStop: 1
   autoStartInEditor: 0
   overrideExePathInEditor: 1
-  exePathFromEditor: C:\Users\matte\Documents\UnityProjects\OGD-Lagoon\Builds\Windows\Server\Server.exe
+  exePathFromEditor: ' C:\Users\chmar\Desktop\unityprova\Lagoon-OGD\Builds\Windows\Server\Server.exe'
   OnSpawnerStartedEvent:
     m_PersistentCalls:
       m_Calls: []
