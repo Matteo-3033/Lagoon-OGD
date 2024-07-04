@@ -164,13 +164,22 @@ public class Inventory : NetworkBehaviour
         }
 
         var playerRadius = player.GetComponent<CapsuleCollider>().radius;
+        if (Physics.Raycast(player.transform.position, player.transform.forward, playerRadius * 3, obstaclesMask))
+        {
+            Debug.Log("Obstacle in front of player");
+            return;
+        }
+        
         var position = player.transform.position + player.transform.forward * playerRadius * 3;
 
         if (Physics.Raycast(transform.position, Vector3.down, out var hit))
         {
+            Debug.Log($"Hit point: {hit.point}");
             position.y = hit.point.y;
 
-            var obstacles = Physics.OverlapBoxNonAlloc(position, new Vector3(0.5F, 0.5F, 0.5F), new Collider[5],  Quaternion.identity, obstaclesMask);
+            var boxCenter = position + new Vector3(0, 0.501F, 0);
+            var obstacles = Physics.OverlapBoxNonAlloc(boxCenter, new Vector3(0.5F, 0.5F, 0.5F), new Collider[10],  Quaternion.identity, obstaclesMask);
+            Debug.Log($"Obstacles: {obstacles}");
             if (obstacles > 0)
             {
                 Debug.Log("Cannot place trap on top of obstacles");
