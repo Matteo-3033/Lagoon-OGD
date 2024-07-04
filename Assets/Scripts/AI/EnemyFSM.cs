@@ -129,7 +129,7 @@ public abstract class EnemyFSM : NetworkBehaviour
         SoundManager?.OnSentinelSearching();
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         if (!isServer) return;
 

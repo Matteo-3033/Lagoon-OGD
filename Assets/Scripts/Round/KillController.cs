@@ -25,6 +25,7 @@ namespace Round
         public static KillController Instance { get; private set; }
 
         public static event Action<Player> OnPlayerKilled;
+        public static event Action<FSMSentinel> OnSentinelKilled;
         public static event Action<Player> OnPlayerRespawned;
         public static event Action OnMiniGameStarting;
         public static event Action OnMiniGameEnded;
@@ -93,8 +94,16 @@ namespace Round
                 (dotProduct < 0 && stabAngle < 180 - halfFieldOfViewAngle))
             {
                 Debug.Log("Sentinel Killed");
-                NetworkServer.Destroy(sentinel.gameObject);
+                sentinel.StopFSM();
+                OnSentinelKilled?.Invoke(sentinel);
+                RpcSentinelKilled(sentinel);
             }
+        }
+        
+        [ClientRpc]
+        private void RpcSentinelKilled(FSMSentinel sentinel)
+        {
+            OnSentinelKilled?.Invoke(sentinel);
         }
 
         [Server]

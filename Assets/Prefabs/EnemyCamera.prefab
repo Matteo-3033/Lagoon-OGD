@@ -117,6 +117,7 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 8449
+  maxVisionDistance: 0
   alarmLight: {fileID: 952045759732404142}
   alarmColor: {r: 1, g: 0, b: 0, a: 1}
   searchColor: {r: 1, g: 0.7254902, b: 0.015686274, a: 1}
@@ -280,8 +281,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   fieldOfViewDegree: 100
-  viewDistance: 15
+  viewDistance: 12
   rayCount: 20
+  innerFieldDegreePercent: 0.8
+  innerFieldDistancePercent: 0.9
   obstaclesLayermask:
     serializedVersion: 2
     m_Bits: 0
@@ -390,6 +393,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   minimapCamera: {fileID: 0}
+  rotateWithMinimapCamera: 1
   startHidden: 1
   hideAfterBorder: 1
   clampToBorder: 0

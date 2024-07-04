@@ -1,14 +1,19 @@
+using System;
 using UnityEngine;
 using Mirror;
 using Round;
+using Unity.VisualScripting;
 using UnityEngine.AI;
 
 public class FSMSentinel : EnemyFSM
 {
+    public ParticleSystem deathEffect = null;
     [Space] public Transform[] patrolPositions;
 
     private Color _baseColor;
     private NavMeshAgent _agent;
+
+    private bool _killed = false;
 
     private Transform _positionTarget;
 
@@ -17,7 +22,10 @@ public class FSMSentinel : EnemyFSM
     private Vector3 _previousPosition;
     private Animator _animator;
     [SyncVar] private float _agentSpeed;
+    
     private static readonly int SpeedParam = Animator.StringToHash("speed");
+    private static readonly int DeathTrigger = Animator.StringToHash("death");
+    
     private const float KILL_DISTANCE = 1.5f;
 
     private void Awake()
@@ -27,7 +35,9 @@ public class FSMSentinel : EnemyFSM
         _animator = GetComponentInChildren<Animator>();
         FieldOfView = GetComponentInChildren<FieldOfView>();
         SoundManager = GetComponent<SentinelSoundManager>();
-
+        
+        KillController.OnSentinelKilled += OnSentinelKilled;
+        
         if (patrolPositions.Length > 0)
         {
             _positionTarget = patrolPositions[_currentPatrolPositionIndex];
@@ -39,6 +49,8 @@ public class FSMSentinel : EnemyFSM
         base.OnStartServer();
 
         Debug.Log("Sentinel OnStartServer");
+        
+        SentinelDeath.OnDeathAnimationEnded += SentinelOnDeathAnimationEnded;
 
         if (RoundController.HasLoaded())
         {
@@ -213,13 +225,35 @@ public class FSMSentinel : EnemyFSM
     }
 
     #endregion
+    
+    private void OnSentinelKilled(FSMSentinel sentinel)
+    {
+        if (_killed || sentinel != this) return;
 
+        KillController.OnSentinelKilled -= OnSentinelKilled;
+        
+        _killed = true;
+        _animator.SetTrigger(DeathTrigger);
+        deathEffect?.Play();
+    }
+
+    private void SentinelOnDeathAnimationEnded(object sender, EventArgs e)
+    {
+        Debug.Log("SentinelOnDeathAnimationEnded");
+        if (sender as GameObject != gameObject) return;
+        Debug.Log("Destroy");
+        
+        NetworkServer.Destroy(gameObject);
+    }
+
+    [Server]
     public override void StopFSM()
     {
         _agent.isStopped = true;
         base.StopFSM();
     }
 
+    [Server]
     public override void PlayFSM()
     {
         _agent.isStopped = false;
