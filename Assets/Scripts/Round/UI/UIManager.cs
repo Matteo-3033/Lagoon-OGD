@@ -113,16 +113,23 @@ namespace Round.UI
 
         private void ShowMenu(ScreenKey key, bool clearStack = true)
         {
+            var newScreen = menus[key];
+            var wasActive = false;
+            
             if (clearStack)
             {
                 foreach (var s in screenStack)
-                    s.OnUnfocus();
+                {
+                    if (s != newScreen)
+                        s.OnUnfocus();
+                    else wasActive = true;
+                }
                 screenStack.Clear();
             }
             
-            var newScreen = menus[key];
             screenStack.Add(newScreen);
-            newScreen.OnFocus();
+            if (!wasActive)
+                newScreen.OnFocus();
         }
 
         private void OnDestroy()

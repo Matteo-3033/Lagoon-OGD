@@ -84,7 +84,6 @@ namespace Round.UI.Main
             if (args.Player.isLocalPlayer)
                 LogStatsUpdateLocalPlayer(args);
             else LogStatsUpdateOpponent(args);
-           
         }
 
         private void LogStatsUpdateOpponent(Inventory.OnStatsUpdatedArgs args)
