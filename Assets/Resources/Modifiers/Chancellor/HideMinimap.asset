@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: HideMinimap
   m_EditorClassIdentifier: 
   modifierName: Lose one's bearings
-  description: All discovered rooms are hidden
+  duration: 2

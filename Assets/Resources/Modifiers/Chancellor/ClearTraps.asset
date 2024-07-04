@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: ClearTraps
   m_EditorClassIdentifier: 
   modifierName: Money burns a hole in one's pocket
+  duration: 2

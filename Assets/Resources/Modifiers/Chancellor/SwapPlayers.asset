@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SwapPlayers
   m_EditorClassIdentifier: 
   modifierName: Trading places
-  playersReady: 0
+  duration: 2

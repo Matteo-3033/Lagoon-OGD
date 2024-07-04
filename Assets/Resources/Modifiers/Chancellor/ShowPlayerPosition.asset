@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: ShowPlayerPosition
   m_EditorClassIdentifier: 
   modifierName: Beacon of hope
+  duration: 30

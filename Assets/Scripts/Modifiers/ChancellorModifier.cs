@@ -7,6 +7,8 @@ namespace TrapModifiers
 {
     public abstract class ChancellorModifier: Modifier
     {
+        public float duration;
+        
         public override void Disable()
         {
         }

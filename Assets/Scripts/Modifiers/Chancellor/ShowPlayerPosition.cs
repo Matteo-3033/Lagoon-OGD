@@ -27,7 +27,7 @@ namespace Modifiers.Chancellor
             {
                 player1.MinimapIcon.RpcHide(false);
                 player2.MinimapIcon.RpcHide(false);
-            }, 32F);
+            }, duration + 2F);
         }
     }
 }

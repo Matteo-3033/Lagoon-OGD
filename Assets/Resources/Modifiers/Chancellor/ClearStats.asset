@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: ClearStats
   m_EditorClassIdentifier: 
   modifierName: From hero to zero
+  duration: 2

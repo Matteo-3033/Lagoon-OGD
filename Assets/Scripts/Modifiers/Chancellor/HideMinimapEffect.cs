@@ -11,7 +11,7 @@ namespace Modifiers.Chancellor
         {
             var camera = GameObject.FindWithTag("MinimapCamera").GetComponent<MinimapCamera>();
 
-            FunctionTimer.Create(() => camera.ShowAllMinimapDarkAreas(), 2F);
+            FunctionTimer.Create(() => camera.ShowAllMinimapDarkAreas(), duration);
         }
     }
 }

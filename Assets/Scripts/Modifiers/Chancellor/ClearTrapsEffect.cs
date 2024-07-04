@@ -20,7 +20,7 @@ namespace Modifiers.Chancellor
             {
                 player1.Inventory.ClearTraps();
                 player2.Inventory.ClearTraps();
-            }, 2F);
+            }, duration);
         }
     }
 }

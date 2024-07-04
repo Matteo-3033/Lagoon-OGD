@@ -9,7 +9,7 @@ namespace Modifiers.Chancellor
     [CreateAssetMenu(menuName = "ScriptableObjects/ChancellorEffects/SwapPlayers", fileName = "SwapPlayers")]
     public class SwapPlayersEffect: ChancellorModifier
     {
-        public int playersReady;
+        private int playersReady;
         
         public override void Enable()
         {
@@ -29,7 +29,7 @@ namespace Modifiers.Chancellor
             
                 player1.TargetGoTo(player2.transform.position);
                 player2.TargetGoTo(player1.transform.position);
-            }, 2F);
+            }, duration);
         }
 
         private void OnPlayerReady(object sender, Vector3 args)

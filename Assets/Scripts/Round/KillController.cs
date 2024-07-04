@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using UnityEngine;
+using Utils;
 
 namespace Round
 {
@@ -30,7 +31,7 @@ namespace Round
         public static event Action<MiniGameKeys?> OnMiniGameNextKey;
         
 
-        private bool roundInProgress;
+        private bool canKill;
         
         public bool MiniGameRunning { get; private set; }
         private readonly object miniGameLock = new();
@@ -61,10 +62,16 @@ namespace Round
 
         private void OnRoundLoaded()
         {
-            RoundController.Instance.OnRoundStarted += () => roundInProgress = true;
-            RoundController.Instance.OnRoundEnded += _ => roundInProgress = false;
+            RoundController.Instance.OnRoundStarted += () => canKill = true;
+            RoundController.Instance.OnRoundEnded += _ => canKill = false;
+            ChancellorEffectsController.OnEffectEnabled += OnEffectEnabled;
         }
 
+        private void OnEffectEnabled(object sender, ChancellorEffectsController.OnEffectEnabledArgs e)
+        {
+            canKill = false;
+            FunctionTimer.Create(() => canKill = true, e.Effect.duration > 0 ? e.Effect.duration : 0.1F);
+        }
 
         [Server]
         public void TryKillPlayer(Player killed, object by, bool stealTrap = false)
@@ -114,7 +121,7 @@ namespace Round
 
         private void Update()
         {
-            if (!isServer || !roundInProgress || MiniGameRunning)
+            if (!isServer || !canKill || MiniGameRunning)
                 return;
 
             if (Players.TrueForAll(p => p.FieldOfView.IsPlayerIn && !p.IsDead))
