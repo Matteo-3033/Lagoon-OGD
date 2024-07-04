@@ -16,4 +16,4 @@ MonoBehaviour:
   durationSeconds: 10
   respawnAfterSeconds: 90
   icon: {fileID: 21300000, guid: 579b97501b490a54fa4a7472b35f0b7d, type: 3}
-  prefab: {fileID: 5117271594775079409, guid: b411e74f0e0aa9b478c6f9257f8af952, type: 3}
+  prefab: {fileID: 1812599325997537748, guid: 97adc820add3a21448af3e6c7f76a01d, type: 3}
