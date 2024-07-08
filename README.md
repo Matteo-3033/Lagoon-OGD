@@ -10,6 +10,7 @@ The game was developed by team Lagoon, composed by:
 The game has been tested on Windows 11 on Unity 2022.3.23f1; please use this configuration to avoid compatibility issues.
 
 ## Other resources:
+- [Trailer](https://youtu.be/7WKIKZCqbLs)
 - [Gameplay trailer](https://youtu.be/q783GfBAZrI)
 - [Game concept](Docs/Concept.pdf)
 - [Game design document](Docs/GDD.pdf)
